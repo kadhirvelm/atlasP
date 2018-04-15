@@ -1,11 +1,19 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { Provider } from "react-redux";
+
+import '@blueprintjs/core/lib/css/blueprint.css';
+
 import App from './App';
-import './index.css';
 import registerServiceWorker from './registerServiceWorker';
+import configureStore from "./State/Store";
+
+const configuredStore = configureStore();
 
 ReactDOM.render(
-  <App />,
+  <Provider store={ configuredStore }>
+    <App />
+  </Provider>,
   document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();
