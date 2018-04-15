@@ -2,13 +2,15 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
+import { Button } from '@blueprintjs/core';
+
 import { fetchGoogleSheetData } from './State/Actions';
 import IStoreState from './State/IStoreState';
 
 interface IAppProps {
   readonly fetching: boolean;
-  readonly googleSheetData: any[];
-  readonly googleSheetDataError: any;
+  readonly googleSheetData?: any[];
+  readonly googleSheetDataError?: any;
   fetchGoogleSheetData: () => (dispatch: Dispatch<IStoreState>) => void;
 }
 

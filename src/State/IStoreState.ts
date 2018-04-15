@@ -1,3 +1,5 @@
 export default interface IStoreState {
-    readonly data: string,
+    fetching: boolean;
+    googleSheetData?: any[],
+    googleSheetDataError?: any,
 }

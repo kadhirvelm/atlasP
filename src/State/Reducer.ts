@@ -3,7 +3,6 @@ import { ActionTypes } from './Actions';
 export default function reducer(
   state = {
     fetching: false,
-    googleSheetData: [],
   },
   action: any,
 ) {
@@ -16,6 +15,7 @@ export default function reducer(
       return Object.assign({}, state, {
         fetching: false,
         googleSheetData: action.googleSheetData,
+        googleSheetDataError: '',
       })
     case ActionTypes.Failure_FetchGoogleSheetData:
       return Object.assign({}, state, {
