@@ -2,6 +2,7 @@ import { Dispatch } from 'redux';
 import IStoreState from './IStoreState';
 
 export enum ActionTypes {
+    Change_Sign_In = 'Change_Sign_In',
     Progress_FetchGoogleSheetData = 'PROGRESS_FetchGoogleSheetData',
     Success_FetchGoogleSheetData = 'SUCCESS_FetchGoogleSheetData',
     Failure_FetchGoogleSheetData = 'FAILURE_FetchGoogleSheetData',
@@ -10,7 +11,6 @@ export enum ActionTypes {
 export function fetchGoogleSheetData(googleApi: any): (dispatch: Dispatch<IStoreState>) => void {
     return (dispatch: Dispatch<IStoreState>) => {
         dispatch(startingFetchedData());
-
         window['gapi'].client.load('sheets', 'v4', () => {
             window['gapi'].client.sheets.spreadsheets.values.get({
               range: 'Users-Data!A1:O35',
@@ -56,5 +56,23 @@ function failedFetchedData(error: any): IActionsFailure {
   return {
       googleSheetDataError: error,
       type: ActionTypes.Failure_FetchGoogleSheetData,
+  }
+}
+
+export function changeSignInStatus(isSignedIn: boolean): (dispatch: Dispatch<IStoreState>) => void {
+  return (dispatch: Dispatch<IStoreState>) => {
+    dispatch(changeSignIn(isSignedIn));
+  }
+}
+
+interface IChangeSignIn {
+  isSignedIn: boolean,
+  type: ActionTypes.Change_Sign_In,
+}
+
+function changeSignIn(isSignedIn: boolean): IChangeSignIn {
+  return {
+    isSignedIn,
+    type: ActionTypes.Change_Sign_In,
   }
 }

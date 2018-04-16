@@ -2,16 +2,19 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { Button } from '@blueprintjs/core';
+import './App.css'
 
-import { fetchGoogleSheetData } from './State/Actions';
+import { Button, Intent, Spinner } from '@blueprintjs/core';
+import Main from './Components/Main';
+import { changeSignInStatus } from './State/Actions';
 import IStoreState from './State/IStoreState';
+
+import * as _ from 'underscore';
 
 interface IAppProps {
   readonly fetching: boolean;
-  readonly googleSheetData?: any[];
-  readonly googleSheetDataError?: any;
-  fetchGoogleSheetData: () => (dispatch: Dispatch<IStoreState>) => void;
+  readonly isSignedIn?: boolean,
+  changeSignInStatus: (isSignedIn: boolean) => (dispatch: Dispatch<IStoreState>) => void,
 }
 
 class App extends React.Component<IAppProps> {
@@ -19,19 +22,20 @@ class App extends React.Component<IAppProps> {
     this.authorize()
   }
 
-  public componentWillReceiveProps(nextProps: IAppProps){
-    this.setState({ googleSheetData: nextProps.googleSheetData, googleSheetDataError: nextProps.googleSheetDataError })
-  }
-
   public render() {
     return (
       <div>
-        <Button onClick={ this.fetchGoogleSheetsData } text='Refresh Data' />
-        <div color='red'> { this.props.googleSheetDataError && this.props.googleSheetDataError.result.error.message } </div>
-        <button id="authorize-button" onClick={ this.handleSignIn } style={ { display: 'block' } }>Authorize</button>
-        <button id="signout-button" style={ { display: 'block' } }>Sign Out</button>
+        { _.isUndefined(this.props.isSignedIn) ?
+          <Spinner className='centered' />
+          :
+          this.props.isSignedIn ?
+          <Button id='signout-button' onClick={ this.handleSignOut } text='Sign Out' intent={ Intent.DANGER } className='top-right-fix' />
+          :
+          <Button id='authorize-button' onClick={ this.handleSignIn } text='Sign In' intent={ Intent.PRIMARY } className='centered fade-in' />
+        }
+        { this.props.isSignedIn && <Main /> }
       </div>
-    );
+    )
   }
 
   private authorize = () => {
@@ -42,36 +46,35 @@ class App extends React.Component<IAppProps> {
           discoveryDocs: [ 'https://sheets.googleapis.com/$discovery/rest?version=v4' ],
           scope: 'https://www.googleapis.com/auth/spreadsheets.readonly'
         }).then(() => {
-            window['gapi'].auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
-            this.updateSigninStatus(window['gapi'].auth2.getAuthInstance().isSignedIn.get());
-        });
-      });
+          window['gapi'].auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
+          this.updateSigninStatus(window['gapi'].auth2.getAuthInstance().isSignedIn.get());
+      })
+    })
   }
 
   private updateSigninStatus = (isSignedIn: boolean) => {
-    console.log(isSignedIn)
-  }
-
-  private fetchGoogleSheetsData = () => {
-    this.props.fetchGoogleSheetData()
+    this.props.changeSignInStatus(isSignedIn)
   }
 
   private handleSignIn = () => {
-    window['gapi'].auth2.getAuthInstance().signIn();
+    window['gapi'].auth2.getAuthInstance().signIn()
+  }
+
+  private handleSignOut = () => {
+    window['gapi'].auth2.getAuthInstance().signOut()
   }
 }
 
 function mapStateToProps(state: IStoreState) {
   return {
     fetching: state.fetching,
-    googleSheetData: state.googleSheetData,
-    googleSheetDataError: state.googleSheetDataError,
+    isSignedIn: state.isSignedIn,
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
   return {
-    fetchGoogleSheetData: bindActionCreators(fetchGoogleSheetData, dispatch)
+    changeSignInStatus: bindActionCreators(changeSignInStatus, dispatch),
   };
 }
 

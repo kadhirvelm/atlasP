@@ -22,6 +22,10 @@ export default function reducer(
         fetching: false,
         googleSheetDataError: action.googleSheetDataError,
       })
+    case ActionTypes.Change_Sign_In:
+      return Object.assign({}, state, {
+        isSignedIn: action.isSignedIn,
+      })
     default:
       return state
   }
