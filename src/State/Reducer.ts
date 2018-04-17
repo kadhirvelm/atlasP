@@ -13,7 +13,6 @@ export default function reducer(
       })
     case ActionTypes.Success_FetchGoogleSheetData:
       return Object.assign({}, state, {
-        eventData: action.eventData,
         fetching: false,
         googleSheetDataError: '',
         userData: action.userData,

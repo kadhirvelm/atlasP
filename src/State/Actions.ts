@@ -1,4 +1,5 @@
 import { Dispatch } from 'redux';
+import { assembleObjects } from '../Helpers/Assembler';
 import IStoreState from './IStoreState';
 
 export enum ActionTypes {
@@ -14,7 +15,7 @@ export function fetchGoogleSheetData(googleApi: any): (dispatch: Dispatch<IStore
         window['gapi'].client.load('sheets', 'v4', () => {
             window['gapi'].client.sheets.spreadsheets.values.batchGet({
               ranges: ['Users-Data!A1:O35', 'Events-Data!A1:C100'],
-              spreadsheetId: '1subd2wYnMRN4lSg6XeJKIIBlX6_38ygWZcHNl8C-UWc'
+              spreadsheetId: process.env.REACT_APP_SPREADSHEET,
             }).then((response: object) => {
                 const results = response['result'].valueRanges;
                 dispatch(succesfullyFetchedData(results[0].values, results[1].values));
@@ -36,16 +37,14 @@ function startingFetchedData(): IActionsProgress {
 }
 
 interface IActionsSuccess {
-    readonly userData: string[][],
-    readonly eventData: string[][],
+    readonly userData: object,
     readonly type: ActionTypes.Success_FetchGoogleSheetData,
 }
 
 function succesfullyFetchedData(userData: string[][], eventData: string[][]): IActionsSuccess {
     return {
-        eventData,
         type: ActionTypes.Success_FetchGoogleSheetData,
-        userData,
+        userData: assembleObjects(userData, eventData),
     }
 }
 

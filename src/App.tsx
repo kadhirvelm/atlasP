@@ -41,8 +41,8 @@ class App extends React.Component<IAppProps> {
   private authorize = () => {
     window['gapi'].load('client:auth2', () => {
       window['gapi'].client.init({
-          apiKey: 'AIzaSyA_CLYOdcIFubupi3CiUiwOl7jC21Ntn0g',
-          clientId: '826952396520-1kpdq0jbso689jldpfou2v7mevjf5u1h.apps.googleusercontent.com',
+          apiKey: process.env.REACT_APP_API_KEY,
+          clientId: process.env.REACT_APP_CLIENT_ID,
           discoveryDocs: [ 'https://sheets.googleapis.com/$discovery/rest?version=v4' ],
           scope: 'https://www.googleapis.com/auth/spreadsheets.readonly'
         }).then(() => {
