@@ -12,12 +12,12 @@ export function fetchGoogleSheetData(googleApi: any): (dispatch: Dispatch<IStore
     return (dispatch: Dispatch<IStoreState>) => {
         dispatch(startingFetchedData());
         window['gapi'].client.load('sheets', 'v4', () => {
-            window['gapi'].client.sheets.spreadsheets.values.get({
-              range: 'Users-Data!A1:O35',
+            window['gapi'].client.sheets.spreadsheets.values.batchGet({
+              ranges: ['Users-Data!A1:O35', 'Events-Data!A1:C100'],
               spreadsheetId: '1subd2wYnMRN4lSg6XeJKIIBlX6_38ygWZcHNl8C-UWc'
-            }).then((response: string[]) => {
-                console.log(response)
-                dispatch(succesfullyFetchedData(response));
+            }).then((response: object) => {
+                const results = response['result'].valueRanges;
+                dispatch(succesfullyFetchedData(results[0].values, results[1].values));
             }).catch((error: any) => {
                 dispatch(failedFetchedData(error));
             });
@@ -36,14 +36,16 @@ function startingFetchedData(): IActionsProgress {
 }
 
 interface IActionsSuccess {
-    readonly googleSheetData: any[],
+    readonly userData: string[][],
+    readonly eventData: string[][],
     readonly type: ActionTypes.Success_FetchGoogleSheetData,
 }
 
-function succesfullyFetchedData(returnedData: any[]): IActionsSuccess {
+function succesfullyFetchedData(userData: string[][], eventData: string[][]): IActionsSuccess {
     return {
-        googleSheetData: returnedData,
+        eventData,
         type: ActionTypes.Success_FetchGoogleSheetData,
+        userData,
     }
 }
 

@@ -1,6 +1,7 @@
 export default interface IStoreState {
     fetching: boolean;
-    googleSheetData?: any[],
+    userData?: string[][],
+    eventData?: string[][],
     googleSheetDataError?: any,
     isSignedIn?: boolean,
 }

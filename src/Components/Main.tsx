@@ -14,14 +14,15 @@ import { assembleObjects } from '../Helpers/Assembler';
 
 interface IMainProps {
   readonly fetching: boolean;
-  readonly googleSheetData?: object;
+  readonly userData?: string[][];
+  readonly eventData?: string[][];
   readonly googleSheetDataError?: any,
   fetchGoogleSheetData: () => (dispatch: Dispatch<IStoreState>) => void,
 }
 
 class Main extends React.Component<IMainProps> {
   public componentWillReceiveProps(nextProps: IMainProps){
-    this.assembleData(nextProps.googleSheetData)
+    this.assembleData(nextProps.userData, nextProps.eventData)
   }
 
   public render() {
@@ -37,18 +38,19 @@ class Main extends React.Component<IMainProps> {
     this.props.fetchGoogleSheetData()
   }
 
-  private assembleData = (googleSheetData?: object) => {
-    if(googleSheetData){
-      console.log(assembleObjects(googleSheetData['result'].values))
+  private assembleData = (userData?: string[][], eventData?: string[][]) => {
+    if(userData && eventData){
+      assembleObjects(userData, eventData)
     }
   }
 }
 
 function mapStateToProps(state: IStoreState) {
   return {
+    eventData: state.eventData,
     fetching: state.fetching,
-    googleSheetData: state.googleSheetData,
     googleSheetDataError: state.googleSheetDataError,
+    userData: state.userData,
   };
 }
 
