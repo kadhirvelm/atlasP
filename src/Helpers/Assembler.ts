@@ -1,19 +1,22 @@
 import Event from './Event';
 import User from './User';
 
+const finalEventsData = {};
+const finalUserData = {};
+
 const extractIntoNumberArray = (rawNumbers: string): number[] => {
     return rawNumbers.split(',').map((rawNumber) => parseInt(rawNumber, 10));
 }
 
-export function assembleObjects(userData: string[][], eventData: string[][]): object {
-    const finalEventsData = {};
-    const finalUserData = {};
-
-    eventData.slice(1).forEach((event: string[]) => {
+function assembleEventData(eventData: string[][]){
+    return eventData.slice(1).forEach((event: string[]) => {
         const newEvent = new Event(parseInt(event[0], 10), parseInt(event[1], 10), event[2]);
         finalEventsData[newEvent.id] = newEvent;
     });
-    userData.slice(1).map((person: string[]) => {
+}
+
+function assembleUserData(userData: string[][]){
+    return userData.slice(1).map((person: string[]) => {
         const newUser = new User(
             parseInt(person[0], 10), 
             person[1],
@@ -29,13 +32,21 @@ export function assembleObjects(userData: string[][], eventData: string[][]): ob
             finalEventsData[event].attendees.push(newUser.id);
         });
     });
+}
+
+function assembleUserConnections(){
     (Object as any).values(finalEventsData).forEach((singleEvent: Event) => {
         const allAttendees = singleEvent.attendees;
         const eventID = singleEvent.id;
         allAttendees.forEach((userID: number) => {
             finalUserData[userID].addMultipleConnections(allAttendees, eventID);
-        })
-    })
+        });
+    });
+}
 
+export function assembleObjects(userData: string[][], eventData: string[][]): object {
+    assembleEventData(eventData);
+    assembleUserData(userData);
+    assembleUserConnections();
     return finalUserData;
 }
