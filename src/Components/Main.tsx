@@ -4,16 +4,18 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import { Button, Intent, Spinner } from '@blueprintjs/core';
 
-import '../App.css';
-import DisplayGraph from './DisplayGraph';
-import './Main.css';
-
+import Event from '../Helpers/Event';
+import User from '../Helpers/User';
 import { fetchGoogleSheetData } from '../State/Actions';
 import IStoreState from '../State/IStoreState';
 
+import DisplayGraph from './DisplayGraph';
+import './Main.css';
+
 interface IMainProps {
+  readonly eventData?: { id: Event },
   readonly fetching: boolean;
-  readonly userData?: string[][];
+  readonly userData?: { id: User };
   readonly googleSheetDataError?: any,
   fetchGoogleSheetData: () => (dispatch: Dispatch<IStoreState>) => void,
 }
@@ -24,7 +26,7 @@ class Main extends React.Component<IMainProps> {
       <div>
         <Button className='top-left-fix' onClick={ this.fetchGoogleSheetsData } intent={ Intent.SUCCESS } text='Refresh Data' />
         { this.props.fetching && <Spinner className='centered' /> }
-        { this.props.userData && <DisplayGraph userData={ this.props.userData } /> }
+        { (this.props.userData && this.props.eventData) && <div className='graph-container'> <DisplayGraph eventData={ this.props.eventData } userData={ this.props.userData } /> </div> }
       </div>
     )
   }
@@ -36,6 +38,7 @@ class Main extends React.Component<IMainProps> {
 
 function mapStateToProps(state: IStoreState) {
   return {
+    eventData: state.eventData,
     fetching: state.fetching,
     googleSheetDataError: state.googleSheetDataError,
     userData: state.userData,

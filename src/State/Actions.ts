@@ -37,14 +37,17 @@ function startingFetchedData(): IActionsProgress {
 }
 
 interface IActionsSuccess {
-    readonly userData: object,
+    readonly userData: {},
+    readonly eventData: {},
     readonly type: ActionTypes.Success_FetchGoogleSheetData,
 }
 
 function succesfullyFetchedData(userData: string[][], eventData: string[][]): IActionsSuccess {
+    const assembledObjects = assembleObjects(userData, eventData);
     return {
+        eventData: assembledObjects.eventData,
         type: ActionTypes.Success_FetchGoogleSheetData,
-        userData: assembleObjects(userData, eventData),
+        userData: assembledObjects.userData,
     }
 }
 

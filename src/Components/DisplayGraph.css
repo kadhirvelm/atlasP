@@ -1,0 +1,32 @@
+.user-node {
+    width: 12vmin;
+    height: 12vmin;
+    border-radius: 50%;
+    animation: fade-in 1s ease-in;
+    position: absolute;
+    transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out;
+}
+
+.user-node:hover {
+    width: 15vmin;
+    height: 15vmin;
+    font-size: 2.7vmin;
+    transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+div.F {
+    background: #943126;
+}
+
+div.M {
+    background: #1A5276;
+}
