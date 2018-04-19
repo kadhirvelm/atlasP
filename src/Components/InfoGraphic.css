@@ -1,6 +1,7 @@
 .info-graphic {
-    border: black 1px solid;
     width: 100%;
+    background:rgb(58, 75, 88);
+    border-radius: 10px;
 }
 
 .show-change {
@@ -42,7 +43,6 @@ div.single-column.value {
     padding-left: 5px;
     justify-content: flex-start;
     flex-basis: 30%;
-    border-left: solid 1px black;
 }
 
 .grow {

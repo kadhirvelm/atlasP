@@ -143,16 +143,20 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
         }
     }
 
+    private handleDragStart(event: any){
+        event.dataTransfer.setDragImage(<img src='' alt='K' style={ { width: '100px', height: '100px', background: 'black' } } />, 0, 0)
+    }
+
     private renderSinglePerson(user: User, position: { x: number, y: number }){
         this.handleAddingRedAndGreenList(user)
         this.locations[user.id] = position
-        const scoreTally = (user.id !== this.mainPerson.id ? calculateScore(user, this.mainPerson) : { isHost: true })
+        const scoreTally = (user.id !== this.mainPerson.id ? calculateScore(user, this.mainPerson) : { isMain: true })
         return(
-            <div key={ user.id }> 
+            <div key={ user.id } draggable={ true } onDragStart={ this.handleDragStart } > 
                 <div onClick={ this.changeInfoPerson(user) } className={ 'user-node' + ' ' + user.gender } style={ { width: this.dimension + 'vmin', height: this.dimension + 'vmin', left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' } }>
                     <div className='centered flexbox-column-centered' style={ { color: 'white' } }>
                         <div> { user.name } </div>
-                        <div> { scoreTally.isHost ? 'Host' : scoreTally['finalScore'] } </div>
+                        <div> { scoreTally.isMain ? 'Main' : scoreTally['finalScore'] } </div>
                     </div>
                 </div>
             </div>

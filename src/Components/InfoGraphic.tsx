@@ -18,15 +18,24 @@ interface IInfoGraphicProps {
 class InfoGraphic extends React.Component<IInfoGraphicProps> {
     public render(){
         return(
-            <div className='info-graphic flexbox-column'>
+            <div className='info-graphic flexbox-column pt-dark' style={ { padding: '15px' } }>
+                { this.renderCurrentDinnerParty() }
                 { this.props.infoPerson && this.renderPerson(this.props.infoPerson) }
+            </div>
+        )
+    }
+
+    private renderCurrentDinnerParty(){
+        return(
+            <div className='flexbox-column' style={ { position: 'relative', flexBasis: '50%' } }>
+                <h4> Current Party </h4>
             </div>
         )
     }
 
     private renderPerson(user: User){
         return(
-            <div style={ { position: 'relative', flexBasis: '50%', borderBottom: 'solid 1px black', padding: '15px' } } className='flexbox-column'>
+            <div style={ { position: 'relative', flexBasis: '50%', marginTop: '15px' } } className='flexbox-column'>
                 <div key={ user.id } className='show-change'>
                     <div className='flexbox-row' style={ { justifyContent: 'center' } }>
                         <h4> { user.name } ({ user.id }) </h4>
@@ -71,7 +80,7 @@ class InfoGraphic extends React.Component<IInfoGraphicProps> {
                             </div>
                         </div>
                         <div className='single-row'>
-                            <div className='single-column label' style={ { color: 'green' } }>
+                            <div className='single-column label'>
                                 Like
                             </div>
                             <div className='single-column value'>
@@ -79,14 +88,14 @@ class InfoGraphic extends React.Component<IInfoGraphicProps> {
                             </div>
                         </div>
                         <div className='single-row' style={ { borderBottom: 'dashed 0px black' } }>
-                            <div className='single-column label' style={ { color: 'red' } }>
+                            <div className='single-column label'>
                                 Dislike
                             </div>
                             <div className='single-column value'>
                                 { score.dislikeScore < 1 ? score.dislikeScore : '--' }
                             </div>
                         </div>
-                        <div className='single-row' style={ { borderTop: 'solid 1px black', borderBottom: 'dashed 0px black' } }>
+                        <div className='single-row' style={ { paddingTop: '15px', borderTop: 'solid 2.5px white', borderBottom: 'dashed 0px black' } }>
                             <div className='single-column label'>
                                 Final Score
                             </div>

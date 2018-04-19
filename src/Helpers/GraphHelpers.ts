@@ -1,7 +1,7 @@
 import User from './User';
 
 export interface IScore {
-    isHost: boolean;
+    isMain: boolean;
     eventScore: number;
     genderScore: number;
     ageScore: number;
@@ -16,7 +16,7 @@ export function calculateScore(user: User, mainPerson: User): IScore {
     const returnAgeScore = (age: number) => age < 5 ? 1 : (age < 15 ? 0 : -1);
     const returnLikeScore = (inputUser: User, checkForUser: User) => inputUser.greenList.includes(checkForUser.id) ? 2 : 1;
     const returnDislikeScore = (inputUser: User, checkForUser: User) => inputUser.redList.includes(checkForUser.id) ? 0.5 : 1;
-    const finalTally = { isHost: false, eventScore: returnEventScore(), genderScore: returnGenderScore(user.gender), ageScore: returnAgeScore(Math.abs(user.age - mainPerson.age)), likeScore: returnLikeScore(user, mainPerson) * returnLikeScore(mainPerson, user), dislikeScore: returnDislikeScore(user, mainPerson) * returnDislikeScore(mainPerson, user) };
+    const finalTally = { isMain: false, eventScore: returnEventScore(), genderScore: returnGenderScore(user.gender), ageScore: returnAgeScore(Math.abs(user.age - mainPerson.age)), likeScore: returnLikeScore(user, mainPerson) * returnLikeScore(mainPerson, user), dislikeScore: returnDislikeScore(user, mainPerson) * returnDislikeScore(mainPerson, user) };
     return Object.assign({}, finalTally, {
         finalScore: (finalTally.eventScore + finalTally.genderScore + finalTally.ageScore) * returnLikeScore(user, mainPerson) * finalTally.likeScore * finalTally.dislikeScore
     });
