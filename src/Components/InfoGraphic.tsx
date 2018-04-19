@@ -29,7 +29,7 @@ class InfoGraphic extends React.Component<IInfoGraphicProps> {
             <div style={ { position: 'relative', flexBasis: '50%', borderBottom: 'solid 1px black', padding: '15px' } } className='flexbox-column'>
                 <div key={ user.id } className='show-change'>
                     <div className='flexbox-row' style={ { justifyContent: 'center' } }>
-                        <h3> { user.name } ({ user.id }) </h3>
+                        <h4> { user.name } ({ user.id }) </h4>
                     </div>
                     { this.renderScore(user) }
                     <div style={ { position: 'absolute', left: '50%', bottom: '1%', transform: 'translate(-50%, -1%)' } }>
