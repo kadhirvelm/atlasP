@@ -6,7 +6,7 @@ import './App.css'
 
 import { Button, Intent, Spinner } from '@blueprintjs/core';
 import Main from './Components/Main';
-import { changeSignInStatus } from './State/Actions';
+import { changeSignInStatus } from './State/GoogleSheetActions';
 import IStoreState from './State/IStoreState';
 
 import * as _ from 'underscore';
@@ -24,14 +24,11 @@ class App extends React.Component<IAppProps> {
 
   public render() {
     return (
-      <div>
+      <div className='prevent-movement'>
         { _.isUndefined(this.props.isSignedIn) ?
           <Spinner className='centered' />
           :
-          this.props.isSignedIn ?
-          <Button id='signout-button' onClick={ this.handleSignOut } text='Sign Out' intent={ Intent.DANGER } className='top-right-fix' />
-          :
-          <Button id='authorize-button' onClick={ this.handleSignIn } text='Sign In' intent={ Intent.PRIMARY } className='centered fade-in' />
+          !this.props.isSignedIn ? <Button id='authorize-button' onClick={ this.handleSignIn } text='Sign In' intent={ Intent.PRIMARY } className='centered fade-in' /> : <div />
         }
         { this.props.isSignedIn && <Main /> }
       </div>
@@ -59,16 +56,12 @@ class App extends React.Component<IAppProps> {
   private handleSignIn = () => {
     window['gapi'].auth2.getAuthInstance().signIn()
   }
-
-  private handleSignOut = () => {
-    window['gapi'].auth2.getAuthInstance().signOut()
-  }
 }
 
 function mapStateToProps(state: IStoreState) {
   return {
-    fetching: state.fetching,
-    isSignedIn: state.isSignedIn,
+    fetching: state.GoogleReducer.fetching,
+    isSignedIn: state.GoogleReducer.isSignedIn,
   };
 }
 

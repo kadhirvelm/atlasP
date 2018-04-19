@@ -1,6 +1,14 @@
-.top-left-fix {
-    top: 2%;
-    left: 2%;
-    transform: translate(-5%, -2%);
-    position: fixed;
+.graph-container {
+    top: 8%;
+    position: absolute;
+    height: 90%;
+    width: 99%;
+}
+
+.centered {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    position: absolute;
 }

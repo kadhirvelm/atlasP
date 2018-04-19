@@ -8,6 +8,13 @@
     flex-direction: column;
 }
 
+.flexbox-column-centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+}
+
 .centered {
     top: 50%;
     left: 50%;
@@ -15,11 +22,11 @@
     position: absolute;
 }
 
-.top-right-fix {
-    top: 2%;
-    right: 2%;
-    transform: translate(-5%, -2%);
-    position: fixed;
+.prevent-movement {
+    max-width: 100%;
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 .fade-in {

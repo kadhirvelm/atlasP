@@ -1,6 +1,6 @@
-import { ActionTypes } from './Actions';
+import { ActionTypes } from './GoogleSheetActions';
 
-export default function reducer(
+export default function GoogleSheetReducer(
   state = {
     fetching: false,
   },
@@ -13,6 +13,7 @@ export default function reducer(
       })
     case ActionTypes.Success_FetchGoogleSheetData:
       return Object.assign({}, state, {
+        eventData: action.eventData,
         fetching: false,
         googleSheetDataError: '',
         userData: action.userData,

@@ -44,9 +44,9 @@ function assembleUserConnections(){
     });
 }
 
-export function assembleObjects(userData: string[][], eventData: string[][]): object {
+export function assembleObjects(userData: string[][], eventData: string[][]): { userData: {}, eventData: {} } {
     assembleEventData(eventData);
     assembleUserData(userData);
     assembleUserConnections();
-    return finalUserData;
+    return { userData: finalUserData, eventData: finalEventsData };
 }

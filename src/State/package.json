@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@types/gapi": "^0.0.35",
-    "@types/gapi.auth2": "^0.0.47"
-  }
-}
