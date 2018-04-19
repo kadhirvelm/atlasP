@@ -8,50 +8,121 @@ import './DisplayGraph.css';
 interface IDisplayGraphProps {
     readonly userData: { id: User };
     readonly eventData: { id: Event };
+    readonly mainPerson?: User;
+}
+
+interface ILines {
+    id?: {
+        fromHost?: boolean,
+        toHost?: boolean,
+    };
+}
+
+interface ILocation {
+    id?: {
+        x?: number,
+        y?: number
+    }
+}
+
+interface IState {
+    greenLines?: ILines;
+    locations?: ILocation;
+    peopleRender?: JSX.Element;
+    redLines?: ILines;
 }
 
 const MAX_RADIANS = 2 * Math.PI;
 const X_ORIGIN = 50;
 const Y_ORIGIN = 50;
-const RADIUS = 45;
+const RADIUS = 42;
 
-class DisplayGraph extends React.Component<IDisplayGraphProps, any> {
-    public state = {
-        mainPerson: this.props.userData[1001],
-        totalConnections: _.keys(this.props.userData[1001].connections).length,
+class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
+    public state: IState
+    private totalConnections: number
+    private locations: ILocation
+    private mainPerson: User
+    private redLines: ILines
+    private greenLines: ILines
+    private dimension: number
+    private containerDimensions: HTMLElement | null
+
+    public componentWillMount(){
+        this.renderSinglePerson = this.renderSinglePerson.bind(this)
+        this.handleAddingRedAndGreenList = this.handleAddingRedAndGreenList.bind(this)
+        this.renderSingleLine = this.renderSingleLine.bind(this)
     }
 
-    private redLines = {}
-    private greenLines = {}
-    private locations = {}
+    public componentWillReceiveProps(nextProps: IDisplayGraphProps){
+        this.changeMainPerson(nextProps.userData[this.mainPerson.id])()
+    }
+
+    public setRef = (ref: HTMLElement | null ) => {
+        this.containerDimensions = ref
+        this.setState(this.returnStateWithPerson(this.props.mainPerson || this.props.userData[1001]))
+    }
+
+    public shouldComponentUpdate(nextProps: IDisplayGraphProps, nextState: IState){
+        return (this.state ? ((nextState['mainPerson'].id !== this.state['mainPerson'].id) || (nextState['mainPerson'].connections !== this.state['mainPerson'].connections) || (nextState['redLines'] !== this.state.redLines) || (nextState['greenLines'] !== this.state.greenLines)) : true)
+    }
 
     public render(){
-        const renderRedLines = this.renderSingleLine({ stroke: 'red', strokeWidth: '2' })
-        const renderGreenLines = this.renderSingleLine({ stroke: 'green', strokeWidth: '2' })
+        const renderRedLines = this.renderSingleLine({ stroke: 'red', fill: 'red', strokeWidth: '2' })
+        const renderGreenLines = this.renderSingleLine({ stroke: 'green', fill: 'green', strokeWidth: '2' })
+        console.log('Re-render')
         return(
-            <div className='flexbox-row' style={ { position: 'absolute', flexWrap: 'wrap', width: '100%', height: '100%' } }>
-                { this.renderSinglePerson(this.state.mainPerson, { x: X_ORIGIN, y: Y_ORIGIN } ) }
-                { _.toPairs(this.state.mainPerson.connections).map((connection, index) => {
-                        return this.sendToRenderSinglePerson(parseInt(connection[0], 10), (connection[1] as number[]), index)
-                    })
+            <div id='Graph Container' ref={ this.setRef } className='flexbox-row' style={ { position: 'absolute', flexWrap: 'wrap', width: '100%', height: '100%' } }>
+                { this.state &&
+                    <div>
+                        { this.state.peopleRender }
+                        <svg height={ this.containerDimensions ? this.containerDimensions.clientHeight : '100%' } width={ this.containerDimensions ? this.containerDimensions.clientWidth : '100%' }>
+                            { _.toPairs(this.state.redLines).map((singleRedLine, index) => renderRedLines(singleRedLine, index)) }
+                            { _.toPairs(this.state.greenLines).map((singleGreenLine, index) => renderGreenLines(singleGreenLine, index)) }
+                        </svg>
+                    </div>
                 }
-                <svg height='100%' width='100%'>
-                    { _.toPairs(this.redLines).map((singleRedLine, index) => renderRedLines(singleRedLine, index)) }
-                    { _.toPairs(this.greenLines).map((singleGreenLine, index) => renderGreenLines(singleGreenLine, index)) }
-                </svg>
             </div>
+        )
+    }
+
+    private convertToAbsolutePoint(left: number, top: number){
+        return this.containerDimensions ? { x: (this.containerDimensions.clientWidth * left / 100), y: (this.containerDimensions.clientHeight * top / 100) } : 0
+    }
+
+    private renderMovingCircleAndLine(index: string, strokeSettings: object, x: object, y: object){
+        return (
+            <svg>
+                <circle id={ 'circle' + index } r='3' { ...strokeSettings }>
+                    <animate xlinkHref={ '#circle' + index } attributeName='cx' from={ x['from'] } to={ x['to'] } dur='5s' repeatCount='indefinite' d='cirx-anim' />
+                    <animate xlinkHref={ '#circle' + index } attributeName='cy' from={ y['from'] } to={ y['to'] } dur='5s' repeatCount='indefinite' d='ciry-anim' />
+                </circle>
+                <circle id={ 'circle2' + index } r='3' { ...strokeSettings }>
+                    <animate xlinkHref={ '#circle2' + index } attributeName='cx' from={ x['from'] } to={ x['to'] } dur='5s' repeatCount='indefinite' begin='2.5s' />
+                    <animate xlinkHref={ '#circle2' + index } attributeName='cy' from={ y['from'] } to={ y['to'] } dur='5s' repeatCount='indefinite' begin='2.5s' />
+                </circle>
+            </svg>
         )
     }
 
     private renderSingleLine(strokeSettings: {}) {
         return (singleLine: [string, {}], index: number) => {
-            const location = this.locations[parseInt(singleLine[0], 10)];
-            return location ? <line key={ index + strokeSettings['stroke'] } x1='50%' y1='50%' x2={ location.x + '%' } y2={ location.y + '%' } style={ strokeSettings } /> : <div key={ index + strokeSettings['stroke'] } />
+            const location = this.state.locations && this.state.locations[parseInt(singleLine[0], 10)];
+            if(location){
+                const circleSettings = { index: index + strokeSettings['stroke'], positions: this.convertToAbsolutePoint(location.x, location.y), origin: this.convertToAbsolutePoint(X_ORIGIN, Y_ORIGIN) }
+                return(
+                    <svg key={ index + strokeSettings['stroke'] }>
+                        { singleLine[1]['fromHost'] && this.renderMovingCircleAndLine(circleSettings.index + '_from', strokeSettings, { to: circleSettings.positions['x'], from: circleSettings.origin['x'] }, { to: circleSettings.positions['y'], from: circleSettings.origin['y'] }) }
+                        { singleLine[1]['toHost'] && this.renderMovingCircleAndLine(circleSettings.index + '_to', strokeSettings, { from: circleSettings.positions['x'], to: circleSettings.origin['x'] }, { from: circleSettings.positions['y'], to: circleSettings.origin['y'] }) }
+                        <path d={ 'M' + circleSettings.positions['x'] + ' ' + circleSettings.positions['y'] + ' L' + circleSettings.origin['x'] + ' ' + circleSettings.origin['y'] } style={ { opacity: (singleLine[1]['fromHost'] && singleLine[1]['toHost']) ? 1 : 0.15 } } { ...strokeSettings } />
+                    </svg>
+                )
+            }
+            return <div key={ index + strokeSettings['stroke'] } />       
         }
     }
 
     private returnPositionOnCircle(origin: number, mathFunction: (position: number) => number, index: number){
-        return origin + (mathFunction(MAX_RADIANS / this.state.totalConnections * index) * RADIUS)
+        return origin + (mathFunction(MAX_RADIANS / this.totalConnections * index) * RADIUS)
     }
 
     private sendToRenderSinglePerson(userID: number, connections: number[], index: number){
@@ -59,21 +130,21 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, any> {
     }
 
     private handleAddingRedAndGreenList(user: User){
-        if(user.id !== this.state.mainPerson.id){
-            if(user.redList.includes(this.state.mainPerson.id)){ this.redLines[user.id] = Object.assign({}, this.redLines[user.id], { toHost: true }) }
-            if(user.greenList.includes(this.state.mainPerson.id)){ this.greenLines[user.id] = Object.assign({}, this.greenLines[user.id], { toHost: true }) }
+        if(user.id !== this.mainPerson.id){
+            if(user.redList.includes(this.mainPerson.id)){ this.redLines[user.id] = Object.assign({}, this.redLines[user.id], { toHost: true }) }
+            if(user.greenList.includes(this.mainPerson.id)){ this.greenLines[user.id] = Object.assign({}, this.greenLines[user.id], { toHost: true }) }
         } else {
             user.redList.map((singlePerson) => this.redLines[singlePerson] = { fromHost: true })
             user.greenList.map((singlePerson) => this.greenLines[singlePerson] = { fromHost: true })
         }
     }
 
-    private renderSinglePerson(user: User, position: { x: number, y: number }) {
+    private renderSinglePerson(user: User, position: { x: number, y: number }){
         this.handleAddingRedAndGreenList(user)
         this.locations[user.id] = position
         return(
-            <div key={ user.id }>
-                <div onClick={ this.changeMainPerson(user) } className={ 'user-node' + ' ' + user.gender } style={ { left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' } }>
+            <div key={ user.id }> 
+                <div onClick={ this.changeMainPerson(user) } className={ 'user-node' + ' ' + user.gender } style={ { width: this.dimension + 'vmin', height: this.dimension + 'vmin', left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' } }>
                     <div className='centered flexbox-column-centered' style={ { color: 'white' } }>
                         <div> { user.name } </div>
                         <div> { user.age } </div>
@@ -82,12 +153,33 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, any> {
             </div>
         )
     }
+    
+    private assemblePeople(mainPerson: User): JSX.Element {
+        return(
+            <div>
+                { this.renderSinglePerson(mainPerson, { x: X_ORIGIN, y: Y_ORIGIN } ) }
+                { _.toPairs(mainPerson.connections).map((connection, index) => this.sendToRenderSinglePerson(parseInt(connection[0], 10), (connection[1] as number[]), index)) }
+            </div>
+        )
+    }
+
+    private returnStateWithPerson(user: User){
+        if(this.containerDimensions){
+            this.totalConnections = _.keys(user.connections).length
+            this.redLines = {}
+            this.greenLines = {}
+            this.locations = {}
+            this.mainPerson = user
+            this.dimension = (-(this.totalConnections) / 2.8) + 19
+            const peopleRender = this.assemblePeople(user)
+            return { mainPerson: user, peopleRender, locations: this.locations, redLines: this.redLines, greenLines: this.greenLines }
+        }
+        return {}
+    }
 
     private changeMainPerson(user: User){
         return () => {
-            this.redLines = {}
-            this.greenLines = {}
-            this.setState({ mainPerson: user, totalConnections: _.keys(user.connections).length })
+            this.setState(this.returnStateWithPerson(user))
         }
     }
 }
