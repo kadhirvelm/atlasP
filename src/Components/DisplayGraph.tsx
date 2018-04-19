@@ -1,14 +1,19 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import { Dispatch } from 'redux';
 
 import Event from '../Helpers/Event';
+import { calculateScore } from '../Helpers/GraphHelpers';
 import User from '../Helpers/User';
+import IStoreState from '../State/IStoreState';
 import './DisplayGraph.css';
 
 interface IDisplayGraphProps {
     readonly userData: { id: User };
     readonly eventData: { id: Event };
     readonly mainPerson?: User;
+    setInfoPerson: (user: User) => (dispatch: Dispatch<IStoreState>) => void;
+    setMainPerson: (user: User) => (dispatch: Dispatch<IStoreState>) => void;
 }
 
 interface ILines {
@@ -54,7 +59,11 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
     }
 
     public componentWillReceiveProps(nextProps: IDisplayGraphProps){
-        this.changeMainPerson(nextProps.userData[this.mainPerson.id])()
+        if(nextProps.mainPerson){
+            this.setState(this.returnStateWithPerson(nextProps.mainPerson))
+        } else {
+            this.props.setMainPerson(nextProps.userData[1001])
+        }
     }
 
     public setRef = (ref: HTMLElement | null ) => {
@@ -62,16 +71,11 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
         this.setState(this.returnStateWithPerson(this.props.mainPerson || this.props.userData[1001]))
     }
 
-    public shouldComponentUpdate(nextProps: IDisplayGraphProps, nextState: IState){
-        return (this.state ? ((nextState['mainPerson'].id !== this.state['mainPerson'].id) || (nextState['mainPerson'].connections !== this.state['mainPerson'].connections) || (nextState['redLines'] !== this.state.redLines) || (nextState['greenLines'] !== this.state.greenLines)) : true)
-    }
-
     public render(){
         const renderRedLines = this.renderSingleLine({ stroke: 'red', fill: 'red', strokeWidth: '2' })
         const renderGreenLines = this.renderSingleLine({ stroke: 'green', fill: 'green', strokeWidth: '2' })
-        console.log('Re-render')
         return(
-            <div id='Graph Container' ref={ this.setRef } className='flexbox-row' style={ { position: 'absolute', flexWrap: 'wrap', width: '100%', height: '100%' } }>
+            <div id='Graph Container' ref={ this.setRef } className='flexbox-row' style={ { position: 'relative', width: '100%', height: '100%' } }>
                 { this.state &&
                     <div>
                         { this.state.peopleRender }
@@ -142,12 +146,13 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
     private renderSinglePerson(user: User, position: { x: number, y: number }){
         this.handleAddingRedAndGreenList(user)
         this.locations[user.id] = position
+        const scoreTally = (user.id !== this.mainPerson.id ? calculateScore(user, this.mainPerson) : { isHost: true })
         return(
             <div key={ user.id }> 
-                <div onClick={ this.changeMainPerson(user) } className={ 'user-node' + ' ' + user.gender } style={ { width: this.dimension + 'vmin', height: this.dimension + 'vmin', left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' } }>
+                <div onClick={ this.changeInfoPerson(user) } className={ 'user-node' + ' ' + user.gender } style={ { width: this.dimension + 'vmin', height: this.dimension + 'vmin', left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' } }>
                     <div className='centered flexbox-column-centered' style={ { color: 'white' } }>
                         <div> { user.name } </div>
-                        <div> { user.age } </div>
+                        <div> { scoreTally.isHost ? 'Host' : scoreTally['finalScore'] } </div>
                     </div>
                 </div>
             </div>
@@ -177,9 +182,9 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
         return {}
     }
 
-    private changeMainPerson(user: User){
+    private changeInfoPerson(user: User){
         return () => {
-            this.setState(this.returnStateWithPerson(user))
+            this.props.setInfoPerson(user)
         }
     }
 }

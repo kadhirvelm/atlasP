@@ -1,0 +1,50 @@
+.info-graphic {
+    border: black 1px solid;
+    width: 100%;
+}
+
+.show-change {
+    border-radius: 10%;
+    animation: fade-color-in 1s ease-in;
+}
+
+@keyframes fade-color-in {
+    0% {
+        opacity: 0;
+        padding: 15px;
+        background: yellow;
+    }
+    100% {
+        padding: 0px;
+        opacity: 1;
+    }
+}
+
+div.single-row {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    border-bottom: dashed 0.1px black;
+    padding: 3px;
+}
+
+div.single-column {
+    display: flex;
+}
+
+div.single-column.label {
+    justify-content: flex-end;
+    flex-basis: 70%;
+}
+
+div.single-column.value {
+    margin-left: 15px;
+    padding-left: 5px;
+    justify-content: flex-start;
+    flex-basis: 30%;
+    border-left: solid 1px black;
+}
+
+.grow {
+    width: 12vw;
+}

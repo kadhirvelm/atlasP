@@ -1,6 +1,6 @@
-import { ActionTypes } from './Actions';
+import { ActionTypes } from './GoogleSheetActions';
 
-export default function reducer(
+export default function GoogleSheetReducer(
   state = {
     fetching: false,
   },

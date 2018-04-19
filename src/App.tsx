@@ -6,7 +6,7 @@ import './App.css'
 
 import { Button, Intent, Spinner } from '@blueprintjs/core';
 import Main from './Components/Main';
-import { changeSignInStatus } from './State/Actions';
+import { changeSignInStatus } from './State/GoogleSheetActions';
 import IStoreState from './State/IStoreState';
 
 import * as _ from 'underscore';
@@ -60,8 +60,8 @@ class App extends React.Component<IAppProps> {
 
 function mapStateToProps(state: IStoreState) {
   return {
-    fetching: state.fetching,
-    isSignedIn: state.isSignedIn,
+    fetching: state.GoogleReducer.fetching,
+    isSignedIn: state.GoogleReducer.isSignedIn,
   };
 }
 

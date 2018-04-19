@@ -2,31 +2,38 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { Alignment, Button, Classes, Dialog, Intent, Navbar, NavbarDivider, NavbarGroup, NavbarHeading, Spinner } from '@blueprintjs/core';
+import { Alignment, Button, Intent, Navbar, NavbarDivider, NavbarGroup, NavbarHeading, Spinner } from '@blueprintjs/core';
 
 import Event from '../Helpers/Event';
 import User from '../Helpers/User';
-import { fetchGoogleSheetData } from '../State/Actions';
+import { fetchGoogleSheetData } from '../State/GoogleSheetActions';
 import IStoreState from '../State/IStoreState';
+import { setInfoPerson, setMainPerson } from '../State/WebsiteActions';
 
 import DisplayGraph from './DisplayGraph';
+import FetchPerson from './FetchPerson';
+import InfoGraphic from './InfoGraphic';
 import './Main.css';
 
 interface IMainProps {
-  readonly eventData?: { id: Event },
+  readonly eventData?: { id: Event };
+  fetchGoogleSheetData: () => (dispatch: Dispatch<IStoreState>) => void;
   readonly fetching: boolean;
+  readonly googleSheetDataError?: any;
+  readonly infoPerson?: User;
+  readonly mainPerson?: User;
+  setInfoPerson: (user: User) => (dispatch: Dispatch<IStoreState>) => void;
+  setMainPerson: (user: User) => (dispatch: Dispatch<IStoreState>) => void;
   readonly userData?: { id: User };
-  readonly googleSheetDataError?: any,
-  fetchGoogleSheetData: () => (dispatch: Dispatch<IStoreState>) => void,
 }
 
-interface IState {
-  mainPersonDialog: boolean;
+interface IMainState {
+  mainPersonDialogOpen: boolean;
 }
 
-class Main extends React.Component<IMainProps, IState> {
+class Main extends React.Component<IMainProps, IMainState> {
   public state = {
-    mainPersonDialog: false
+    mainPersonDialogOpen: false
   }
 
   public render() {
@@ -34,9 +41,17 @@ class Main extends React.Component<IMainProps, IState> {
       <div style={ { display: 'flex', flexDirection: 'column' } }>
         { this.renderNavbar() }
         { this.renderNewPersonDialog() }
-        <div className='graph-container' style={ { display: 'flex', flexGrow: 1 } }> { (this.props.userData && this.props.eventData) && <DisplayGraph eventData={ this.props.eventData } userData={ this.props.userData } /> } </div>
+        { this.renderGraphAndInfo() }
       </div>
     )
+  }
+
+  private openChangeMainPersonDialog = () => {
+    this.setState({ mainPersonDialogOpen: true })
+  }
+
+  private handleMainPersonDialogClose = () => {
+    this.setState({ mainPersonDialogOpen: false })
   }
 
   private renderNavbar(){
@@ -47,7 +62,7 @@ class Main extends React.Component<IMainProps, IState> {
           <NavbarDivider />
           <Button icon='refresh' onClick={ this.fetchGoogleSheetsData } text='Refresh Data' />
           { this.props.fetching && <Spinner className='pt-small' intent={ Intent.WARNING } /> }
-          <Button onClick={ this.changeMainPersonDialog } text='Fetch User' />
+          <Button icon='exchange' onClick={ this.openChangeMainPersonDialog } text='Change User' />
         </NavbarGroup>
         <NavbarGroup align={ Alignment.RIGHT }>
           <Button icon='log-out' onClick={ this.handleSignOut } />
@@ -56,30 +71,25 @@ class Main extends React.Component<IMainProps, IState> {
     )
   }
 
-  private handleMainPersonDialogClose = () => {
-    this.setState({ mainPersonDialog: false })
+  private renderNewPersonDialog(){
+    return this.props.userData ? <FetchPerson handleMainPersonDialogClose={ this.handleMainPersonDialogClose } mainPersonDialogOpen={ this.state.mainPersonDialogOpen } mainPerson={ this.props.mainPerson } setMainPerson={ this.props.setMainPerson } userData={ this.props.userData } /> : <div />
   }
 
-  private renderNewPersonDialog(){
+  private renderGraphAndInfo = () => {
     return(
-      <Dialog hasBackdrop={ false } usePortal={ false } icon='inbox' isOpen={ this.state.mainPersonDialog } onClose={ this.handleMainPersonDialogClose } title='Fetch Specific Person'>
-        <div className={ Classes.DIALOG_BODY }> Select person: </div>
-        <div className={ Classes.DIALOG_FOOTER }>
-          <div className={ Classes.DIALOG_FOOTER_ACTIONS }>
-            <Button text='Cancel' onClick={ this.handleMainPersonDialogClose } />
-            <Button intent={ Intent.PRIMARY } text='Primary' />
-          </div>
+      <div className='graph-container flexbox-row'>
+        <div style={ { display: 'flex', flexBasis: '85%' } }>
+            { (this.props.userData && this.props.eventData) ? <DisplayGraph mainPerson={ this.props.mainPerson } setMainPerson={ this.props.setMainPerson } eventData={ this.props.eventData } userData={ this.props.userData } setInfoPerson={ this.props.setInfoPerson } /> : <div /> }
         </div>
-      </Dialog>
+        <div style={ { display: 'flex', flexBasis: '15%' } }>
+          { (this.props.mainPerson) && <InfoGraphic infoPerson={ this.props.infoPerson } mainPerson={ this.props.mainPerson } setMainPerson={ this.props.setMainPerson } /> }
+        </div>
+      </div>
     )
   }
 
   private handleSignOut = () => {
     window['gapi'].auth2.getAuthInstance().signOut()
-  }
-
-  private changeMainPersonDialog = () => {
-    this.setState({ mainPersonDialog: true })
   }
 
   private fetchGoogleSheetsData = () => {
@@ -89,16 +99,20 @@ class Main extends React.Component<IMainProps, IState> {
 
 function mapStateToProps(state: IStoreState) {
   return {
-    eventData: state.eventData,
-    fetching: state.fetching,
-    googleSheetDataError: state.googleSheetDataError,
-    userData: state.userData,
+    eventData: state.GoogleReducer.eventData,
+    fetching: state.GoogleReducer.fetching,
+    googleSheetDataError: state.GoogleReducer.googleSheetDataError,
+    infoPerson: state.WebsiteReducer.infoPerson,
+    mainPerson: state.WebsiteReducer.mainPerson,
+    userData: state.GoogleReducer.userData,
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
   return {
-    fetchGoogleSheetData: bindActionCreators(fetchGoogleSheetData, dispatch)
+    fetchGoogleSheetData: bindActionCreators(fetchGoogleSheetData, dispatch),
+    setInfoPerson: bindActionCreators(setInfoPerson, dispatch),
+    setMainPerson: bindActionCreators(setMainPerson, dispatch),
   };
 }
 
