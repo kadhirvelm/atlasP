@@ -7,7 +7,7 @@ export default interface IStoreState {
         userData?: { id: User };
         eventData?: { id: Event };
         googleSheetDataError?: object;
-        isSignedIn?: boolean;
+        isSignedIn: boolean;
     }
     WebsiteReducer: {
         infoPerson?: User;

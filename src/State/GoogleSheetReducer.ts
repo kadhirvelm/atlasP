@@ -3,6 +3,7 @@ import { ActionTypes } from './GoogleSheetActions';
 export default function GoogleSheetReducer(
   state = {
     fetching: false,
+    isSignedIn: false,
   },
   action: any,
 ) {

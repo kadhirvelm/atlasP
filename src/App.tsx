@@ -4,12 +4,10 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import './App.css'
 
-import { Button, Intent, Spinner } from '@blueprintjs/core';
+import { Button, Intent } from '@blueprintjs/core';
 import Main from './Components/Main';
 import { changeSignInStatus } from './State/GoogleSheetActions';
 import IStoreState from './State/IStoreState';
-
-import * as _ from 'underscore';
 
 interface IAppProps {
   readonly fetching: boolean;
@@ -25,12 +23,7 @@ class App extends React.Component<IAppProps> {
   public render() {
     return (
       <div className='prevent-movement'>
-        { _.isUndefined(this.props.isSignedIn) ?
-          <Spinner className='centered' />
-          :
-          !this.props.isSignedIn ? <Button id='authorize-button' onClick={ this.handleSignIn } text='Sign In' intent={ Intent.PRIMARY } className='centered fade-in' /> : <div />
-        }
-        { this.props.isSignedIn && <Main /> }
+        { this.props.isSignedIn ? <Main /> : <Button id='authorize-button' onClick={ this.handleSignIn } text='Sign In' intent={ Intent.PRIMARY } className='centered fade-in' /> }
       </div>
     )
   }
