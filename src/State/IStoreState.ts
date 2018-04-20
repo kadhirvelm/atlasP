@@ -10,7 +10,8 @@ export default interface IStoreState {
         isSignedIn?: boolean;
     }
     WebsiteReducer: {
-        mainPerson?: User;
         infoPerson?: User;
+        mainPerson?: User;
+        party?: string[];
     }
 }

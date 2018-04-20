@@ -144,7 +144,10 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
     }
 
     private handleDragStart(event: any){
-        event.dataTransfer.setDragImage(<img src='' alt='K' style={ { width: '100px', height: '100px', background: 'black' } } />, 0, 0)
+        event.dataTransfer.setData('text', event.currentTarget.id)
+        const img = document.createElement('img')
+        img.src = 'https://d30y9cdsu7xlg0.cloudfront.net/png/5024-200.png'
+        event.dataTransfer.setDragImage(img, 50, 150)
     }
 
     private renderSinglePerson(user: User, position: { x: number, y: number }){
@@ -152,8 +155,8 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
         this.locations[user.id] = position
         const scoreTally = (user.id !== this.mainPerson.id ? calculateScore(user, this.mainPerson) : { isMain: true })
         return(
-            <div key={ user.id } draggable={ true } onDragStart={ this.handleDragStart } > 
-                <div onClick={ this.changeInfoPerson(user) } className={ 'user-node' + ' ' + user.gender } style={ { width: this.dimension + 'vmin', height: this.dimension + 'vmin', left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' } }>
+            <div key={ user.id }>
+                <div id={ user.gender + '_' + user.id } draggable={ true } onDragStart={ this.handleDragStart } onClick={ this.changeInfoPerson(user) } className={ 'user-node' + ' ' + user.gender } style={ { width: this.dimension + 'vmin', height: this.dimension + 'vmin', left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' } }>
                     <div className='centered flexbox-column-centered' style={ { color: 'white' } }>
                         <div> { user.name } </div>
                         <div> { scoreTally.isMain ? 'Main' : scoreTally['finalScore'] } </div>

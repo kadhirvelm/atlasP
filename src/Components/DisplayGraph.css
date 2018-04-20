@@ -9,7 +9,8 @@
     width: 15vmin;
     height: 15vmin;
     font-size: 2.7vmin;
-    transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out;
+    background: #9A7D0A;
+    transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, background 0.4s ease-in-out;
 }
 
 @keyframes fade-in {

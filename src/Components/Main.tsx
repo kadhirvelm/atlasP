@@ -82,7 +82,7 @@ class Main extends React.Component<IMainProps, IMainState> {
             { (this.props.userData && this.props.eventData) ? <DisplayGraph mainPerson={ this.props.mainPerson } setMainPerson={ this.props.setMainPerson } eventData={ this.props.eventData } userData={ this.props.userData } setInfoPerson={ this.props.setInfoPerson } /> : <div /> }
         </div>
         <div style={ { display: 'flex', flexBasis: '15%' } }>
-          { (this.props.mainPerson) && <InfoGraphic infoPerson={ this.props.infoPerson } mainPerson={ this.props.mainPerson } setMainPerson={ this.props.setMainPerson } /> }
+          { (this.props.mainPerson && this.props.userData) && <InfoGraphic /> }
         </div>
       </div>
     )

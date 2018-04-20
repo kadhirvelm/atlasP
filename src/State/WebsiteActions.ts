@@ -5,6 +5,7 @@ import IStoreState from './IStoreState';
 export enum ActionTypes {
     Set_Main_Person = 'Set_Main_Person',
     Set_Info_Person = 'Set_Info_Person',
+    Change_Person = 'Change_Person',
 }
 
 export function setMainPerson(user: User): (dispatch: Dispatch<IStoreState>) => void {
@@ -40,5 +41,23 @@ function setInfo(infoPerson: User): IActionsSetInfo {
     return {
         infoPerson,
         type: ActionTypes.Set_Info_Person,
+    }
+}
+
+export function setParty(party: string[]): (dispatch: Dispatch<IStoreState>) => void {
+    return (dispatch: Dispatch<IStoreState>) => {
+        dispatch(changeParty(party))
+    }
+}
+
+interface IActionsChangeParty {
+    readonly party: string[],
+    readonly type: ActionTypes.Change_Person;
+}
+
+function changeParty(party: string[]): IActionsChangeParty {
+    return {
+        party,
+        type: ActionTypes.Change_Person,
     }
 }
