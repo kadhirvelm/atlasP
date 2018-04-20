@@ -32,7 +32,7 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
         return(
             <div className='info-graphic flexbox-column pt-dark' style={ { padding: '15px' } }>
                 { this.renderCurrentDinnerParty() }
-                { this.props.infoPerson && this.renderPerson(this.props.infoPerson) }
+                { this.renderPerson(this.props.infoPerson) }
             </div>
         )
     }
@@ -81,9 +81,10 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
         )
     }
 
-    private renderPerson(user: User){
+    private renderPerson(user?: User){
         return(
-            <div style={ { position: 'relative', flexBasis: '40%', marginTop: '15px', paddingTop: '15px', borderTop: 'solid 1px white' } } className='flexbox-column'>
+            user ?
+            <div className='flexbox-column info-person'>
                 <div key={ user.id } className='show-change'>
                     <div className='flexbox-row' style={ { justifyContent: 'center' } }>
                         <h4> { user.name } ({ user.id }) </h4>
@@ -91,6 +92,14 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
                     { this.renderScore(user) }
                     <div style={ { position: 'absolute', left: '50%', bottom: '1%', transform: 'translate(-50%, -1%)' } }>
                         <Button icon='exchange' text={ 'Make ' + user.name + ' Main' } onClick={ this.setMainPerson } intent={ Intent.WARNING } className='grow' />
+                    </div>
+                </div>
+            </div>
+            :
+            <div className='flexbox-column info-person'>
+                <div key='Unknown' className='show-change'>
+                    <div className='flexbox-row' style={ { justifyContent: 'center' } }>
+                        <h4> None Selected </h4>
                     </div>
                 </div>
             </div>

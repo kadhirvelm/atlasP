@@ -54,17 +54,22 @@ class Main extends React.Component<IMainProps, IMainState> {
     this.setState({ mainPersonDialogOpen: false })
   }
 
+  private openSheet(){
+    window.open('https://docs.google.com/spreadsheets/d/1subd2wYnMRN4lSg6XeJKIIBlX6_38ygWZcHNl8C-UWc/edit#gid=123656038', '_blank')
+  }
+
   private renderNavbar(){
     return(
       <Navbar className='pt-dark' style={ { zIndex: 10 } }>
         <NavbarGroup align={ Alignment.LEFT }>
           <NavbarHeading> Goe V2 </NavbarHeading>
           <NavbarDivider />
-          <Button icon='refresh' onClick={ this.fetchGoogleSheetsData } text='Refresh Data' />
+          <Button icon='refresh' onClick={ this.fetchGoogleSheetsData } text='Refresh Data' intent={ (this.props.userData && Object.keys(this.props.userData).length) ? Intent.NONE : Intent.DANGER }/>
           { this.props.fetching && <Spinner className='pt-small' intent={ Intent.WARNING } /> }
           <Button icon='exchange' onClick={ this.openChangeMainPersonDialog } text='Change User' />
         </NavbarGroup>
         <NavbarGroup align={ Alignment.RIGHT }>
+          <Button icon='link' text='Google Sheet' onClick={ this.openSheet } />
           <Button icon='log-out' onClick={ this.handleSignOut } />
         </NavbarGroup>
       </Navbar>
@@ -82,7 +87,7 @@ class Main extends React.Component<IMainProps, IMainState> {
             { (this.props.userData && this.props.eventData) ? <DisplayGraph mainPerson={ this.props.mainPerson } setMainPerson={ this.props.setMainPerson } eventData={ this.props.eventData } userData={ this.props.userData } setInfoPerson={ this.props.setInfoPerson } /> : <div /> }
         </div>
         <div style={ { display: 'flex', flexBasis: '15%' } }>
-          { (this.props.mainPerson && this.props.userData) && <InfoGraphic /> }
+          { (this.props.userData) && <InfoGraphic /> }
         </div>
       </div>
     )

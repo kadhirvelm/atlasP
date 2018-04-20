@@ -1,6 +1,7 @@
 .user-node {
     border-radius: 50%;
     animation: fade-in 1s ease-in;
+    transform: translate(-50%, -50%);
     position: absolute;
     transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, top 0.2s linear, left 0.2s linear;
 }
@@ -22,8 +23,28 @@
     }
 }
 
+.time-difference {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+}
+
+div.R {
+    background: #F1948A;
+}
+
+div.Y {
+    background: #F7DC6F;
+}
+
+div.G {
+    background: #7DCEA0;
+}
+
 div.F {
-    background: #943126;
+    background: #7B241C;
 }
 
 div.M {

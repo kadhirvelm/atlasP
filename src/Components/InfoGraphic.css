@@ -82,3 +82,11 @@ Button.removal-button {
     transform: translate(-2%, -50%);
     z-index: 3;
 }
+
+.info-person {
+    position: relative;
+    flex-basis: 40%;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: solid 1px white;
+}

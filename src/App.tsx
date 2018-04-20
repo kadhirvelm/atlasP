@@ -4,7 +4,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import './App.css'
 
-import { Button, Intent } from '@blueprintjs/core';
+import { Button, Intent, Spinner } from '@blueprintjs/core';
 import Main from './Components/Main';
 import { changeSignInStatus } from './State/GoogleSheetActions';
 import IStoreState from './State/IStoreState';
@@ -16,6 +16,10 @@ interface IAppProps {
 }
 
 class App extends React.Component<IAppProps> {
+  public state = {
+    receivedUpdate: false,
+  }
+
   public componentWillMount(){
     this.authorize()
   }
@@ -23,7 +27,11 @@ class App extends React.Component<IAppProps> {
   public render() {
     return (
       <div className='prevent-movement'>
-        { this.props.isSignedIn ? <Main /> : <Button id='authorize-button' onClick={ this.handleSignIn } text='Sign In' intent={ Intent.PRIMARY } className='centered fade-in' /> }
+        { this.state.receivedUpdate ? 
+          this.props.isSignedIn ? <Main /> : <Button id='authorize-button' onClick={ this.handleSignIn } text='Sign In' intent={ Intent.PRIMARY } className='centered fade-in' />
+          :
+          <Spinner className='centered' />
+        }
       </div>
     )
   }
@@ -43,7 +51,9 @@ class App extends React.Component<IAppProps> {
   }
 
   private updateSigninStatus = (isSignedIn: boolean) => {
-    this.props.changeSignInStatus(isSignedIn)
+    this.setState({ receivedUpdate: true }, () => {
+      this.props.changeSignInStatus(isSignedIn)
+    })
   }
 
   private handleSignIn = () => {
