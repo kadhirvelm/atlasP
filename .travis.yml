@@ -1,4 +1,14 @@
 language: node_js
+cache:
+  directories:
+  - node_modules
+env:
+  matrix:
+  - REACT_APP_SPREADSHEET=1fsQHaT2ZG1uRKmuHagoUjReNMpFH3_fSGw9HLLcphIg
+  - REACT_APP_CLIENT_ID=826952396520-1kpdq0jbso689jldpfou2v7mevjf5u1h.apps.googleusercontent.com
+  - secure: klh3Bt7zaAbkzaayeMYDKAM2w6DozaXGoerLuvoxbriVzHWifrRQOZ6zX+zt9faKw8v5afH33t/p3UciT6TrMUnl5fkxAENnkR5TlsyXaaQCCMUdumeF+UxLoLxilgDsy7y/TH1h1mHkVDk6UUHRyQPy7rV9upZrcXfmMSBPuXe9ITwPgi9L0xZ5tZrxpD8QsGfxI6sm2ztsLT28U+TXGsRvdlg5IZYx4/h+ohdl0tdN8BKFbn6TzQ7mcW4CgPa/RmpEqWjf9UaIzARr6S3FkgpVydoTRu43PEizb3iVVNpaLMg+NimMAThWYbMabFRwOLlYrg9WxjLiSDp6u7Jscfg7X9+gugZ2CoABecR4WnfeYnxdV+bavYUAtvfT2FygPfI7ld/959LrWVXw1p+Spj2IdAD9Bsel2oVenvsh5PYWeCaiyQJgsTwy4cekOWRCep+GzDvaSs/9+dghB3/mgwJxPfkvvbJ7WHEPHpHApQfcoV38v78EfSGTlBuQUK3PdZU82A1h3LAHizZWPX7aozK/gcUm9UTEQ0zQdnVNajqwLCoFweOQp1nXX1o5GSxcF2QyvBFufUJyztKYoAx+r3lFywVYVBvRIiRnyIdd6zGvwxGyZQuumlz+93xVBFIzEitNNlyRkp5WN/+BF14pGVzgK1iu3/PNwwGFvZmiAhQ=
+script:
+  - yarn run build
 deploy:
   provider: s3
   access_key_id: AKIAJ6JLQ6HT2QG2BEYQ
