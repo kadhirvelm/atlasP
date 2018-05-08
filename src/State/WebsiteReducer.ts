@@ -19,6 +19,10 @@ export default function WebsiteReducer(
       return Object.assign({}, state, {
         infoPerson: action.infoPerson,
       })
+    case ActionTypes.Change_Person:
+      return Object.assign({}, state, {
+        party: action.party,
+      })
     default:
       return state
   }

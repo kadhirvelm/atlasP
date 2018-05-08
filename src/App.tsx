@@ -9,8 +9,6 @@ import Main from './Components/Main';
 import { changeSignInStatus } from './State/GoogleSheetActions';
 import IStoreState from './State/IStoreState';
 
-import * as _ from 'underscore';
-
 interface IAppProps {
   readonly fetching: boolean;
   readonly isSignedIn?: boolean,
@@ -18,6 +16,10 @@ interface IAppProps {
 }
 
 class App extends React.Component<IAppProps> {
+  public state = {
+    receivedUpdate: false,
+  }
+
   public componentWillMount(){
     this.authorize()
   }
@@ -25,12 +27,11 @@ class App extends React.Component<IAppProps> {
   public render() {
     return (
       <div className='prevent-movement'>
-        { _.isUndefined(this.props.isSignedIn) ?
-          <Spinner className='centered' />
+        { this.state.receivedUpdate ? 
+          this.props.isSignedIn ? <Main /> : <Button id='authorize-button' onClick={ this.handleSignIn } text='Sign In' intent={ Intent.PRIMARY } className='centered fade-in' />
           :
-          !this.props.isSignedIn ? <Button id='authorize-button' onClick={ this.handleSignIn } text='Sign In' intent={ Intent.PRIMARY } className='centered fade-in' /> : <div />
+          <Spinner className='centered' />
         }
-        { this.props.isSignedIn && <Main /> }
       </div>
     )
   }
@@ -50,7 +51,9 @@ class App extends React.Component<IAppProps> {
   }
 
   private updateSigninStatus = (isSignedIn: boolean) => {
-    this.props.changeSignInStatus(isSignedIn)
+    this.setState({ receivedUpdate: true }, () => {
+      this.props.changeSignInStatus(isSignedIn)
+    })
   }
 
   private handleSignIn = () => {

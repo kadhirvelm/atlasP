@@ -3,6 +3,7 @@ import User from './User';
 
 const finalEventsData = {};
 const finalUserData = {};
+let hasFailed: boolean;
 
 const extractIntoNumberArray = (rawNumbers: string): number[] => {
     return rawNumbers.split(',').map((rawNumber) => parseInt(rawNumber, 10));
@@ -29,7 +30,12 @@ function assembleUserData(userData: string[][]){
             extractIntoNumberArray(person.slice(8).join(',')));
         finalUserData[newUser.id] = newUser;
         newUser.events.forEach((event: number) => {
-            finalEventsData[event].attendees.push(newUser.id);
+            if(finalEventsData[event]){
+                finalEventsData[event].attendees.push(newUser.id);
+            } else {
+                hasFailed = true;
+                console.error('Cannot find event!', 'Event ID - ' + event, newUser);
+            }
         });
     });
 }
@@ -45,8 +51,9 @@ function assembleUserConnections(){
 }
 
 export function assembleObjects(userData: string[][], eventData: string[][]): { userData: {}, eventData: {} } {
+    hasFailed = false;
     assembleEventData(eventData);
     assembleUserData(userData);
     assembleUserConnections();
-    return { userData: finalUserData, eventData: finalEventsData };
+    return hasFailed ? { userData: {}, eventData: {} } : { userData: finalUserData, eventData: finalEventsData };
 }

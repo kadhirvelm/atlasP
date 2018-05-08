@@ -7,10 +7,11 @@ export default interface IStoreState {
         userData?: { id: User };
         eventData?: { id: Event };
         googleSheetDataError?: object;
-        isSignedIn?: boolean;
+        isSignedIn: boolean;
     }
     WebsiteReducer: {
-        mainPerson?: User;
         infoPerson?: User;
+        mainPerson?: User;
+        party?: string[];
     }
 }

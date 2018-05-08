@@ -41,6 +41,7 @@ const MAX_RADIANS = 2 * Math.PI;
 const X_ORIGIN = 50;
 const Y_ORIGIN = 50;
 const RADIUS = 42;
+const MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24
 
 class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
     public state: IState
@@ -144,7 +145,20 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
     }
 
     private handleDragStart(event: any){
-        event.dataTransfer.setDragImage(<img src='' alt='K' style={ { width: '100px', height: '100px', background: 'black' } } />, 0, 0)
+        event.dataTransfer.setData('text', event.currentTarget.id)
+        const img = document.createElement('img')
+        img.src = 'https://d30y9cdsu7xlg0.cloudfront.net/png/5024-200.png'
+        event.dataTransfer.setDragImage(img, 50, 150)
+    }
+
+    private calcuateTimeDifferenceInDays(time: string){
+        const timeDiff = (new Date().getTime() - new Date(time).getTime()) / (MILLISECONDS_IN_DAY)
+        if(timeDiff < 14){
+            return 'G'
+        } else if (timeDiff < 28){
+            return 'Y'
+        }
+        return 'R'
     }
 
     private renderSinglePerson(user: User, position: { x: number, y: number }){
@@ -152,8 +166,9 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
         this.locations[user.id] = position
         const scoreTally = (user.id !== this.mainPerson.id ? calculateScore(user, this.mainPerson) : { isMain: true })
         return(
-            <div key={ user.id } draggable={ true } onDragStart={ this.handleDragStart } > 
-                <div onClick={ this.changeInfoPerson(user) } className={ 'user-node' + ' ' + user.gender } style={ { width: this.dimension + 'vmin', height: this.dimension + 'vmin', left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' } }>
+            <div key={ user.id } style={ { position: 'absolute', left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' } }>
+                <div className={ 'user-node time-difference ' + this.calcuateTimeDifferenceInDays(this.props.eventData[user.events.slice(-1)[0]].date) } style={ { width: this.dimension + 1 + 'vmin', height: this.dimension + 1 + 'vmin' } } />
+                <div id={ user.gender + '_' + user.id } className={ 'user-node' + ' ' + user.gender } draggable={ true } onDragStart={ this.handleDragStart } onClick={ this.changeInfoPerson(user) } style={ { width: this.dimension + 'vmin', height: this.dimension + 'vmin' } }>
                     <div className='centered flexbox-column-centered' style={ { color: 'white' } }>
                         <div> { user.name } </div>
                         <div> { scoreTally.isMain ? 'Main' : scoreTally['finalScore'] } </div>
@@ -173,13 +188,13 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
     }
 
     private returnStateWithPerson(user: User){
-        if(this.containerDimensions){
+        if(this.containerDimensions && _.keys(this.props.userData).length){
             this.totalConnections = _.keys(user.connections).length
             this.redLines = {}
             this.greenLines = {}
             this.locations = {}
             this.mainPerson = user
-            this.dimension = (-(this.totalConnections) / 2.8) + 19
+            this.dimension = (-(this.totalConnections) / 2.25) + 19
             const peopleRender = this.assemblePeople(user)
             return { mainPerson: user, peopleRender, locations: this.locations, redLines: this.redLines, greenLines: this.greenLines }
         }
