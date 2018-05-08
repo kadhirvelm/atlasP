@@ -62,7 +62,7 @@ class Main extends React.Component<IMainProps, IMainState> {
     return(
       <Navbar className='pt-dark' style={ { zIndex: 10 } }>
         <NavbarGroup align={ Alignment.LEFT }>
-          <NavbarHeading> Goe V2 </NavbarHeading>
+          <NavbarHeading> Fika V2 </NavbarHeading>
           <NavbarDivider />
           <Button icon='refresh' onClick={ this.fetchGoogleSheetsData } text='Refresh Data' intent={ (this.props.userData && Object.keys(this.props.userData).length) ? Intent.NONE : Intent.DANGER }/>
           { this.props.fetching && <Spinner className='pt-small' intent={ Intent.WARNING } /> }
