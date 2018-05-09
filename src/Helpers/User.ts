@@ -1,10 +1,11 @@
 interface IUser {
     id: number,
     name: string,
+    fullName: string,
     gender: string,
     age: number,
     location: string,
-    email: string,
+    contact: string,
     redList: number[],
     greenList: number[],
     events: object,
@@ -13,22 +14,24 @@ interface IUser {
 export default class User implements IUser {
     public id: number;
     public name: string;
+    public fullName: string;
     public gender: string;
     public age: number;
     public location: string;
-    public email: string;
+    public contact: string;
     public redList: number[];
     public greenList: number[];
     public events: number[];
     public connections: object;
 
-    constructor(id: number, name: string, gender: string, age: number, location: string, email: string, redList: number[], greenList: number[], events: number[]){
+    constructor(id: number, name: string, gender: string, age: number, location: string, contact: string, redList: number[], greenList: number[], events: number[]){
         this.id = id;
-        this.name = name;
+        this.name = this.firstNameAndLastInitial(name);
+        this.fullName = name;
         this.gender = gender;
         this.age = age;
         this.location = location;
-        this.email = email;
+        this.contact = contact;
         this.redList = redList;
         this.greenList = greenList;
         this.events = events;
@@ -45,5 +48,10 @@ export default class User implements IUser {
         if(newConnection !== this.id){
             this.connections[newConnection] = (this.connections[newConnection] || []).concat(eventID);
         }
+    }
+
+    private firstNameAndLastInitial = (name: string) => {
+        const tempSeparate = name.split(' ');
+        return tempSeparate[0] + ' ' + tempSeparate[1][0];
     }
 }

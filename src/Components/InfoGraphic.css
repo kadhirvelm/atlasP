@@ -86,7 +86,19 @@ Button.removal-button {
 .info-person {
     position: relative;
     flex-basis: 40%;
-    margin-top: 15px;
-    padding-top: 15px;
+    margin-top: 5px;
+    padding-top: 5px;
     border-top: solid 1px white;
+}
+
+.padding-box {
+    padding: 5px;
+}
+
+.blue-box {
+    border: #2471A3 3px solid;
+}
+
+.red-box {
+    border: #A93226 3px solid;
 }

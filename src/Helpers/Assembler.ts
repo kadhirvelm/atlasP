@@ -6,7 +6,7 @@ const finalUserData = {};
 let hasFailed: boolean;
 
 const extractIntoNumberArray = (rawNumbers: string): number[] => {
-    return rawNumbers.split(',').map((rawNumber) => parseInt(rawNumber, 10));
+    return rawNumbers ? rawNumbers.split(',').map((rawNumber) => parseInt(rawNumber, 10)) : [];
 }
 
 function assembleEventData(eventData: string[][]){

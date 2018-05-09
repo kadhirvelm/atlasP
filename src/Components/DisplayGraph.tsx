@@ -168,7 +168,7 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
         return(
             <div key={ user.id } style={ { position: 'absolute', left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' } }>
                 <div className={ 'user-node time-difference ' + this.calcuateTimeDifferenceInDays(this.props.eventData[user.events.slice(-1)[0]].date) } style={ { width: this.dimension + 1 + 'vmin', height: this.dimension + 1 + 'vmin' } } />
-                <div id={ user.gender + '_' + user.id } className={ 'user-node' + ' ' + user.gender } draggable={ true } onDragStart={ this.handleDragStart } onClick={ this.changeInfoPerson(user) } style={ { width: this.dimension + 'vmin', height: this.dimension + 'vmin' } }>
+                <div id={ user.gender + '_' + user.id } className={ 'user-node' + ' ' + user.gender } draggable={ true } onDragStart={ this.handleDragStart } onDoubleClick={ this.changeMainPerson(user) } onClick={ this.changeInfoPerson(user) } style={ { width: this.dimension + 'vmin', height: this.dimension + 'vmin' } }>
                     <div className='centered flexbox-column-centered' style={ { color: 'white' } }>
                         <div> { user.name } </div>
                         <div> { scoreTally.isMain ? 'Main' : scoreTally['finalScore'] } </div>
@@ -199,6 +199,12 @@ class DisplayGraph extends React.Component<IDisplayGraphProps, IState> {
             return { mainPerson: user, peopleRender, locations: this.locations, redLines: this.redLines, greenLines: this.greenLines }
         }
         return {}
+    }
+
+    private changeMainPerson(user: User){
+        return () => {
+            this.props.setMainPerson(user)
+        }
     }
 
     private changeInfoPerson(user: User){

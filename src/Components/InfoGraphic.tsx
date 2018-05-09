@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { Button, Intent } from '@blueprintjs/core';
+import { Button, Icon, Intent, Popover } from '@blueprintjs/core';
 
 import { calculateScore, IScore } from '../Helpers/GraphHelpers';
 import User from '../Helpers/User';
@@ -24,6 +24,10 @@ interface IInfoGraphicProps {
 }
 
 class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
+    public state = {
+        openPopover: false,
+    }
+
     public componentWillMount(){
       this.renderSingleIndividual = this.renderSingleIndividual.bind(this)
     }
@@ -81,13 +85,26 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
         )
     }
 
+    private openPopoverHover = () => this.setState({ openPopover: true })
+    private closePopoverHover = () => this.setState({ openPopover: false })
+
     private renderPerson(user?: User){
         return(
             user ?
             <div className='flexbox-column info-person'>
                 <div key={ user.id } className='show-change'>
-                    <div className='flexbox-row' style={ { justifyContent: 'center' } }>
-                        <h4> { user.name } ({ user.id }) </h4>
+                    <div className='flexbox-row' style={ { justifyContent: 'center', alignContent: 'center', height: '100%', width: '100%', position: 'relative' } }>
+                        <div style={ { fontSize: '1.5vw' } }> { user.name } </div>
+                        <Popover isOpen={ this.state.openPopover }>
+                            <div style={ { marginLeft: '15px', top: '50%', position: 'absolute', transform: 'translateY(-50%)' } }>
+                                <Icon onMouseEnter={ this.openPopoverHover } onMouseLeave={ this.closePopoverHover } icon='help' />
+                            </div>
+                            <div style={ { padding: '15px', textAlign: 'center' } } className={ user.gender === 'M' ? 'blue-box' : 'red-box' }>
+                                <div className='padding-box'> { user.fullName } ({ user.id }) </div>
+                                <div className='padding-box'> { user.contact } </div>
+                                <div className='padding-box'> { user.age }, { user.location } </div>
+                            </div>
+                        </Popover>
                     </div>
                     { this.renderScore(user) }
                     <div style={ { position: 'absolute', left: '50%', bottom: '1%', transform: 'translate(-50%, -1%)' } }>
