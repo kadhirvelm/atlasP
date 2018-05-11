@@ -14,7 +14,7 @@ export function fetchGoogleSheetData(googleApi: any): (dispatch: Dispatch<IStore
         dispatch(startingFetchedData());
         window['gapi'].client.load('sheets', 'v4', () => {
             window['gapi'].client.sheets.spreadsheets.values.batchGet({
-              ranges: ['Users-Data!A1:O35', 'Events-Data!A1:C100'],
+              ranges: ['Users-Data!A1:Z35', 'Events-Data!A1:D100'],
               spreadsheetId: process.env.REACT_APP_SPREADSHEET,
             }).then((response: object) => {
                 const results = response['result'].valueRanges;

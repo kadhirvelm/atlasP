@@ -11,7 +11,7 @@ const extractIntoNumberArray = (rawNumbers: string): number[] => {
 
 function assembleEventData(eventData: string[][]){
     return eventData.slice(1).forEach((event: string[]) => {
-        const newEvent = new Event(parseInt(event[0], 10), parseInt(event[1], 10), event[2]);
+        const newEvent = new Event(parseInt(event[0], 10), parseInt(event[1], 10), event[2], event[3]);
         finalEventsData[newEvent.id] = newEvent;
     });
 }

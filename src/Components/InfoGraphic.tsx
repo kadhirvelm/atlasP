@@ -18,6 +18,7 @@ interface IInfoGraphicProps {
     mainPerson?: User;
     party?: string[];
     userData?: { id: User },
+    eventData?: { id: Event },
     setParty: (party: string[]) => (dispatch: Dispatch<IStoreState>) => void;
     setInfoPerson: (user: User) => (dispatch: Dispatch<IStoreState>) => void;
     setMainPerson: (user: User) => (dispatch: Dispatch<IStoreState>) => void;
@@ -88,6 +89,16 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
     private openPopoverHover = () => this.setState({ openPopover: true })
     private closePopoverHover = () => this.setState({ openPopover: false })
 
+    private openInformationDialog = (user: User) => {
+        return () => {
+            if(this.props.mainPerson){
+                user.connections[this.props.mainPerson.id].forEach((id: number) => {
+                    console.log(this.props.eventData && this.props.eventData[id])
+                })
+            }
+        }
+    }
+
     private renderPerson(user?: User){
         return(
             user ?
@@ -97,7 +108,7 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
                         <div style={ { fontSize: '1.5vw' } }> { user.name } </div>
                         <Popover isOpen={ this.state.openPopover }>
                             <div style={ { marginLeft: '15px', top: '50%', position: 'absolute', transform: 'translateY(-50%)' } }>
-                                <Icon onMouseEnter={ this.openPopoverHover } onMouseLeave={ this.closePopoverHover } icon='help' />
+                                <Icon onMouseEnter={ this.openPopoverHover } onMouseLeave={ this.closePopoverHover } onClick={ this.openInformationDialog(user) } icon='help' />
                             </div>
                             <div style={ { padding: '15px', textAlign: 'center' } } className={ user.gender === 'M' ? 'blue-box' : 'red-box' }>
                                 <div className='padding-box'> { user.fullName } ({ user.id }) </div>
@@ -190,6 +201,7 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
 
 function mapStateToProps(state: IStoreState) {
   return {
+    eventData: state.GoogleReducer.eventData,
     infoPerson: state.WebsiteReducer.infoPerson,
     mainPerson: state.WebsiteReducer.mainPerson,
     party: state.WebsiteReducer.party,

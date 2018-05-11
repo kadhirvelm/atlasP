@@ -55,7 +55,7 @@ class Main extends React.Component<IMainProps, IMainState> {
   }
 
   private openSheet(){
-    window.open('https://docs.google.com/spreadsheets/d/1subd2wYnMRN4lSg6XeJKIIBlX6_38ygWZcHNl8C-UWc/edit#gid=123656038', '_blank')
+    window.open('https://docs.google.com/spreadsheets/d/1fsQHaT2ZG1uRKmuHagoUjReNMpFH3_fSGw9HLLcphIg/edit#gid=123656038', '_blank')
   }
 
   private renderNavbar(){
