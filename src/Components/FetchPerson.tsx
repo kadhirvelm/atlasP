@@ -40,7 +40,7 @@ class FetchPerson extends React.Component<IFetchPersonProps, IFetchPersonState> 
                         </div>
                         <div className='flexbox-row' style={ { flexBasis: '50%', justifyContent: 'flex-start' } }>
                             <h3 style={ { marginLeft: '15px', color: '#1D8348' } }>
-                                { (this.state.id && this.props.userData && this.props.userData[this.state.id]) ? this.props.userData[this.state.id].name : '' }
+                                { (this.state.id && this.props.userData && this.props.userData[this.state.id]) ? this.props.userData[this.state.id].fullName : '' }
                             </h3>
                         </div>
                     </div>

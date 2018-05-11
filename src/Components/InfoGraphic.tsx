@@ -3,8 +3,9 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { Button, Icon, Intent, Popover } from '@blueprintjs/core';
+import { Button, Dialog, Icon, Intent, Popover, Position } from '@blueprintjs/core';
 
+import Event from '../Helpers/Event';
 import { calculateScore, IScore } from '../Helpers/GraphHelpers';
 import User from '../Helpers/User';
 import IStoreState from '../State/IStoreState';
@@ -24,8 +25,16 @@ interface IInfoGraphicProps {
     setMainPerson: (user: User) => (dispatch: Dispatch<IStoreState>) => void;
 }
 
-class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
+interface IStateProps {
+    openDialog: boolean,
+    openInformationPopover: boolean,
+    openPopover: boolean,
+}
+
+class InfoGraphic extends React.Component<IInfoGraphicProps, IStateProps> {
     public state = {
+        openDialog: false,
+        openInformationPopover: false,
         openPopover: false,
     }
 
@@ -38,6 +47,7 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
             <div className='info-graphic flexbox-column pt-dark' style={ { padding: '15px' } }>
                 { this.renderCurrentDinnerParty() }
                 { this.renderPerson(this.props.infoPerson) }
+                { this.renderInformationDialogOnPerson() }
             </div>
         )
     }
@@ -89,14 +99,61 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
     private openPopoverHover = () => this.setState({ openPopover: true })
     private closePopoverHover = () => this.setState({ openPopover: false })
 
-    private openInformationDialog = (user: User) => {
-        return () => {
-            if(this.props.mainPerson){
-                user.connections[this.props.mainPerson.id].forEach((id: number) => {
-                    console.log(this.props.eventData && this.props.eventData[id])
-                })
-            }
-        }
+    private openInformationDialog = () => this.setState({ openDialog: true })
+    private closeInformationDialog = () => this.setState({ openDialog: false })
+
+    private openInformationHover = () => this.setState({ openInformationPopover: true })
+    private closeInformationHover = () => this.setState({ openInformationPopover: false })
+
+    private renderInformationDialogOnPerson(){
+        return( (this.props.infoPerson && this.props.mainPerson && this.props.userData) &&
+            <Dialog icon='person' isOpen={ this.state.openDialog } onClose={ this.closeInformationDialog } title={ (this.props.infoPerson ? this.props.infoPerson.name : '') + ' with ' + (this.props.mainPerson.name) }>
+                { (this.props.infoPerson && this.props.mainPerson && this.props.eventData) &&
+                    <div className='pt-dialog-body flexbox-column'>
+                    <div className='flexbox-row' style={ { flexGrow: 1, marginBottom: '15px' } }>
+                        <u className='flex-basis flex-basis-20'>ID</u>
+                        <u className='flex-basis flex-basis-15'>Host</u>
+                        <u className='flex-basis flex-basis-35'>Description</u>
+                        <u className='flex-basis flex-basis-15'>Date</u>
+                        <u className='flex-basis flex-basis-15' style={ { justifyContent: 'center' } }>People</u>
+                    </div>
+                    { this.props.infoPerson.connections[this.props.mainPerson.id] && this.props.infoPerson.connections[this.props.mainPerson.id].map((eventID: number, index: number) => {
+                            const event: Event = this.props.eventData && this.props.eventData[eventID]
+                            return (
+                                <div key={ index } className='flexbox-row' style={ { flexGrow: 1 } }>
+                                    <div className='flex-basis flex-basis-20'>
+                                        { event.id }
+                                    </div>
+                                    <div className='flex-basis flex-basis-15'>
+                                        { this.props.userData && this.props.userData[event.host].name }
+                                    </div>
+                                    <div className='flex-basis flex-basis-35' style={ { wordWrap: 'break-word' } }>
+                                        { event.description }
+                                    </div>
+                                    <div className='flex-basis flex-basis-15'>
+                                        { event.date }
+                                    </div>
+                                    <div className='flex-basis flex-basis-15' style={ { justifyContent: 'center' } }>
+                                        <Popover isOpen={ this.state.openInformationPopover } position={ Position.RIGHT }>
+                                            <Icon onMouseEnter={ this.openInformationHover } onMouseLeave={ this.closeInformationHover } icon='people' />
+                                            <div style={ { padding: '15px', textAlign: 'center' } }>
+                                                <div className='flexbox-column'>
+                                                    { event.attendees.map((id: number) => (
+                                                        <div key={ id }> { this.props.userData && this.props.userData[id].name } ({ id }) </div>
+                                                        ))
+                                                    }
+                                                </div>
+                                            </div>
+                                        </Popover>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
+                    </div>
+                }
+            </Dialog>
+        )
     }
 
     private renderPerson(user?: User){
@@ -108,7 +165,7 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, any> {
                         <div style={ { fontSize: '1.5vw' } }> { user.name } </div>
                         <Popover isOpen={ this.state.openPopover }>
                             <div style={ { marginLeft: '15px', top: '50%', position: 'absolute', transform: 'translateY(-50%)' } }>
-                                <Icon onMouseEnter={ this.openPopoverHover } onMouseLeave={ this.closePopoverHover } onClick={ this.openInformationDialog(user) } icon='help' />
+                                <Icon onMouseEnter={ this.openPopoverHover } onMouseLeave={ this.closePopoverHover } onClick={ this.openInformationDialog } icon='help' />
                             </div>
                             <div style={ { padding: '15px', textAlign: 'center' } } className={ user.gender === 'M' ? 'blue-box' : 'red-box' }>
                                 <div className='padding-box'> { user.fullName } ({ user.id }) </div>

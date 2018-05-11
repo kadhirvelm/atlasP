@@ -102,3 +102,29 @@ Button.removal-button {
 .red-box {
     border: #A93226 3px solid;
 }
+
+.flex-basis {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    word-wrap: break-word;
+    white-space: nowrap;
+    justify-content: flex-start;
+}
+
+.flex-basis-15 {
+    width: 15%;
+    flex-basis: 15%;
+}
+
+.flex-basis-20 {
+    width: 20%;
+    flex-basis: 20%;
+}
+
+.flex-basis-35 {
+    width: 35%;
+    flex-basis: 35%;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
