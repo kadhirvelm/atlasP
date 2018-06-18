@@ -9,20 +9,17 @@ import Event from '../Helpers/Event';
 import { calculateScore, IScore } from '../Helpers/GraphHelpers';
 import User from '../Helpers/User';
 import IStoreState from '../State/IStoreState';
-
-import { setInfoPerson, setMainPerson, setParty } from '../State/WebsiteActions'
+import { SetInfoPerson, SetMainPerson, ChangeParty } from '../State/WebsiteActions';
+import { ScoreDisplay } from "./ScoreDisplay";
 
 import './InfoGraphic.css';
 
 interface IInfoGraphicProps {
-    infoPerson?: User;
-    mainPerson?: User;
-    party?: string[];
-    userData?: { id: User },
-    eventData?: { id: Event },
-    setParty: (party: string[]) => (dispatch: Dispatch<IStoreState>) => void;
-    setInfoPerson: (user: User) => (dispatch: Dispatch<IStoreState>) => void;
-    setMainPerson: (user: User) => (dispatch: Dispatch<IStoreState>) => void;
+    infoPerson: User;
+    mainPerson: User;
+    party: string[];
+    userData: { id: User },
+    eventData: { id: Event },
 }
 
 interface IStateProps {
@@ -31,7 +28,13 @@ interface IStateProps {
     openPopover: boolean,
 }
 
-class InfoGraphic extends React.Component<IInfoGraphicProps, IStateProps> {
+export interface IInfoGraphDispatchProps {
+    setParty(party: string[]): void;
+    setInfoPerson(user: User): void;
+    setMainPerson(user: User): void;
+}
+
+class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDispatchProps, IStateProps> {
     public state = {
         openDialog: false,
         openInformationPopover: false,
@@ -44,10 +47,10 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, IStateProps> {
 
     public render(){
         return(
-            <div className='info-graphic flexbox-column pt-dark' style={ { padding: '15px' } }>
-                { this.renderCurrentDinnerParty() }
-                { this.renderPerson(this.props.infoPerson) }
-                { this.renderInformationDialogOnPerson() }
+            <div className='info-graphic flexbox-column pt-dark' style={{ padding: '15px' }}>
+                {this.renderCurrentDinnerParty()}
+                {this.renderPerson(this.props.infoPerson)}
+                {this.renderInformationDialogOnPerson()}
             </div>
         )
     }
@@ -62,17 +65,17 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, IStateProps> {
 
     private renderSingleIndividual(id: string){
       const user = this.props.userData && this.props.userData[id]
+      if (user == null) {
+          return null;
+      }
       return(
-        user ?
-          <div key={ id } style={ { position: 'relative', fontSize: '1vw' } } className='user-display'>
+        <div key={id} style={{ position: 'relative', fontSize: '1vw' }} className='user-display'>
             <div className='user-div'>
-              <div> { user.name } </div>
+                <div> {user.name} </div>
             </div>
-            <button onClick={ this.makeInfoPerson(user) } style={ { position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, zIndex: 2, background: 'transparent', border: 'none' } } />
-            <Button className='removal-button' icon='cross' onClick={ this.removePerson(user) } />
-          </div>
-          :
-          <div />
+            <button onClick={this.makeInfoPerson(user)} style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, zIndex: 2, background: 'transparent', border: 'none' }} />
+            <Button className='removal-button' icon='cross' onClick={this.removePerson(user)} />
+        </div>
       )
     }
 
@@ -87,10 +90,10 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, IStateProps> {
 
     private renderCurrentDinnerParty(){
         return(
-            <div className='flexbox-column' style={ { position: 'relative', flexBasis: '60%' } } onDrop={ this.receiveNewPerson } onDragOver={ this.preventDefault }>
+            <div className='flexbox-column' style={{ position: 'relative', flexBasis: '60%' }} onDrop={this.receiveNewPerson} onDragOver={this.preventDefault}>
                 <h4> Current Party </h4>
                 <div className='party-holder'>
-                    { this.props.party ? this.props.party.map(this.renderSingleIndividual) : <div /> }
+                    {this.props.party ? this.props.party.map(this.renderSingleIndividual) : <div />}
                 </div>
             </div>
         )
@@ -106,84 +109,107 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, IStateProps> {
     private closeInformationHover = () => this.setState({ openInformationPopover: false })
 
     private renderInformationDialogOnPerson(){
-        return( (this.props.infoPerson && this.props.mainPerson && this.props.userData) &&
-            <Dialog icon='person' isOpen={ this.state.openDialog } onClose={ this.closeInformationDialog } title={ (this.props.infoPerson ? this.props.infoPerson.name : '') + ' with ' + (this.props.mainPerson.name) }>
-                { (this.props.infoPerson && this.props.mainPerson && this.props.eventData) &&
-                    <div className='pt-dialog-body flexbox-column'>
-                    <div className='flexbox-row' style={ { flexGrow: 1, marginBottom: '15px' } }>
+        if (!((this.props.infoPerson && this.props.mainPerson && this.props.userData))) {
+            return null;
+        }
+        return(
+            <Dialog icon='person' isOpen={this.state.openDialog} onClose={this.closeInformationDialog} title={(this.props.infoPerson ? this.props.infoPerson.name : '') + ' with ' + (this.props.mainPerson.name)}>
+                <div className='pt-dialog-body flexbox-column'>
+                    <div className='flexbox-row' style={{ flexGrow: 1, marginBottom: '15px' }}>
                         <u className='flex-basis flex-basis-20'>ID</u>
                         <u className='flex-basis flex-basis-15'>Host</u>
                         <u className='flex-basis flex-basis-35'>Description</u>
                         <u className='flex-basis flex-basis-15'>Date</u>
-                        <u className='flex-basis flex-basis-15' style={ { justifyContent: 'center' } }>People</u>
+                        <u className='flex-basis flex-basis-15' style={{ justifyContent: 'center' }}>People</u>
                     </div>
-                    { this.props.infoPerson.connections[this.props.mainPerson.id] && this.props.infoPerson.connections[this.props.mainPerson.id].map((eventID: number, index: number) => {
-                            const event: Event = this.props.eventData && this.props.eventData[eventID]
-                            return (
-                                <div key={ index } className='flexbox-row' style={ { flexGrow: 1 } }>
-                                    <div className='flex-basis flex-basis-20'>
-                                        { event.id }
-                                    </div>
-                                    <div className='flex-basis flex-basis-15'>
-                                        { this.props.userData && this.props.userData[event.host].name }
-                                    </div>
-                                    <div className='flex-basis flex-basis-35' style={ { wordWrap: 'break-word' } }>
-                                        { event.description }
-                                    </div>
-                                    <div className='flex-basis flex-basis-15'>
-                                        { event.date }
-                                    </div>
-                                    <div className='flex-basis flex-basis-15' style={ { justifyContent: 'center' } }>
-                                        <Popover isOpen={ this.state.openInformationPopover } position={ Position.RIGHT }>
-                                            <Icon onMouseEnter={ this.openInformationHover } onMouseLeave={ this.closeInformationHover } icon='people' />
-                                            <div style={ { padding: '15px', textAlign: 'center' } }>
-                                                <div className='flexbox-column'>
-                                                    { event.attendees.map((id: number) => (
-                                                        <div key={ id }> { this.props.userData && this.props.userData[id].name } ({ id }) </div>
-                                                        ))
-                                                    }
-                                                </div>
-                                            </div>
-                                        </Popover>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
-                    </div>
-                }
+                    {this.renderInfoPersonContent()}
+                </div>
             </Dialog>
         )
     }
 
-    private renderPerson(user?: User){
-        return(
-            user ?
-            <div className='flexbox-column info-person'>
-                <div key={ user.id } className='show-change'>
-                    <div className='flexbox-row' style={ { justifyContent: 'center', alignContent: 'center', height: '100%', width: '100%', position: 'relative' } }>
-                        <div style={ { fontSize: '1.5vw' } }> { user.name } </div>
-                        <Popover isOpen={ this.state.openPopover }>
-                            <div style={ { marginLeft: '15px', top: '50%', position: 'absolute', transform: 'translateY(-50%)' } }>
-                                <Icon onMouseEnter={ this.openPopoverHover } onMouseLeave={ this.closePopoverHover } onClick={ this.openInformationDialog } icon='help' />
+    private renderInfoPersonContent() {
+        if (this.props.infoPerson === undefined || this.props.mainPerson === undefined) {
+            return null;
+        }
+        const connectionsToMainPerson = this.props.infoPerson.connections[this.props.mainPerson.id]
+
+        if(connectionsToMainPerson === undefined) {
+            return null;
+        }
+
+        return connectionsToMainPerson.map((eventID: number, index: number) => {
+                const event: Event = this.props.eventData && this.props.eventData[eventID]
+                return this.renderEventStuff(event, index)
+            })
+    }
+
+    private renderEventStuff(event: Event, index: number) {
+        if (this.props.userData === undefined) {
+            return null;
+        }
+        return (
+            <div key={index} className='flexbox-row' style={{ flexGrow: 1 }}>
+                <div className='flex-basis flex-basis-20'>
+                    {event.id}
+                </div>
+                <div className='flex-basis flex-basis-15'>
+                    {this.props.userData && this.props.userData[event.host].name}
+                </div>
+                <div className='flex-basis flex-basis-35' style={{ wordWrap: 'break-word' }}>
+                    {event.description}
+                </div>
+                <div className='flex-basis flex-basis-15'>
+                    {event.date}
+                </div>
+                <div className='flex-basis flex-basis-15' style={{ justifyContent: 'center' }}>
+                    <Popover isOpen={this.state.openInformationPopover} position={Position.RIGHT}>
+                        <Icon onMouseEnter={this.openInformationHover} onMouseLeave={this.closeInformationHover} icon='people' />
+                        <div style={{ padding: '15px', textAlign: 'center' }}>
+                            <div className='flexbox-column'>
+                                {event.attendees.map((id: number) => (<div key={id}> {this.props.userData && this.props.userData[id].name} ({id}) </div>))}
                             </div>
-                            <div style={ { padding: '15px', textAlign: 'center' } } className={ user.gender === 'M' ? 'blue-box' : 'red-box' }>
-                                <div className='padding-box'> { user.fullName } ({ user.id }) </div>
-                                <div className='padding-box'> { user.contact } </div>
-                                <div className='padding-box'> { user.age }, { user.location } </div>
+                        </div>
+                    </Popover>
+                </div>
+            </div>
+        )
+    }
+
+    private renderPerson(user?: User){
+        if (user === undefined) {
+            return this.renderNoPerson()
+        }
+        return(
+            <div className='flexbox-column info-person'>
+                <div key={user.id} className='show-change'>
+                    <div className='flexbox-row' style={{ justifyContent: 'center', alignContent: 'center', height: '100%', width: '100%', position: 'relative' }}>
+                        <div style={{ fontSize: '1.5vw' }}> {user.name} </div>
+                        <Popover isOpen={this.state.openPopover}>
+                            <div style={{ marginLeft: '15px', top: '50%', position: 'absolute', transform: 'translateY(-50%)' }}>
+                                <Icon onMouseEnter={this.openPopoverHover} onMouseLeave={this.closePopoverHover} onClick={this.openInformationDialog} icon='help' />
+                            </div>
+                            <div style={{ padding: '15px', textAlign: 'center' }} className={user.gender === 'M' ? 'blue-box' : 'red-box'}>
+                                <div className='padding-box'> {user.fullName} ({user.id}) </div>
+                                <div className='padding-box'> {user.contact} </div>
+                                <div className='padding-box'> {user.age}, {user.location} </div>
                             </div>
                         </Popover>
                     </div>
-                    { this.renderScore(user) }
-                    <div style={ { position: 'absolute', left: '50%', bottom: '1%', transform: 'translate(-50%, -1%)' } }>
-                        <Button icon='exchange' text={ 'Make ' + user.name + ' Main' } onClick={ this.setMainPerson } intent={ Intent.WARNING } className='grow' />
+                    {this.renderScore(user)}
+                    <div style={{ position: 'absolute', left: '50%', bottom: '1%', transform: 'translate(-50%, -1%)' }}>
+                        <Button icon='exchange' text={'Make ' + user.name + ' Main'} onClick={this.setMainPerson} intent={Intent.WARNING} className='grow' />
                     </div>
                 </div>
             </div>
-            :
+        )
+    }
+
+    private renderNoPerson() {
+        return (
             <div className='flexbox-column info-person'>
                 <div key='Unknown' className='show-change'>
-                    <div className='flexbox-row' style={ { justifyContent: 'center' } }>
+                    <div className='flexbox-row' style={{ justifyContent: 'center' }}>
                         <h4> None Selected </h4>
                     </div>
                 </div>
@@ -192,65 +218,8 @@ class InfoGraphic extends React.Component<IInfoGraphicProps, IStateProps> {
     }
 
     private renderScore(user: User){
-        const score: IScore | boolean = ((this.props.mainPerson && (user.id !== this.props.mainPerson.id)) && calculateScore(user, this.props.mainPerson)) || false
-        return(
-            <div>
-                { score ?
-                    <div className='flexbox-column' style={ { flexGrow: 1 } }>
-                        <div className='single-row'>
-                            <div className='single-column label'>
-                                Connections
-                            </div>
-                            <div className='single-column value'>
-                                { score.eventScore }
-                            </div>
-                        </div>
-                        <div className='single-row'>
-                            <div className='single-column label'>
-                                Gender
-                            </div>
-                            <div className='single-column value'>
-                                { score.genderScore > 0 ? score.genderScore : '--' }
-                            </div>
-                        </div>
-                        <div className='single-row'>
-                            <div className='single-column label'>
-                                Age
-                            </div>
-                            <div className='single-column value'>
-                                { score.ageScore !== 0 ? score.ageScore : '--' }
-                            </div>
-                        </div>
-                        <div className='single-row'>
-                            <div className='single-column label'>
-                                Like
-                            </div>
-                            <div className='single-column value'>
-                                { score.likeScore > 1 ? score.likeScore : '--' }
-                            </div>
-                        </div>
-                        <div className='single-row' style={ { borderBottom: 'dashed 0px black' } }>
-                            <div className='single-column label'>
-                                Dislike
-                            </div>
-                            <div className='single-column value'>
-                                { score.dislikeScore < 1 ? score.dislikeScore : '--' }
-                            </div>
-                        </div>
-                        <div className='single-row' style={ { paddingTop: '15px', borderTop: 'solid 2.5px white', borderBottom: 'dashed 0px black' } }>
-                            <div className='single-column label'>
-                                Final Score
-                            </div>
-                            <div className='single-column value'>
-                                { score.finalScore }
-                            </div>
-                        </div>
-                    </div>
-                :
-                <div />
-                }
-            </div>
-        )
+        const score: IScore | null = ((this.props.mainPerson && (user.id !== this.props.mainPerson.id)) && calculateScore(user, this.props.mainPerson)) || null
+        return <ScoreDisplay score={score} />
     }
 
     private setMainPerson = () => this.props.infoPerson && this.props.setMainPerson && this.props.setMainPerson(this.props.infoPerson)
@@ -266,12 +235,8 @@ function mapStateToProps(state: IStoreState) {
   };
 }
 
-function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-  return {
-    setInfoPerson: bindActionCreators(setInfoPerson, dispatch),
-    setMainPerson: bindActionCreators(setMainPerson, dispatch),
-    setParty: bindActionCreators(setParty, dispatch),
-  };
+function mapDispatchToProps(dispatch: Dispatch) {
+  return bindActionCreators({ setInfoPerson: SetInfoPerson.create, setMainPerson: SetMainPerson.create, setParty: ChangeParty.create }, dispatch);
 }
 
-export default connect<{}, {}, IInfoGraphicProps>(mapStateToProps, mapDispatchToProps)(InfoGraphic) as React.ComponentClass<{}>;
+export const InfoGraphic = connect(mapStateToProps, mapDispatchToProps)(PureInfoGraphic);

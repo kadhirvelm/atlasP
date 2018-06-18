@@ -1,34 +1,38 @@
-import { ActionTypes } from './GoogleSheetActions';
+import { TypedReducer, setWith } from "redoodle";
 
-export default function GoogleSheetReducer(
-  state = {
-    fetching: false,
-    isSignedIn: false,
-  },
-  action: any,
-) {
-  switch(action.type){
-    case ActionTypes.Progress_FetchGoogleSheetData:
-      return Object.assign({}, state, {
-        fetching: true,
-      })
-    case ActionTypes.Success_FetchGoogleSheetData:
-      return Object.assign({}, state, {
-        eventData: action.eventData,
-        fetching: false,
-        googleSheetDataError: '',
-        userData: action.userData,
-      })
-    case ActionTypes.Failure_FetchGoogleSheetData:
-      return Object.assign({}, state, {
-        fetching: false,
-        googleSheetDataError: action.googleSheetDataError,
-      })
-    case ActionTypes.Change_Sign_In:
-      return Object.assign({}, state, {
-        isSignedIn: action.isSignedIn,
-      })
-    default:
-      return state
-  }
-}
+import {
+  ChangeSignIn,
+  FailedDataFetch,
+  StartingDataFetch,
+  SuccessfulDataFetch,
+} from "./GoogleSheetActions";
+import IStoreState from './IStoreState';
+import { assembleObjects } from '../Helpers/Assembler';
+
+export const GoogleReducer = TypedReducer.builder<IStoreState["GoogleReducer"]>()
+  .withHandler(StartingDataFetch.TYPE, (state, _payload) => {
+    return setWith(state, {
+      isFetching: true,
+    });
+  })
+  .withHandler(SuccessfulDataFetch.TYPE, (state, payload) => {
+    const assembledObject = assembleObjects(payload.userData, payload.eventData);
+    return setWith(state, {
+      isFetching: false,
+      isSignedIn: state.isSignedIn,
+      userData: assembledObject.userData,
+      eventData: assembledObject.eventData,
+    })
+  })
+  .withHandler(FailedDataFetch.TYPE, (state, payload) => {
+    return setWith(state, {
+      googleSheetDataError: payload,
+    });
+  })
+  .withHandler(ChangeSignIn.TYPE, (state, payload) => {
+    return setWith(state, {
+      isSignedIn: payload,
+    });
+  })
+  .build();
+  

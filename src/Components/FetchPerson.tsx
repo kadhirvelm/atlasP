@@ -1,54 +1,63 @@
 import * as React from 'react';
-import { Dispatch } from 'redux';
+import { connect } from "react-redux";
+import { Dispatch, bindActionCreators } from 'redux';
 
 import { Button, Classes, Dialog, EditableText, Intent } from '@blueprintjs/core';
 import User from '../Helpers/User'
-import IStoreState from '../State/IStoreState'
+import { SetMainPerson } from '../State/WebsiteActions';
+import IStoreState from '../State/IStoreState';
 
 interface IFetchPersonProps {
     handleMainPersonDialogClose: () => void;
-    readonly mainPerson?: User;
     readonly mainPersonDialogOpen: boolean;
-    readonly userData?: { id: User };
-    setMainPerson: (user: User) => (dispatch: Dispatch<IStoreState>) => void;
 }
 
 interface IFetchPersonState {
     id: string;
 }
 
-class FetchPerson extends React.Component<IFetchPersonProps, IFetchPersonState> {
+export interface IFetchPersonStateProps {
+    mainPerson?: User;
+    userData?: { id?: User };
+}
+
+export interface IFetchPersonDispatchProps {
+    setMainPerson(user: User): void;
+}
+
+class PureFetchPerson extends React.Component<IFetchPersonProps & IFetchPersonStateProps & IFetchPersonDispatchProps, IFetchPersonState> {
     public state = {
         id: ''
     }
 
     public render(){
         return(
-            <Dialog icon='inbox' isOpen={ this.props.mainPersonDialogOpen } onClose={ this.props.handleMainPersonDialogClose } title='Fetch Specific Person'>
-                <div className={ Classes.DIALOG_BODY }>
-                    { this.props.mainPerson ? this.renderCurrentPerson(this.props.mainPerson) : 'Unknown' }
-                    <div className='flexbox-row' style={ { flexGrow: 1, justifyContent: 'center', alignItems: 'baseline' } }>
-                        <div className='flexbox-row' style={ { flexBasis: '50%', justifyContent: 'flex-end' } }>
-                            <h2 style={ { marginTop: '25px' } }>
+            <Dialog icon='inbox' isOpen={this.props.mainPersonDialogOpen} onClose={this.props.handleMainPersonDialogClose} title='Fetch Specific Person'>
+                <div className={Classes.DIALOG_BODY}>
+                    {this.props.mainPerson ? this.renderCurrentPerson(this.props.mainPerson) : 'Unknown'}
+                    <div className='flexbox-row' style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'baseline' }}>
+                        <div className='flexbox-row' style={{ flexBasis: '50%', justifyContent: 'flex-end' }}>
+                            <h2 style={{ marginTop: '25px' }}>
                                 <EditableText
-                                intent={ Intent.PRIMARY }
-                                maxLength={ 4 }
-                                placeholder='Enter ID'
-                                value={ this.state.id }
-                                onChange={ this.changeValue } />
+                                    intent={Intent.PRIMARY}
+                                    maxLength={4}
+                                    placeholder='Enter ID'
+                                    value={this.state.id}
+                                    onChange={this.changeValue}
+                                />
                             </h2>
                         </div>
-                        <div className='flexbox-row' style={ { flexBasis: '50%', justifyContent: 'flex-start' } }>
-                            <h3 style={ { marginLeft: '15px', color: '#1D8348' } }>
-                                { (this.state.id && this.props.userData && this.props.userData[this.state.id]) ? this.props.userData[this.state.id].fullName : '' }
+                        <div className='flexbox-row' style={{ flexBasis: '50%', justifyContent: 'flex-start' }}>
+                            <h3 style={{ marginLeft: '15px', color: '#1D8348' }}>
+                                {(this.state.id && this.props.userData && this.props.userData[this.state.id]) ? this.props.userData[this.state.id].fullName : ''}
                             </h3>
                         </div>
                     </div>
                 </div>
-                <div className={ Classes.DIALOG_FOOTER }>
-                    <div className={ Classes.DIALOG_FOOTER_ACTIONS }>
-                    <Button text='Cancel' onClick={ this.props.handleMainPersonDialogClose } />
-                    <Button onClick={ this.changeMainPerson } intent={ Intent.PRIMARY } text='Select' disabled={ (this.props.userData && this.props.userData[this.state.id]) ? false : true } />
+                <div className={Classes.DIALOG_FOOTER}>
+                    <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+                    <Button text='Cancel' onClick={this.props.handleMainPersonDialogClose} />
+                    <Button onClick={this.changeMainPerson} intent={Intent.PRIMARY} text='Select' disabled={(this.props.userData && this.props.userData[this.state.id]) ? false : true} />
                     </div>
                 </div>
             </Dialog>
@@ -66,10 +75,21 @@ class FetchPerson extends React.Component<IFetchPersonProps, IFetchPersonState> 
     private renderCurrentPerson(user: User){
         return(
             <div>
-                Current: <b> { user.name } - { user.id } </b>
+                Current: <b> {user.name} - {user.id} </b>
             </div>
         )
     }
 }
 
-export default FetchPerson
+function mapStateToProps(state: IStoreState): IFetchPersonStateProps {
+    return {
+        mainPerson: state.WebsiteReducer.mainPerson,
+        userData: state.GoogleReducer.userData,
+    };
+}
+
+function mapDispatchToProps(dispatch: Dispatch): IFetchPersonDispatchProps {
+    return bindActionCreators({ setMainPerson: SetMainPerson.create }, dispatch)
+}
+
+export const FetchPerson = connect(mapStateToProps, mapDispatchToProps)(PureFetchPerson);

@@ -1,12 +1,18 @@
-import { applyMiddleware, createStore } from 'redux';
-import thunkMiddleware from 'redux-thunk';
-import rootReducer from './CombineReducers';
-import IStoreState from './IStoreState';
+import { createStore, loggingMiddleware, StoreEnhancer } from "redoodle";
+import { Store, applyMiddleware } from "redux";
 
-export default function configureStore(savedState: IStoreState) {
-  return createStore<IStoreState>(
-    rootReducer,
-    savedState,
-    applyMiddleware(thunkMiddleware)
-  );
+import { RootReducer } from "./CombineReducers";
+import IStoreState from "./IStoreState";
+
+export default function configureStore(savedState: IStoreState): Store<IStoreState> {
+  const logging = applyMiddleware(loggingMiddleware()) as StoreEnhancer;
+  const initialState: IStoreState = Object.assign({}, {
+    GoogleReducer: {
+      isFetching: false,
+      isSignedIn: false,
+    },
+    WebsiteReducer: {}
+  }, savedState);
+
+  return createStore(RootReducer, initialState, logging);
 }

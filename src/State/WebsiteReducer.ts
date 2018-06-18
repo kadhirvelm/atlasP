@@ -1,29 +1,29 @@
-import { ActionTypes as G_ActionTypes } from './GoogleSheetActions';
-import { ActionTypes } from './WebsiteActions';
+import { TypedReducer, setWith } from "redoodle";
 
-export default function WebsiteReducer(
-  state = {},
-  action: any,
-) {
-  switch(action.type){
-    case G_ActionTypes.Success_FetchGoogleSheetData:
-      return Object.assign({}, state, {
-        infoPerson: undefined,
-        mainPerson: undefined,
-      })
-    case ActionTypes.Set_Main_Person:
-      return Object.assign({}, state, {
-        mainPerson: action.mainPerson,
-      })
-    case ActionTypes.Set_Info_Person:
-      return Object.assign({}, state, {
-        infoPerson: action.infoPerson,
-      })
-    case ActionTypes.Change_Person:
-      return Object.assign({}, state, {
-        party: action.party,
-      })
-    default:
-      return state
-  }
-}
+import IStoreState from './IStoreState';
+import { SetMainPerson, SetInfoPerson, ChangeParty } from './WebsiteActions';
+import { SuccessfulDataFetch } from './GoogleSheetActions';
+
+export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]>()
+  .withHandler(SuccessfulDataFetch.TYPE, (state, _payload) => {
+    return setWith(state, {
+      infoPerson: undefined,
+      mainPerson: undefined,
+    });
+  })
+  .withHandler(SetMainPerson.TYPE, (state, payload) => {
+    return setWith(state, {
+      mainPerson: payload,
+    });
+  })
+  .withHandler(SetInfoPerson.TYPE, (state, payload) => {
+    return setWith(state, {
+      infoPerson: payload,
+    });
+  })
+  .withHandler(ChangeParty.TYPE, (state, payload) => {
+    return setWith(state, {
+      party: payload,
+    });
+  })
+  .build();

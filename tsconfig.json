@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
+    "declaration": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
     "outDir": "build/dist",
-    "module": "esnext",
     "target": "es5",
-    "lib": ["es7", "dom"],
+    "lib": ["dom", "es2015", "es7"],
+    "module": "es2015",
     "sourceMap": true,
-    "allowJs": true,
     "jsx": "react",
     "moduleResolution": "node",
     "rootDir": "src",
@@ -15,7 +17,9 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "stripInternal": true
   },
   "exclude": [
     "node_modules",

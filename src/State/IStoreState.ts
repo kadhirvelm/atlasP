@@ -3,9 +3,9 @@ import User from '../Helpers/User';
 
 export default interface IStoreState {
     GoogleReducer: {
-        fetching: boolean;
-        userData?: { id: User };
-        eventData?: { id: Event };
+        isFetching: boolean;
+        userData?: { id?: User };
+        eventData?: { id?: Event };
         googleSheetDataError?: object;
         isSignedIn: boolean;
     }
