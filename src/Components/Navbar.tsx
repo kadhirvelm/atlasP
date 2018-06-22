@@ -46,25 +46,25 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
         return(
             <Navbar className='pt-dark' style={{ zIndex: 10 }}>
                 <NavbarGroup align={Alignment.LEFT}>
-                <NavbarHeading> Dinner Table </NavbarHeading>
-                <NavbarDivider />
-                <Button icon='refresh' onClick={this.props.fetchGoogleSheetData} text='Refresh Data' intent={this.returnIntent()}/>
-                {this.props.fetching && <Spinner className='pt-small' intent={Intent.WARNING} />}
-                <Button icon='exchange' onClick={this.handleChangeMainPersonDialog} text='Change User' />
+                    <NavbarHeading> Dinner Table </NavbarHeading>
+                    <NavbarDivider />
+                    <Button icon='refresh' onClick={this.props.fetchGoogleSheetData} text='Refresh Data' intent={this.returnIntent()}/>
+                        {this.props.fetching && <Spinner className='pt-small' intent={Intent.WARNING} />}
+                    <Button icon='exchange' onClick={this.handleChangeMainPersonDialog} text='Change User' />
                 </NavbarGroup>
                 <NavbarGroup align={Alignment.RIGHT}>
-                <Button icon='link' text='Google Sheet' onClick={this.openSheet} />
-                <Button icon='log-out' onClick={this.handleSignOut} />
+                    <Button icon='link' text='Google Sheet' onClick={this.openSheet} />
+                    <Button icon='log-out' onClick={this.handleSignOut} />
                 </NavbarGroup>
-                {this.renderNewPersonDialog()}
+                {this.maybeRenderNewPersonDialog()}
             </Navbar>
         )
     }
 
-  private renderNewPersonDialog(){
-      if (this.props.userData === undefined) {
-          return null;
-      }
+  private maybeRenderNewPersonDialog(){
+    if (this.props.userData === undefined) {
+        return null;
+    }
     return (
         <FetchPerson
             handleMainPersonDialogClose={this.handleMainPersonDialogClose}

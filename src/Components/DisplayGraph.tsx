@@ -8,10 +8,9 @@ import { calculateScore } from '../Helpers/GraphHelpers';
 import User from '../Helpers/User';
 import './DisplayGraph.css';
 import { SetInfoPerson, SetMainPerson } from '../State/WebsiteActions';
+import IStoreState from '../State/IStoreState';
 
 interface IDisplayGraphProps {
-    readonly userData: { id: User };
-    readonly eventData: { id: Event };
     readonly mainPerson: User;
 }
 
@@ -36,6 +35,11 @@ interface IDisplayGraphState {
     redLines?: ILines;
 }
 
+export interface IDisplayGraphStateProps {
+    userData?: { id?: User };
+    eventData?: { id?: Event };
+}
+
 export interface IDisplayGraphDispatchProps {
     setInfoPerson(infoPerson: User): void;
     setMainPerson(mainPerson: User): void;
@@ -49,7 +53,7 @@ const MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24
 
 
 // TODO: Integrate reselect to calculate connections between people
-class PureDispayGraph extends React.Component<IDisplayGraphProps & IDisplayGraphDispatchProps, IDisplayGraphState> {
+class PureDispayGraph extends React.Component<IDisplayGraphProps & IDisplayGraphStateProps & IDisplayGraphDispatchProps, IDisplayGraphState> {
     public state: IDisplayGraphState = {};
     private totalConnections: number = 1;
     private locations: ILocation = {};
@@ -59,27 +63,27 @@ class PureDispayGraph extends React.Component<IDisplayGraphProps & IDisplayGraph
     private containerDimensions: HTMLElement | null = null;
 
     public componentWillMount(){
-        this.renderSinglePerson = this.renderSinglePerson.bind(this)
-        this.handleAddingRedAndGreenList = this.handleAddingRedAndGreenList.bind(this)
-        this.renderSingleLine = this.renderSingleLine.bind(this)
+        this.maybeRenderSinglePerson = this.maybeRenderSinglePerson.bind(this);
+        this.handleAddingRedAndGreenList = this.handleAddingRedAndGreenList.bind(this);
+        this.renderSingleLine = this.renderSingleLine.bind(this);
     }
 
-    public componentWillReceiveProps(nextProps: IDisplayGraphProps){
+    public componentWillReceiveProps(nextProps: IDisplayGraphProps & IDisplayGraphStateProps){
         if(nextProps.mainPerson){
-            this.setState(this.returnStateWithPerson(nextProps.mainPerson))
-        } else {
-            this.props.setMainPerson(nextProps.userData[1001])
+            this.setState(this.returnStateWithPerson(nextProps.mainPerson));
+        } else if (nextProps.userData) {
+            this.props.setMainPerson(nextProps.userData[1001]);
         }
     }
 
     public setRef = (ref: HTMLElement | null ) => {
-        this.containerDimensions = ref
-        this.setState(this.returnStateWithPerson(this.props.mainPerson || this.props.userData[1001]))
+        this.containerDimensions = ref;
+        this.setState(this.returnStateWithPerson(this.props.mainPerson || (this.props.userData && this.props.userData[1001])));
     }
 
     public render(){
-        const renderRedLines = this.renderSingleLine({ stroke: 'red', fill: 'red', strokeWidth: '2' })
-        const renderGreenLines = this.renderSingleLine({ stroke: 'green', fill: 'green', strokeWidth: '2' })
+        const renderRedLines = this.renderSingleLine({ stroke: 'red', fill: 'red', strokeWidth: '2' });
+        const renderGreenLines = this.renderSingleLine({ stroke: 'green', fill: 'green', strokeWidth: '2' });
         return(
             <div id='Graph Container' ref={this.setRef} className='flexbox-row' style={{ position: 'relative', width: '100%', height: '100%' }}>
                 <div>
@@ -134,7 +138,10 @@ class PureDispayGraph extends React.Component<IDisplayGraphProps & IDisplayGraph
     }
 
     private sendToRenderSinglePerson(userID: number, index: number){
-        return this.renderSinglePerson(this.props.userData[userID], { x: this.returnPositionOnCircle(X_ORIGIN, Math.cos, index), y: this.returnPositionOnCircle(Y_ORIGIN, Math.sin, index) })
+        if (this.props.userData === undefined) {
+            return null;
+        }
+        return this.maybeRenderSinglePerson(this.props.userData[userID], { x: this.returnPositionOnCircle(X_ORIGIN, Math.cos, index), y: this.returnPositionOnCircle(Y_ORIGIN, Math.sin, index) })
     }
 
     private handleAddingRedAndGreenList(user: User){
@@ -164,7 +171,10 @@ class PureDispayGraph extends React.Component<IDisplayGraphProps & IDisplayGraph
         return 'R'
     }
 
-    private renderSinglePerson(user: User, position: { x: number, y: number }){
+    private maybeRenderSinglePerson(user: User, position: { x: number, y: number }){
+        if (this.props.eventData === undefined) {
+            return null;
+        }
         this.handleAddingRedAndGreenList(user)
         this.locations[user.id] = position
         const scoreTally = (user.id !== this.props.mainPerson.id ? calculateScore(user, this.props.mainPerson) : { isMain: true })
@@ -184,7 +194,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphProps & IDisplayGraph
     private assemblePeople(mainPerson: User): JSX.Element {
         return(
             <div>
-                {this.renderSinglePerson(mainPerson, { x: X_ORIGIN, y: Y_ORIGIN } )}
+                {this.maybeRenderSinglePerson(mainPerson, { x: X_ORIGIN, y: Y_ORIGIN } )}
                 {_.toPairs(mainPerson.connections).map((connection, index) => this.sendToRenderSinglePerson(parseInt(connection[0], 10), index))}
             </div>
         )
@@ -216,6 +226,13 @@ class PureDispayGraph extends React.Component<IDisplayGraphProps & IDisplayGraph
     }
 }
 
+function mapStateToProps(state: IStoreState): IDisplayGraphStateProps {
+    return {
+        eventData: state.GoogleReducer.eventData,
+        userData: state.GoogleReducer.userData,
+    }
+}
+
 function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {
     return bindActionCreators({
         setInfoPerson: SetInfoPerson.create,
@@ -223,4 +240,4 @@ function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {
     }, dispatch)
 }
 
-export const DisplayGraph = connect(undefined, mapDispatchToProps)(PureDispayGraph);
+export const DisplayGraph = connect(mapStateToProps, mapDispatchToProps)(PureDispayGraph);

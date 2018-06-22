@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-import { calculateScore, IScore } from '../Helpers/GraphHelpers';
-import User from '../Helpers/User';
+import { IScore } from '../Helpers/GraphHelpers';
 
 import './InfoGraphic.css';
 
