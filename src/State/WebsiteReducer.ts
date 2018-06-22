@@ -1,7 +1,7 @@
 import { TypedReducer, setWith } from "redoodle";
 
 import IStoreState from './IStoreState';
-import { SetMainPerson, SetInfoPerson, ChangeParty } from './WebsiteActions';
+import { ChangeParty, SetMainPerson, SetInfoPerson, SetGraphRef } from './WebsiteActions';
 import { SuccessfulDataFetch } from './GoogleSheetActions';
 
 export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]>()
@@ -25,5 +25,10 @@ export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]
     return setWith(state, {
       party: payload,
     });
+  })
+  .withHandler(SetGraphRef.TYPE, (state, payload) => {
+    return setWith(state, {
+      graphRef: payload,
+    })
   })
   .build();

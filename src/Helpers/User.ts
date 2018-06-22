@@ -12,29 +12,20 @@ interface IUser {
 }
 
 export default class User implements IUser {
-    public id: number;
     public name: string;
-    public fullName: string;
-    public gender: string;
-    public age: number;
-    public location: string;
-    public contact: string;
-    public redList: number[];
-    public greenList: number[];
-    public events: number[];
-    public connections: object;
+    public connections: { id?: User };
 
-    constructor(id: number, name: string, gender: string, age: number, location: string, contact: string, redList: number[], greenList: number[], events: number[]){
-        this.id = id;
+    constructor(
+        public id: number,
+        public fullName: string,
+        public gender: string,
+        public age: number,
+        public location: string,
+        public contact: string,
+        public redList: number[],
+        public greenList: number[],
+        public events: number[]){
         this.name = this.firstNameAndLastInitial(name);
-        this.fullName = name;
-        this.gender = gender;
-        this.age = age;
-        this.location = location;
-        this.contact = contact;
-        this.redList = redList;
-        this.greenList = greenList;
-        this.events = events;
         this.connections = {};
     }
 

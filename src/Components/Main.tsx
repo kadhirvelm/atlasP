@@ -55,7 +55,7 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
     if(this.props.mainPerson === undefined) {
       return null;
     }
-    return <DisplayGraph mainPerson={this.props.mainPerson} />
+    return <DisplayGraph />
   }
 }
 

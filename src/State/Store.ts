@@ -11,7 +11,9 @@ export default function configureStore(savedState: IStoreState): Store<IStoreSta
       isFetching: false,
       isSignedIn: false,
     },
-    WebsiteReducer: {}
+    WebsiteReducer: {
+      graphRef: null,
+    }
   }, savedState);
 
   return createStore(RootReducer, initialState, logging);
