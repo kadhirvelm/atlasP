@@ -18,6 +18,7 @@ function assembleEventData(eventData: string[][]){
 
 function assembleUserData(userData: string[][]){
     return userData.slice(1).map((person: string[]) => {
+        console.log(person);
         const newUser = new User(
             parseInt(person[0], 10), 
             person[1],

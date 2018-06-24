@@ -10,7 +10,7 @@ export function fetchGoogleSheetData(dispatch: Dispatch) {
                 spreadsheetId: process.env.REACT_APP_SPREADSHEET,
             }).then((response: object) => {
                 const results = response['result'].valueRanges;
-                dispatch(SuccessfulDataFetch.create({ eventData: results[0].values, userData: results[1].values }));
+                dispatch(SuccessfulDataFetch.create({ userData: results[0].values, eventData: results[1].values }));
             }).catch((error: any) => {
                 dispatch(FailedDataFetch.create(error));
             });

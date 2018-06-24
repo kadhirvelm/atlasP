@@ -27,6 +27,7 @@ export const GoogleReducer = TypedReducer.builder<IStoreState["GoogleReducer"]>(
   .withHandler(FailedDataFetch.TYPE, (state, payload) => {
     return setWith(state, {
       googleSheetDataError: payload,
+      isFetching: false,
     });
   })
   .withHandler(ChangeSignIn.TYPE, (state, payload) => {

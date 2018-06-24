@@ -3,14 +3,18 @@ import { connect } from "react-redux";
 import { Dispatch, bindActionCreators } from 'redux';
 
 import User from '../Helpers/User';
-import './DisplayGraph.css';
 import { SetInfoPerson, SetMainPerson, SetGraphRef } from '../State/WebsiteActions';
-import IStoreState from '../State/IStoreState';
-import { selectMainPersonGraph, IPeopleGraph } from '../Helpers/selectors';
+import IStoreState, { IEventMap, IUserMap } from '../State/IStoreState';
+import { selectMainPersonGraph, IPeopleGraph, X_ORIGIN, Y_ORIGIN } from '../Helpers/Selectors';
+import { RenderPerson } from './RenderPerson';
+import { calculateScore } from '../Helpers/GraphHelpers';
 
+import './DisplayGraph.css';
 
 export interface IDisplayGraphStateProps {
     graphRef: HTMLElement | null;
+    eventData: IEventMap;
+    userData: IUserMap;
     peopleGraph: IPeopleGraph,
 }
 
@@ -21,20 +25,6 @@ export interface IDisplayGraphDispatchProps {
 }
 
 class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplayGraphDispatchProps> {
-
-    // public componentWillMount(){
-    //     this.renderSingleLine = this.renderSingleLine.bind(this);
-    // }
-
-    // public componentWillReceiveProps(nextProps: IDisplayGraphStateProps){
-    //     if (nextProps.userData !== undefined && nextProps.mainPerson === undefined) {
-    //         const randomUser = _.sample(nextProps.userData);
-    //         if (randomUser !== undefined) {
-    //             this.props.setMainPerson(randomUser);
-    //         }
-    //     }
-    // }
-
     public setRef = (ref: HTMLElement | null ) => {
         if (this.props.graphRef == null) {
             this.props.setGraphRef(ref);
@@ -44,12 +34,55 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
     public render(){
         // const renderRedLines = this.renderSingleLine({ stroke: 'red', fill: 'red', strokeWidth: '2' });
         // const renderGreenLines = this.renderSingleLine({ stroke: 'green', fill: 'green', strokeWidth: '2' });
-        console.log(this.props.peopleGraph);
+        console.log(this.props);
         return(
             <div id='Graph Container' ref={this.setRef} className='flexbox-row' style={{ position: 'relative', width: '100%', height: '100%' }}>
-                Reaching
+                {this.renderMainPerson()}
+                {this.renderMainPersonConnections()}
             </div>
         )
+    }
+
+    private returnEventDate = (events: number[]) => this.props.eventData[events.slice(-1)[0]]
+
+    private renderMainPerson(){
+        return (
+            <RenderPerson
+                dimension={this.props.peopleGraph.dimension}
+                lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.events)}
+                location={{x: X_ORIGIN, y: Y_ORIGIN }}
+                scoreTally={{ isMain: true }}
+                user={this.props.peopleGraph.mainPerson}
+                changeInfoPerson={this.changeInfoPerson}
+                changeMainPerson={this.changeMainPerson}
+            />
+        )
+    }
+    
+    private renderMainPersonConnections() {
+        return Object.keys(this.props.peopleGraph.mainPerson.connections).map((userID: string) => {
+            const user = this.props.userData[userID];
+            return (
+                <RenderPerson
+                    key={userID}
+                    dimension={this.props.peopleGraph.dimension}
+                    lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.connections[userID])}
+                    location={this.props.peopleGraph.locations[userID]}
+                    scoreTally={calculateScore(user, this.props.peopleGraph.mainPerson)}
+                    user={user}
+                    changeInfoPerson={this.changeInfoPerson}
+                    changeMainPerson={this.changeMainPerson}
+                />
+            )
+        })
+    }
+
+    private changeInfoPerson = (user: User) => {
+        return () => this.props.setInfoPerson(user);
+    }
+
+    private changeMainPerson = (user: User) => {
+        return () => this.props.setMainPerson(user);
     }
 
     // <svg height={this.containerDimensions ? this.containerDimensions.clientHeight : '100%'} width={this.containerDimensions ? this.containerDimensions.clientWidth : '100%'}>
@@ -97,6 +130,8 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
 function mapStateToProps(state: IStoreState): IDisplayGraphStateProps {
     return {
         graphRef: state.WebsiteReducer.graphRef,
+        eventData: state.GoogleReducer.eventData || {},
+        userData: state.GoogleReducer.userData || {},
         peopleGraph: selectMainPersonGraph(state),
     }
 }

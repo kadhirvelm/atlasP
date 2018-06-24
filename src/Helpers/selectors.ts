@@ -4,8 +4,8 @@ import User from './User';
 
 const MAX_RADIANS = 2 * Math.PI;
 const RADIUS = 42;
-const X_ORIGIN = 50;
-const Y_ORIGIN = 50;
+export const X_ORIGIN = 50;
+export const Y_ORIGIN = 50;
 
 export interface ILines {
     id?: {
@@ -29,6 +29,7 @@ export interface ILocation {
 export interface IPeopleGraph {
     mainPerson: User,
     connections: IConnectionLines,
+    dimension: number,
     locations: ILocation,
 }
 
@@ -52,8 +53,8 @@ export const selectMainPersonConnectionLines = createSelector(
     (mainPerson: User, connections: IConnectionLines, userData: IUserMap) => {
         Object.keys(mainPerson.connections).map((userID: string) => {
             const user = userData[userID];
-            if(user.redList && user.redList.includes(mainPerson.id)){ connections[user.id] = Object.assign({}, connections[user.id], { toHost: true }) }
-            if(user.greenList && user.greenList.includes(mainPerson.id)){ connections[user.id] = Object.assign({}, connections[user.id], { toHost: true }) }
+            if(user.redList && user.redList.includes(mainPerson.id)){ connections.redLines[user.id] = Object.assign({}, connections.redLines[user.id], { toHost: true }) }
+            if(user.greenList && user.greenList.includes(mainPerson.id)){ connections.greenLines[user.id] = Object.assign({}, connections.greenLines[user.id], { toHost: true }) }
         })
         return connections
     }
@@ -81,6 +82,7 @@ export const selectMainPersonGraph = createSelector(
     selectMainPersonConnectionLines,
     selectConnectionLocations,
     (mainPerson: User, connections: IConnectionLines, locations: ILocation): IPeopleGraph => {
-        return { mainPerson, connections, locations }
+        const dimension = (-(Object.keys(mainPerson.connections).length) / 2.25) + 19
+        return { mainPerson, connections, dimension, locations }
     }
 )
