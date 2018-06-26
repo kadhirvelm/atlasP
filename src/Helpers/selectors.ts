@@ -7,28 +7,29 @@ const RADIUS = 42;
 export const X_ORIGIN = 50;
 export const Y_ORIGIN = 50;
 
-export interface ILines {
-    id?: {
-        fromHost?: boolean,
-        toHost?: boolean,
-    }
+export interface ISingleLine { 
+    fromHost?: boolean,
+    toHost?: boolean,
+    red?: boolean,
+    green?: boolean,
 }
 
-export interface IConnectionLines {
-    redLines: ILines,
-    greenLines: ILines,
+export interface ILines {
+    id?: ISingleLine
+}
+
+export interface ISingleLocation {
+    x: number,
+    y: number
 }
 
 export interface ILocation {
-    id?: {
-        x?: number,
-        y?: number
-    }
+    id?: ISingleLocation
 }
 
 export interface IPeopleGraph {
     mainPerson: User,
-    connections: IConnectionLines,
+    connections: ILines,
     dimension: number,
     locations: ILocation,
 }
@@ -37,12 +38,11 @@ const selectMainPerson = (state: IStoreState) => state.WebsiteReducer.mainPerson
 
 export const selectMainPersonLines = createSelector(
     selectMainPerson,
-    (mainPerson: User): IConnectionLines => {
-        const redLines = {}
-        const greenLines = {}
-        mainPerson.redList.map((singlePerson) => redLines[singlePerson] = { fromHost: true })
-        mainPerson.greenList.map((singlePerson) => greenLines[singlePerson] = { fromHost: true })
-        return { redLines, greenLines }
+    (mainPerson: User): ILines => {
+        const connections = {}
+        mainPerson.redList.map((singlePerson) => connections[singlePerson] = { fromHost: true, red: true })
+        mainPerson.greenList.map((singlePerson) => connections[singlePerson] = { fromHost: true, green: true })
+        return connections
     }
 )
 
@@ -50,11 +50,11 @@ export const selectMainPersonConnectionLines = createSelector(
     selectMainPerson,
     selectMainPersonLines,
     (state: IStoreState) => state.GoogleReducer.userData,
-    (mainPerson: User, connections: IConnectionLines, userData: IUserMap) => {
+    (mainPerson: User, connections: ILines, userData: IUserMap) => {
         Object.keys(mainPerson.connections).map((userID: string) => {
             const user = userData[userID];
-            if(user.redList && user.redList.includes(mainPerson.id)){ connections.redLines[user.id] = Object.assign({}, connections.redLines[user.id], { toHost: true }) }
-            if(user.greenList && user.greenList.includes(mainPerson.id)){ connections.greenLines[user.id] = Object.assign({}, connections.greenLines[user.id], { toHost: true }) }
+            if(user.redList && user.redList.includes(mainPerson.id)){ connections[user.id] = { ...connections[user.id], toHost: true, red: true } }
+            if(user.greenList && user.greenList.includes(mainPerson.id)){ connections[user.id] = { ...connections[user.id], toHost: true, green: true } }
         })
         return connections
     }
@@ -81,7 +81,7 @@ export const selectMainPersonGraph = createSelector(
     selectMainPerson,
     selectMainPersonConnectionLines,
     selectConnectionLocations,
-    (mainPerson: User, connections: IConnectionLines, locations: ILocation): IPeopleGraph => {
+    (mainPerson: User, connections: ILines, locations: ILocation): IPeopleGraph => {
         const dimension = (-(Object.keys(mainPerson.connections).length) / 2.25) + 19
         return { mainPerson, connections, dimension, locations }
     }

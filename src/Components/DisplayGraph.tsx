@@ -5,9 +5,10 @@ import { Dispatch, bindActionCreators } from 'redux';
 import User from '../Helpers/User';
 import { SetInfoPerson, SetMainPerson, SetGraphRef } from '../State/WebsiteActions';
 import IStoreState, { IEventMap, IUserMap } from '../State/IStoreState';
-import { selectMainPersonGraph, IPeopleGraph, X_ORIGIN, Y_ORIGIN } from '../Helpers/Selectors';
-import { RenderPerson } from './RenderPerson';
+import { selectMainPersonGraph, IPeopleGraph, X_ORIGIN, Y_ORIGIN, ISingleLocation } from '../Helpers/Selectors';
+import { RenderPerson } from './DisplayGraphHelpers/RenderPerson';
 import { calculateScore } from '../Helpers/GraphHelpers';
+import { RenderLine } from './DisplayGraphHelpers/RenderLine';
 
 import './DisplayGraph.css';
 
@@ -25,6 +26,8 @@ export interface IDisplayGraphDispatchProps {
 }
 
 class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplayGraphDispatchProps> {
+    public ORIGIN = {x: X_ORIGIN, y: Y_ORIGIN };
+
     public setRef = (ref: HTMLElement | null ) => {
         if (this.props.graphRef == null) {
             this.props.setGraphRef(ref);
@@ -32,13 +35,11 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
     }
 
     public render(){
-        // const renderRedLines = this.renderSingleLine({ stroke: 'red', fill: 'red', strokeWidth: '2' });
-        // const renderGreenLines = this.renderSingleLine({ stroke: 'green', fill: 'green', strokeWidth: '2' });
-        console.log(this.props);
         return(
             <div id='Graph Container' ref={this.setRef} className='flexbox-row' style={{ position: 'relative', width: '100%', height: '100%' }}>
                 {this.renderMainPerson()}
                 {this.renderMainPersonConnections()}
+                {this.renderConnectionLines()}
             </div>
         )
     }
@@ -50,7 +51,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
             <RenderPerson
                 dimension={this.props.peopleGraph.dimension}
                 lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.events)}
-                location={{x: X_ORIGIN, y: Y_ORIGIN }}
+                location={this.ORIGIN}
                 scoreTally={{ isMain: true }}
                 user={this.props.peopleGraph.mainPerson}
                 changeInfoPerson={this.changeInfoPerson}
@@ -85,46 +86,18 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
         return () => this.props.setMainPerson(user);
     }
 
-    // <svg height={this.containerDimensions ? this.containerDimensions.clientHeight : '100%'} width={this.containerDimensions ? this.containerDimensions.clientWidth : '100%'}>
-    //     {_.toPairs(this.state.redLines).map((singleRedLine, index) => renderRedLines(singleRedLine, index))}
-    //     {_.toPairs(this.state.greenLines).map((singleGreenLine, index) => renderGreenLines(singleGreenLine, index))}
-    // </svg>
+    private renderConnectionLines() {
+        const origin = this.convertToAbsolutePoint(this.ORIGIN);
+        return (
+            <svg height={this.props.graphRef ? this.props.graphRef.clientHeight : '100%'} width={this.props.graphRef ? this.props.graphRef.clientWidth : '100%'}>
+                {Object.entries(this.props.peopleGraph.connections).map((line) => (<RenderLine key={line[0]} lineSettings={line[1]} location={this.convertToAbsolutePoint(this.props.peopleGraph.locations[line[0]])} origin={origin} />))}
+            </svg>
+        )
+    }
 
-    // private convertToAbsolutePoint(left: number, top: number){
-    //     return this.containerDimensions ? { x: (this.containerDimensions.clientWidth * left / 100), y: (this.containerDimensions.clientHeight * top / 100) } : 0
-    // }
-
-    // private renderMovingCircleAndLine(index: string, strokeSettings: object, x: object, y: object){
-    //     return (
-    //         <svg>
-    //             <circle id={'circle' + index} r='3' {...strokeSettings}>
-    //                 <animate xlinkHref={'#circle' + index} attributeName='cx' from={x['from']} to={x['to']} dur='5s' repeatCount='indefinite' d='cirx-anim' />
-    //                 <animate xlinkHref={'#circle' + index} attributeName='cy' from={y['from']} to={y['to']} dur='5s' repeatCount='indefinite' d='ciry-anim' />
-    //             </circle>
-    //             <circle id={'circle2' + index} r='3' {...strokeSettings}>
-    //                 <animate xlinkHref={'#circle2' + index} attributeName='cx' from={x['from']} to={x['to']} dur='5s' repeatCount='indefinite' begin='2.5s' />
-    //                 <animate xlinkHref={'#circle2' + index} attributeName='cy' from={y['from']} to={y['to']} dur='5s' repeatCount='indefinite' begin='2.5s' />
-    //             </circle>
-    //         </svg>
-    //     )
-    // }
-
-    // private renderSingleLine(strokeSettings: {}) {
-    //     return (singleLine: [string, {}], index: number) => {
-    //         const location = this.state.locations && this.state.locations[parseInt(singleLine[0], 10)];
-    //         if(location){
-    //             const circleSettings = { index: index + strokeSettings['stroke'], positions: this.convertToAbsolutePoint(location.x, location.y), origin: this.convertToAbsolutePoint(X_ORIGIN, Y_ORIGIN) }
-    //             return(
-    //                 <svg key={index + strokeSettings['stroke']}>
-    //                     {singleLine[1]['fromHost'] && this.renderMovingCircleAndLine(circleSettings.index + '_from', strokeSettings, { to: circleSettings.positions['x'], from: circleSettings.origin['x'] }, { to: circleSettings.positions['y'], from: circleSettings.origin['y'] })}
-    //                     {singleLine[1]['toHost'] && this.renderMovingCircleAndLine(circleSettings.index + '_to', strokeSettings, { from: circleSettings.positions['x'], to: circleSettings.origin['x'] }, { from: circleSettings.positions['y'], to: circleSettings.origin['y'] })}
-    //                     <path d={'M' + circleSettings.positions['x'] + ' ' + circleSettings.positions['y'] + ' L' + circleSettings.origin['x'] + ' ' + circleSettings.origin['y']} style={{ opacity: (singleLine[1]['fromHost'] && singleLine[1]['toHost']) ? 1 : 0.15 }} {...strokeSettings} />
-    //                 </svg>
-    //             )
-    //         }
-    //         return <div key={index + strokeSettings['stroke']} />       
-    //     }
-    // }
+    private convertToAbsolutePoint(location: ISingleLocation){
+        return this.props.graphRef ? { x: (this.props.graphRef.clientWidth * location.x / 100), y: (this.props.graphRef.clientHeight * location.y / 100) } : {x: 0, y: 0}
+    }
 }
 
 function mapStateToProps(state: IStoreState): IDisplayGraphStateProps {

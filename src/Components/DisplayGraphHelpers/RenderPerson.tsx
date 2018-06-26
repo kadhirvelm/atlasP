@@ -1,14 +1,15 @@
 import * as React from "react"
 
-import User from "../Helpers/User";
+import User from "../../Helpers/User";
+import { IScore, IScoreMainPerson } from "../../Helpers/GraphHelpers";
+import { ISingleLocation } from '../../Helpers/Selectors';
 
-import "./DisplayGraph.css";
-import { IScore, IScoreMainPerson } from "../Helpers/GraphHelpers";
+import "./RenderPerson.css";
 
 export interface IRenderPersonProps {
     dimension: number;
     lastEventDate: string;
-    location: { x: number, y: number };
+    location: ISingleLocation;
     scoreTally: IScore | IScoreMainPerson;
     user: User;
     changeInfoPerson(user: User): () => void;
