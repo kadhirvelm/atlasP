@@ -1,8 +1,8 @@
-import * as React from "react"
+import * as React from "react";
 
-import User from "../../Helpers/User";
 import { IScore, IScoreMainPerson } from "../../Helpers/GraphHelpers";
-import { ISingleLocation } from '../../Helpers/Selectors';
+import { ISingleLocation } from "../../Helpers/Selectors";
+import User from "../../Helpers/User";
 
 import "./RenderPerson.css";
 
@@ -23,8 +23,15 @@ export class RenderPerson extends React.Component<IRenderPersonProps> {
 
     public render() {
         return (
-            <div key={this.props.user.id} style={{ position: "absolute", left: this.props.location.x + "%", top: this.props.location.y + "%", transform: "translate(-50%, -50%)" }}>
-                <div className={"user-node time-difference " + this.calcuateTimeDifferenceInDays()} style={{ width: this.props.dimension + 1 + "vmin", height: this.props.dimension + 1 + "vmin" }} />
+            <div
+                className="person"
+                key={this.props.user.id}
+                style={{ left: this.props.location.x + "%", top: this.props.location.y + "%" }}
+            >
+                <div
+                    className={"user-node time-difference " + this.calcuateTimeDifferenceInDays()}
+                    style={{ width: this.props.dimension + 1 + "vmin", height: this.props.dimension + 1 + "vmin" }}
+                />
                 <div
                     id={this.props.user.gender + "_" + this.props.user.id}
                     className={"user-node" + " " + this.props.user.gender}
@@ -36,31 +43,39 @@ export class RenderPerson extends React.Component<IRenderPersonProps> {
                 >
                     <div className="centered flexbox-column-centered" style={{ color: "white" }}>
                         <div> {this.props.user.name} </div>
-                        <div> {this.scoreTypeIsMainPerson(this.props.scoreTally) ? this.props.scoreTally.finalScore : "Main"} </div>
+                        <div> {this.maybeRenderScore(this.props.scoreTally)} </div>
                     </div>
                 </div>
             </div>
-        )
+        );
+    }
+
+    private maybeRenderScore(scoreTally: IScore | IScoreMainPerson) {
+        if (this.scoreTypeIsMainPerson(scoreTally)) {
+            return scoreTally.finalScore;
+        }
+        return "Main";
     }
 
     private scoreTypeIsMainPerson(scoreTally: IScore | IScoreMainPerson): scoreTally is IScore {
-        return !scoreTally.isMain
+        return !scoreTally.isMain;
     }
 
     private handleDragStart(event: any) {
-        event.dataTransfer.setData("text", event.currentTarget.id)
-        const img = document.createElement("img")
-        img.src = "https://d30y9cdsu7xlg0.cloudfront.net/png/5024-200.png"
-        event.dataTransfer.setDragImage(img, 50, 150)
+        event.dataTransfer.setData("text", event.currentTarget.id);
+        const img = document.createElement("img");
+        img.src = "https://d30y9cdsu7xlg0.cloudfront.net/png/5024-200.png";
+        event.dataTransfer.setDragImage(img, 50, 150);
     }
 
     private calcuateTimeDifferenceInDays() {
-        const timeDiff = (new Date().getTime() - new Date(this.props.lastEventDate).getTime()) / (this.MILLISECONDS_IN_DAY)
-        if(timeDiff < this.GREEN_DAYS){
-            return "G"
-        } else if (timeDiff < this.YELLOW_DAYS){
-            return "Y"
+        const currentTime = (new Date().getTime() - new Date(this.props.lastEventDate).getTime());
+        const daysDifference = currentTime / (this.MILLISECONDS_IN_DAY);
+        if (daysDifference < this.GREEN_DAYS) {
+            return "G";
+        } else if (daysDifference < this.YELLOW_DAYS) {
+            return "Y";
         }
-        return "R"
+        return "R";
     }
 }

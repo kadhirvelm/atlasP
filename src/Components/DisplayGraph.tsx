@@ -16,7 +16,7 @@ export interface IDisplayGraphStateProps {
     graphRef: HTMLElement | null;
     eventData: IEventMap;
     userData: IUserMap;
-    peopleGraph: IPeopleGraph,
+    peopleGraph: IPeopleGraph;
 }
 
 export interface IDisplayGraphDispatchProps {
@@ -40,7 +40,8 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
                 id="Graph Container"
                 ref={this.setRef}
                 className="flexbox-row"
-                style={{ position: "relative", width: "100%", height: "100%" }}>
+                style={{ position: "relative", width: "100%", height: "100%" }}
+            >
                 {this.renderMainPerson()}
                 {this.renderMainPersonConnections()}
                 {this.renderConnectionLines()}
@@ -78,8 +79,8 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
                     changeInfoPerson={this.changeInfoPerson}
                     changeMainPerson={this.changeMainPerson}
                 />
-            )
-        })
+            );
+        });
     }
 
     private changeInfoPerson = (user: User) => {
@@ -91,16 +92,36 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
     }
 
     private renderConnectionLines() {
+        if (this.props.graphRef === null) {
+            return null;
+        }
         const origin = this.convertToAbsolutePoint(this.ORIGIN);
         return (
-            <svg height={this.props.graphRef ? this.props.graphRef.clientHeight : "100%"} width={this.props.graphRef ? this.props.graphRef.clientWidth : "100%"}>
-                {Object.entries(this.props.peopleGraph.connections).map((line) => (<RenderLine key={line[0]} lineSettings={line[1]} location={this.convertToAbsolutePoint(this.props.peopleGraph.locations[line[0]])} origin={origin} />))}
+            <svg height={this.props.graphRef.clientHeight} width={this.props.graphRef.clientWidth}>
+                {this.renderPeopleGraphConnections(origin)}
             </svg>
-        )
+        );
     }
 
-    private convertToAbsolutePoint(location: ISingleLocation){
-        return this.props.graphRef ? { x: (this.props.graphRef.clientWidth * location.x / 100), y: (this.props.graphRef.clientHeight * location.y / 100) } : {x: 0, y: 0}
+    private renderPeopleGraphConnections(origin: ISingleLocation) {
+        return Object.entries(this.props.peopleGraph.connections).map((line) => (
+            <RenderLine
+                key={line[0]}
+                lineSettings={line[1]}
+                location={this.convertToAbsolutePoint(this.props.peopleGraph.locations[line[0]])}
+                origin={origin}
+            />
+        ));
+    }
+
+    private convertToAbsolutePoint(location: ISingleLocation) {
+        if (this.props.graphRef == null) {
+            return {x: 0, y: 0 };
+        }
+        return {
+            x: (this.props.graphRef.clientWidth * location.x / 100),
+            y: (this.props.graphRef.clientHeight * location.y / 100),
+        };
     }
 }
 
@@ -118,7 +139,7 @@ function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {
         setGraphRef: SetGraphRef.create,
         setInfoPerson: SetInfoPerson.create,
         setMainPerson: SetMainPerson.create,
-    }, dispatch)
+    }, dispatch);
 }
 
 export const DisplayGraph = connect(mapStateToProps, mapDispatchToProps)(PureDispayGraph);
