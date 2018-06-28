@@ -1,16 +1,16 @@
-import * as React from 'react';
+import * as React from "react";
 import { connect } from "react-redux";
-import { Dispatch, bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from "redux";
 
-import User from '../Helpers/User';
-import { SetInfoPerson, SetMainPerson, SetGraphRef } from '../State/WebsiteActions';
-import IStoreState, { IEventMap, IUserMap } from '../State/IStoreState';
-import { selectMainPersonGraph, IPeopleGraph, X_ORIGIN, Y_ORIGIN, ISingleLocation } from '../Helpers/Selectors';
-import { RenderPerson } from './DisplayGraphHelpers/RenderPerson';
-import { calculateScore } from '../Helpers/GraphHelpers';
-import { RenderLine } from './DisplayGraphHelpers/RenderLine';
+import { calculateScore } from "../Helpers/GraphHelpers";
+import { IPeopleGraph, ISingleLocation, selectMainPersonGraph, X_ORIGIN, Y_ORIGIN } from "../Helpers/Selectors";
+import User from "../Helpers/User";
+import IStoreState, { IEventMap, IUserMap } from "../State/IStoreState";
+import { SetGraphRef, SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
+import { RenderLine } from "./DisplayGraphHelpers/RenderLine";
+import { RenderPerson } from "./DisplayGraphHelpers/RenderPerson";
 
-import './DisplayGraph.css';
+import "./DisplayGraph.css";
 
 export interface IDisplayGraphStateProps {
     graphRef: HTMLElement | null;
@@ -34,19 +34,23 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
         }
     }
 
-    public render(){
+    public render() {
         return(
-            <div id='Graph Container' ref={this.setRef} className='flexbox-row' style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <div
+                id="Graph Container"
+                ref={this.setRef}
+                className="flexbox-row"
+                style={{ position: "relative", width: "100%", height: "100%" }}>
                 {this.renderMainPerson()}
                 {this.renderMainPersonConnections()}
                 {this.renderConnectionLines()}
             </div>
-        )
+        );
     }
 
-    private returnEventDate = (events: number[]) => this.props.eventData[events.slice(-1)[0]]
+    private returnEventDate = (events: number[]) => this.props.eventData[events.slice(-1)[0]];
 
-    private renderMainPerson(){
+    private renderMainPerson() {
         return (
             <RenderPerson
                 dimension={this.props.peopleGraph.dimension}
@@ -57,9 +61,9 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
                 changeInfoPerson={this.changeInfoPerson}
                 changeMainPerson={this.changeMainPerson}
             />
-        )
+        );
     }
-    
+
     private renderMainPersonConnections() {
         return Object.keys(this.props.peopleGraph.mainPerson.connections).map((userID: string) => {
             const user = this.props.userData[userID];
@@ -89,7 +93,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
     private renderConnectionLines() {
         const origin = this.convertToAbsolutePoint(this.ORIGIN);
         return (
-            <svg height={this.props.graphRef ? this.props.graphRef.clientHeight : '100%'} width={this.props.graphRef ? this.props.graphRef.clientWidth : '100%'}>
+            <svg height={this.props.graphRef ? this.props.graphRef.clientHeight : "100%"} width={this.props.graphRef ? this.props.graphRef.clientWidth : "100%"}>
                 {Object.entries(this.props.peopleGraph.connections).map((line) => (<RenderLine key={line[0]} lineSettings={line[1]} location={this.convertToAbsolutePoint(this.props.peopleGraph.locations[line[0]])} origin={origin} />))}
             </svg>
         )
@@ -102,11 +106,11 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
 
 function mapStateToProps(state: IStoreState): IDisplayGraphStateProps {
     return {
-        graphRef: state.WebsiteReducer.graphRef,
         eventData: state.GoogleReducer.eventData || {},
-        userData: state.GoogleReducer.userData || {},
+        graphRef: state.WebsiteReducer.graphRef,
         peopleGraph: selectMainPersonGraph(state),
-    }
+        userData: state.GoogleReducer.userData || {},
+    };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {

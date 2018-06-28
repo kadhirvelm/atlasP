@@ -1,5 +1,5 @@
 {
-  "extends": ["tslint-react", "./tsconfig.json"],
+  "extends": ["tslint:recommended", "./tsconfig.json"],
   "rules": {
     "no-console": false,
     "no-var-requires": false,

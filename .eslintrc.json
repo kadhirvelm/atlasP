@@ -14,12 +14,14 @@
         "classes": true
     },
     "plugins":[
+        "prettier",
         "react"
     ],
     "globals": {
         "module": false
     },
     "rules": {
+        "prettier/prettier": "error",
         "comma-dangle": [2, "always-multiline"],
         "computed-property-spacing": [2, "never"],
         "react/jsx-space-before-closing": [2, "always"],
