@@ -6,5 +6,5 @@ import { WebsiteReducer } from "./WebsiteReducer";
 
 export const RootReducer = combineReducers<IStoreState>({
   GoogleReducer,
-  WebsiteReducer
+  WebsiteReducer,
 });

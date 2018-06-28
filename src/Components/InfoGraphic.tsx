@@ -181,12 +181,19 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
                         />
                         <div style={{ padding: "15px", textAlign: "center" }}>
                             <div className="flexbox-column">
-                                {event.attendees.map((id: number) => (<div key={id}> {this.props.userData && this.props.userData[id].name} ({id}) </div>))}
+                                {this.renderEvents(event)}
                             </div>
                         </div>
                     </Popover>
                 </div>
             </div>
+        );
+    }
+
+    private renderEvents(event: Event) {
+        return event.attendees.map((id: number) => (
+                <div key={id}> {this.props.userData && this.props.userData[id].name} ({id}) </div>
+            ),
         );
     }
 
@@ -197,13 +204,21 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
         return(
             <div className="flexbox-column info-person">
                 <div key={user.id} className="show-change">
-                    <div className="flexbox-row" style={{ justifyContent: "center", alignContent: "center", height: "100%", width: "100%", position: "relative" }}>
+                    <div className="flexbox-row full-width-height">
                         <div style={{ fontSize: "1.5vw" }}> {user.name} </div>
                         <Popover isOpen={this.state.openPopover}>
-                            <div style={{ marginLeft: "15px", top: "50%", position: "absolute", transform: "translateY(-50%)" }}>
-                                <Icon onMouseEnter={this.openPopoverHover} onMouseLeave={this.closePopoverHover} onClick={this.openInformationDialog} icon="help" />
+                            <div className="centered">
+                                <Icon
+                                    onMouseEnter={this.openPopoverHover}
+                                    onMouseLeave={this.closePopoverHover}
+                                    onClick={this.openInformationDialog}
+                                    icon="help"
+                                />
                             </div>
-                            <div style={{ padding: "15px", textAlign: "center" }} className={user.gender === "M" ? "blue-box" : "red-box"}>
+                            <div
+                                style={{ padding: "15px", textAlign: "center" }}
+                                className={user.gender === "M" ? "blue-box" : "red-box"}
+                            >
                                 <div className="padding-box"> {user.fullName} ({user.id}) </div>
                                 <div className="padding-box"> {user.contact} </div>
                                 <div className="padding-box"> {user.age}, {user.location} </div>
@@ -212,7 +227,13 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
                     </div>
                     {this.renderScore(user)}
                     <div style={{ position: "absolute", left: "50%", bottom: "1%", transform: "translate(-50%, -1%)" }}>
-                        <Button icon="exchange" text={"Make " + user.name + " Main"} onClick={this.setMainPerson} intent={Intent.WARNING} className="grow" />
+                        <Button
+                            icon="exchange"
+                            text={"Make " + user.name + " Main"}
+                            onClick={this.setMainPerson}
+                            intent={Intent.WARNING}
+                            className="grow"
+                        />
                     </div>
                 </div>
             </div>
@@ -232,11 +253,18 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
     }
 
     private renderScore(user: User) {
-        const score: IScore | null = ((this.props.mainPerson && (user.id !== this.props.mainPerson.id)) && calculateScore(user, this.props.mainPerson)) || null;
+        const score: IScore | null = (
+            (this.props.mainPerson && (user.id !== this.props.mainPerson.id)) &&
+                calculateScore(user, this.props.mainPerson)
+        ) || null;
         return <ScoreDisplay score={score} />;
     }
 
-    private setMainPerson = () => this.props.infoPerson && this.props.setMainPerson && this.props.setMainPerson(this.props.infoPerson);
+    private setMainPerson = () => {
+        if (this.props.infoPerson && this.props.setMainPerson) {
+            this.props.setMainPerson(this.props.infoPerson);
+        }
+    }
 }
 
 function mapStateToProps(state: IStoreState) {
@@ -250,7 +278,11 @@ function mapStateToProps(state: IStoreState) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch) {
-  return bindActionCreators({ setInfoPerson: SetInfoPerson.create, setMainPerson: SetMainPerson.create, setParty: ChangeParty.create }, dispatch);
+    return bindActionCreators({
+        setInfoPerson: SetInfoPerson.create,
+        setMainPerson: SetMainPerson.create,
+        setParty: ChangeParty.create,
+    }, dispatch);
 }
 
 export const InfoGraphic = connect(mapStateToProps, mapDispatchToProps)(PureInfoGraphic);

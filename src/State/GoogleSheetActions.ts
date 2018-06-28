@@ -8,15 +8,15 @@ export function fetchGoogleSheetData(dispatch: Dispatch) {
       window["gapi"].client.sheets.spreadsheets.values
         .batchGet({
           ranges: ["Users-Data!A1:Z35", "Events-Data!A1:D100"],
-          spreadsheetId: process.env.REACT_APP_SPREADSHEET
+          spreadsheetId: process.env.REACT_APP_SPREADSHEET,
         })
         .then((response: object) => {
           const results = response["result"].valueRanges;
           dispatch(
             SuccessfulDataFetch.create({
+              eventData: results[1].values,
               userData: results[0].values,
-              eventData: results[1].values
-            })
+            }),
           );
         })
         .catch((error: any) => {
@@ -27,12 +27,12 @@ export function fetchGoogleSheetData(dispatch: Dispatch) {
 }
 
 export const StartingDataFetch = TypedAction.defineWithoutPayload(
-  "GoogleSheetActions//START_DATA_FETCH"
+  "GoogleSheetActions//START_DATA_FETCH",
 )();
 
 export const SuccessfulDataFetch = TypedAction.define("GoogleSheetActions//SUCCESSFUL_DATA_FETCH")<{
   eventData: string[][],
-  userData: string[][]
+  userData: string[][],
 }>();
 
 export const FailedDataFetch = TypedAction.define("GoogleSheetActions//FAILED_DATA_FETCH")<any>();

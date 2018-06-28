@@ -1,12 +1,12 @@
-import Event from '../Helpers/Event';
-import User from '../Helpers/User';
+import Event from "../Helpers/Event";
+import User from "../Helpers/User";
 
 export interface IUserMap {
-    id?: User,
+    id?: User;
 }
 
 export interface IEventMap {
-    id?: Event,
+    id?: Event;
 }
 
 export default interface IStoreState {
@@ -16,11 +16,11 @@ export default interface IStoreState {
         eventData?: IEventMap;
         googleSheetDataError?: object;
         isSignedIn: boolean;
-    }
+    };
     WebsiteReducer: {
         infoPerson?: User;
         graphRef: HTMLElement | null;
         mainPerson?: User;
         party?: string[];
-    }
+    };
 }

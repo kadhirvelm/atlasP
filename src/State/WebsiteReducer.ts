@@ -1,10 +1,11 @@
-import { TypedReducer, setWith } from "redoodle";
+import { setWith, TypedReducer } from "redoodle";
 
-import IStoreState from './IStoreState';
-import { ChangeParty, SetMainPerson, SetInfoPerson, SetGraphRef } from './WebsiteActions';
-import { SuccessfulDataFetch } from './GoogleSheetActions';
+import { SuccessfulDataFetch } from "./GoogleSheetActions";
+import IStoreState from "./IStoreState";
+import { ChangeParty, SetGraphRef, SetInfoPerson, SetMainPerson } from "./WebsiteActions";
 
 export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]>()
+  // tslint:disable-next-line:variable-name
   .withHandler(SuccessfulDataFetch.TYPE, (state, _payload) => {
     return setWith(state, {
       infoPerson: undefined,
@@ -29,6 +30,6 @@ export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]
   .withHandler(SetGraphRef.TYPE, (state, payload) => {
     return setWith(state, {
       graphRef: payload,
-    })
+    });
   })
   .build();

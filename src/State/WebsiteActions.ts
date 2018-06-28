@@ -9,5 +9,5 @@ export const SetInfoPerson = TypedAction.define("WebsiteReducer//SET_INFO_PERSON
 export const ChangeParty = TypedAction.define("WebsiteReducer//CHANGE_PARTY")<string[]>();
 
 export const SetGraphRef = TypedAction.define(
-  "WebsiteReducer//SET_GRAPH_REF"
+  "WebsiteReducer//SET_GRAPH_REF",
 )<HTMLElement | null>();

@@ -1,8 +1,8 @@
 interface IEvent {
-    id: number,
-    host: number,
-    date: string,
-    description: string,
+    id: number;
+    host: number;
+    date: string;
+    description: string;
 }
 
 export default class Event implements IEvent {
@@ -12,7 +12,7 @@ export default class Event implements IEvent {
     public attendees: number[];
     public description: string;
 
-    constructor(id: number, host: number, date: string, description: string){
+    constructor(id: number, host: number, date: string, description: string) {
         this.id = id;
         this.host = host;
         this.date = date;

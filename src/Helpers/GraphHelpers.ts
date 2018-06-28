@@ -24,18 +24,20 @@ export function calculateScore(user: User, mainPerson: User): IScore {
   const returnDislikeScore = (inputUser: User, checkForUser: User) =>
     inputUser.redList.includes(checkForUser.id) ? 0.5 : 1;
   const finalTally = {
-    isMain: false,
+    ageScore: returnAgeScore(Math.abs(user.age - mainPerson.age)),
+    dislikeScore: returnDislikeScore(user, mainPerson) * returnDislikeScore(mainPerson, user),
     eventScore: returnEventScore(),
     genderScore: returnGenderScore(),
-    ageScore: returnAgeScore(Math.abs(user.age - mainPerson.age)),
-    likeScore: returnLikeScore(user, mainPerson) * returnLikeScore(mainPerson, user),
-    dislikeScore: returnDislikeScore(user, mainPerson) * returnDislikeScore(mainPerson, user)
+    isMain: false,
+    // tslint:disable-next-line:trailing-comma
+    likeScore: returnLikeScore(user, mainPerson) * returnLikeScore(mainPerson, user)
   };
   return Object.assign({}, finalTally, {
     finalScore:
       (finalTally.eventScore + finalTally.genderScore + finalTally.ageScore) *
       returnLikeScore(user, mainPerson) *
       finalTally.likeScore *
+      // tslint:disable-next-line:trailing-comma
       finalTally.dislikeScore
   });
 }

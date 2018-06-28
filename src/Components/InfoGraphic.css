@@ -66,6 +66,21 @@ div.party-holder {
     background: #425666;
 }
 
+.full-width-height {
+    justify-content: "center";
+    align-content: "center";
+    height: "100%";
+    width: "100%";
+    position: "relative"
+}
+
+.centered {
+    margin-left: "15px";
+    top: "50%";
+    position: "absolute";
+    transform: "translateY(-50%)"
+}
+
 .user-div {
     transition: color 0.3s linear;
 }

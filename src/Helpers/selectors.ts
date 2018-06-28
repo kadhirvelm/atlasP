@@ -41,13 +41,13 @@ export const selectMainPersonLines = createSelector(
   (mainPerson: User): ILines => {
     const connections = {};
     mainPerson.redList.map(
-      singlePerson => (connections[singlePerson] = { fromHost: true, red: true })
+      (singlePerson) => (connections[singlePerson] = { fromHost: true, red: true }),
     );
     mainPerson.greenList.map(
-      singlePerson => (connections[singlePerson] = { fromHost: true, green: true })
+      (singlePerson) => (connections[singlePerson] = { fromHost: true, green: true }),
     );
     return connections;
-  }
+  },
 );
 
 export const selectMainPersonConnectionLines = createSelector(
@@ -65,7 +65,7 @@ export const selectMainPersonConnectionLines = createSelector(
       }
     });
     return connections;
-  }
+  },
 );
 
 export const selectConnectionLocations = createSelector(
@@ -77,7 +77,7 @@ export const selectConnectionLocations = createSelector(
     const returnPositionOnCircle = (
       origin: number,
       mathFunction: (position: number) => number,
-      index: number
+      index: number,
     ) => {
       return origin + mathFunction((MAX_RADIANS / totalConnections) * index) * RADIUS;
     };
@@ -85,11 +85,11 @@ export const selectConnectionLocations = createSelector(
     Object.keys(mainPerson.connections).map((userID: string, index: number) => {
       locations[userID] = {
         x: returnPositionOnCircle(X_ORIGIN, Math.cos, index),
-        y: returnPositionOnCircle(Y_ORIGIN, Math.sin, index)
+        y: returnPositionOnCircle(Y_ORIGIN, Math.sin, index),
       };
     });
     return locations;
-  }
+  },
 );
 
 export const selectMainPersonGraph = createSelector(
@@ -99,5 +99,5 @@ export const selectMainPersonGraph = createSelector(
   (mainPerson: User, connections: ILines, locations: ILocation): IPeopleGraph => {
     const dimension = -Object.keys(mainPerson.connections).length / 2.25 + 19;
     return { mainPerson, connections, dimension, locations };
-  }
+  },
 );
