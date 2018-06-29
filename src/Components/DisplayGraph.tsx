@@ -107,6 +107,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
         return Object.entries(this.props.peopleGraph.connections).map((line) => (
             <RenderLine
                 key={line[0]}
+                index={line[0]}
                 lineSettings={line[1]}
                 location={this.convertToAbsolutePoint(this.props.peopleGraph.locations[line[0]])}
                 origin={origin}

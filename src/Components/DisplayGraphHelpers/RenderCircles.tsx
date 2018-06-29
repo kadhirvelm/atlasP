@@ -4,7 +4,7 @@ import { ISingleLine, ISingleLocation } from "../../Helpers/Selectors";
 import { IStrokeSettings } from "./RenderLine";
 
 export interface IRenderCirclesProps {
-    key: string;
+    index: string;
     strokeSettings: IStrokeSettings;
     lineSettings: ISingleLine;
     location: ISingleLocation;
@@ -44,7 +44,7 @@ export class RenderCircles extends React.Component<IRenderCirclesProps> {
         if (!shouldRender) {
             return null;
         }
-        return this.renderCircleSet(this.props.key + key, location);
+        return this.renderCircleSet(this.props.index + key, location);
     }
 
     private renderCircleSet(key: string, locations: IMappedStartAndFinish) {

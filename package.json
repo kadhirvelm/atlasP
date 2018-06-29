@@ -17,6 +17,7 @@
     "redoodle": "^2.3.2",
     "redux-thunk": "^2.2.0",
     "reselect": "^3.0.1",
+    "twilio": "^3.17.4",
     "underscore": "^1.8.3"
   },
   "scripts": {

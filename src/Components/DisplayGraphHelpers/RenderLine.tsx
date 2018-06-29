@@ -4,7 +4,7 @@ import { ISingleLine, ISingleLocation } from "../../Helpers/Selectors";
 import { RenderCircles } from "./RenderCircles";
 
 export interface IRenderLineProps {
-    key: string;
+    index: string;
     lineSettings: ISingleLine;
     location: ISingleLocation;
     origin: ISingleLocation;
@@ -29,7 +29,7 @@ export class RenderLine extends React.Component<IRenderLineProps> {
         return (
             <svg>
                 <path
-                    {...d}
+                    d={d}
                     {...style}
                     {...strokeSettings}
                 />
@@ -41,7 +41,7 @@ export class RenderLine extends React.Component<IRenderLineProps> {
     private renderCircles(strokeSettings: IStrokeSettings) {
         return (
             <RenderCircles
-                key={this.props.key}
+                index={this.props.index}
                 strokeSettings={strokeSettings}
                 lineSettings={this.props.lineSettings}
                 location={this.props.location}
