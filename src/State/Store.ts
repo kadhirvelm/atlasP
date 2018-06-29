@@ -1,5 +1,5 @@
 import { createStore, loggingMiddleware, StoreEnhancer } from "redoodle";
-import { Store, applyMiddleware } from "redux";
+import { applyMiddleware, Store } from "redux";
 
 import { RootReducer } from "./CombineReducers";
 import IStoreState from "./IStoreState";
@@ -11,7 +11,9 @@ export default function configureStore(savedState: IStoreState): Store<IStoreSta
       isFetching: false,
       isSignedIn: false,
     },
-    WebsiteReducer: {}
+    WebsiteReducer: {
+      graphRef: null,
+    },
   }, savedState);
 
   return createStore(RootReducer, initialState, logging);

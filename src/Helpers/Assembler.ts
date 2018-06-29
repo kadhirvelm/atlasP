@@ -1,25 +1,26 @@
-import Event from './Event';
-import User from './User';
+import Event from "./Event";
+import User from "./User";
 
 const finalEventsData = {};
 const finalUserData = {};
 let hasFailed: boolean;
 
 const extractIntoNumberArray = (rawNumbers: string): number[] => {
-    return rawNumbers ? rawNumbers.split(',').map((rawNumber) => parseInt(rawNumber, 10)) : [];
-}
+    return rawNumbers ? rawNumbers.split(",").map((rawNumber) => parseInt(rawNumber, 10)) : [];
+};
 
-function assembleEventData(eventData: string[][]){
+function assembleEventData(eventData: string[][]) {
     return eventData.slice(1).forEach((event: string[]) => {
         const newEvent = new Event(parseInt(event[0], 10), parseInt(event[1], 10), event[2], event[3]);
         finalEventsData[newEvent.id] = newEvent;
     });
 }
 
-function assembleUserData(userData: string[][]){
+function assembleUserData(userData: string[][]) {
     return userData.slice(1).map((person: string[]) => {
+        console.log(person);
         const newUser = new User(
-            parseInt(person[0], 10), 
+            parseInt(person[0], 10),
             person[1],
             person[2],
             parseInt(person[3], 10),
@@ -27,20 +28,20 @@ function assembleUserData(userData: string[][]){
             person[5],
             extractIntoNumberArray(person[6]),
             extractIntoNumberArray(person[7]),
-            extractIntoNumberArray(person.slice(8).join(',')));
+            extractIntoNumberArray(person.slice(8).join(",")));
         finalUserData[newUser.id] = newUser;
         newUser.events.forEach((event: number) => {
-            if(finalEventsData[event]){
+            if (finalEventsData[event]) {
                 finalEventsData[event].attendees.push(newUser.id);
             } else {
                 hasFailed = true;
-                console.error('Cannot find event!', 'Event ID - ' + event, newUser);
+                console.error("Cannot find event!", "Event ID - " + event, newUser);
             }
         });
     });
 }
 
-function assembleUserConnections(){
+function assembleUserConnections() {
     (Object as any).values(finalEventsData).forEach((singleEvent: Event) => {
         const allAttendees = singleEvent.attendees;
         const eventID = singleEvent.id;

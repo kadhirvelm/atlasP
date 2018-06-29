@@ -1,226 +1,144 @@
-import * as _ from 'lodash';
-import * as React from 'react';
+import * as React from "react";
 import { connect } from "react-redux";
-import { Dispatch, bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from "redux";
 
-import Event from '../Helpers/Event';
-import { calculateScore } from '../Helpers/GraphHelpers';
-import User from '../Helpers/User';
-import './DisplayGraph.css';
-import { SetInfoPerson, SetMainPerson } from '../State/WebsiteActions';
+import { calculateScore } from "../Helpers/GraphHelpers";
+import { IPeopleGraph, ISingleLocation, ORIGIN, selectMainPersonGraph } from "../Helpers/Selectors";
+import User from "../Helpers/User";
+import IStoreState, { IEventMap, IUserMap } from "../State/IStoreState";
+import { SetGraphRef, SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
+import { RenderLine } from "./DisplayGraphHelpers/RenderLine";
+import { RenderPerson } from "./DisplayGraphHelpers/RenderPerson";
 
-interface IDisplayGraphProps {
-    readonly userData: { id: User };
-    readonly eventData: { id: Event };
-    readonly mainPerson: User;
-}
+import "./DisplayGraph.css";
 
-interface ILines {
-    id?: {
-        fromHost?: boolean,
-        toHost?: boolean,
-    };
-}
-
-interface ILocation {
-    id?: {
-        x?: number,
-        y?: number
-    }
-}
-
-interface IDisplayGraphState {
-    greenLines?: ILines;
-    locations?: ILocation;
-    peopleRender?: JSX.Element;
-    redLines?: ILines;
+export interface IDisplayGraphStateProps {
+    graphRef: HTMLElement | null;
+    eventData: IEventMap;
+    userData: IUserMap;
+    peopleGraph: IPeopleGraph;
 }
 
 export interface IDisplayGraphDispatchProps {
+    setGraphRef(ref: HTMLElement | null): void;
     setInfoPerson(infoPerson: User): void;
     setMainPerson(mainPerson: User): void;
 }
 
-const MAX_RADIANS = 2 * Math.PI;
-const X_ORIGIN = 50;
-const Y_ORIGIN = 50;
-const RADIUS = 42;
-const MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24
-
-
-// TODO: Integrate reselect to calculate connections between people
-class PureDispayGraph extends React.Component<IDisplayGraphProps & IDisplayGraphDispatchProps, IDisplayGraphState> {
-    public state: IDisplayGraphState = {};
-    private totalConnections: number = 1;
-    private locations: ILocation = {};
-    private redLines: ILines = {};
-    private greenLines: ILines = {};
-    private dimension: number = 1;
-    private containerDimensions: HTMLElement | null = null;
-
-    public componentWillMount(){
-        this.renderSinglePerson = this.renderSinglePerson.bind(this)
-        this.handleAddingRedAndGreenList = this.handleAddingRedAndGreenList.bind(this)
-        this.renderSingleLine = this.renderSingleLine.bind(this)
-    }
-
-    public componentWillReceiveProps(nextProps: IDisplayGraphProps){
-        if(nextProps.mainPerson){
-            this.setState(this.returnStateWithPerson(nextProps.mainPerson))
-        } else {
-            this.props.setMainPerson(nextProps.userData[1001])
-        }
-    }
-
+class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplayGraphDispatchProps> {
     public setRef = (ref: HTMLElement | null ) => {
-        this.containerDimensions = ref
-        this.setState(this.returnStateWithPerson(this.props.mainPerson || this.props.userData[1001]))
+        if (this.props.graphRef == null) {
+            this.props.setGraphRef(ref);
+        }
     }
 
-    public render(){
-        const renderRedLines = this.renderSingleLine({ stroke: 'red', fill: 'red', strokeWidth: '2' })
-        const renderGreenLines = this.renderSingleLine({ stroke: 'green', fill: 'green', strokeWidth: '2' })
+    public render() {
         return(
-            <div id='Graph Container' ref={this.setRef} className='flexbox-row' style={{ position: 'relative', width: '100%', height: '100%' }}>
-                <div>
-                    {this.state.peopleRender}
-                    <svg height={this.containerDimensions ? this.containerDimensions.clientHeight : '100%'} width={this.containerDimensions ? this.containerDimensions.clientWidth : '100%'}>
-                        {_.toPairs(this.state.redLines).map((singleRedLine, index) => renderRedLines(singleRedLine, index))}
-                        {_.toPairs(this.state.greenLines).map((singleGreenLine, index) => renderGreenLines(singleGreenLine, index))}
-                    </svg>
-                </div>
+            <div
+                id="Graph Container"
+                ref={this.setRef}
+                className="flexbox-row"
+                style={{ position: "relative", width: "100%", height: "100%" }}
+            >
+                {this.renderMainPerson()}
+                {this.renderMainPersonConnections()}
+                {this.renderConnectionLines()}
             </div>
-        )
+        );
     }
 
-    private convertToAbsolutePoint(left: number, top: number){
-        return this.containerDimensions ? { x: (this.containerDimensions.clientWidth * left / 100), y: (this.containerDimensions.clientHeight * top / 100) } : 0
-    }
+    private returnEventDate = (events: number[]) => this.props.eventData[events.slice(-1)[0]];
 
-    private renderMovingCircleAndLine(index: string, strokeSettings: object, x: object, y: object){
+    private renderMainPerson() {
         return (
-            <svg>
-                <circle id={'circle' + index} r='3' {...strokeSettings}>
-                    <animate xlinkHref={'#circle' + index} attributeName='cx' from={x['from']} to={x['to']} dur='5s' repeatCount='indefinite' d='cirx-anim' />
-                    <animate xlinkHref={'#circle' + index} attributeName='cy' from={y['from']} to={y['to']} dur='5s' repeatCount='indefinite' d='ciry-anim' />
-                </circle>
-                <circle id={'circle2' + index} r='3' {...strokeSettings}>
-                    <animate xlinkHref={'#circle2' + index} attributeName='cx' from={x['from']} to={x['to']} dur='5s' repeatCount='indefinite' begin='2.5s' />
-                    <animate xlinkHref={'#circle2' + index} attributeName='cy' from={y['from']} to={y['to']} dur='5s' repeatCount='indefinite' begin='2.5s' />
-                </circle>
+            <RenderPerson
+                changeInfoPerson={this.changeInfoPerson}
+                changeMainPerson={this.changeMainPerson}
+                dimension={this.props.peopleGraph.dimension}
+                lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.events)}
+                location={ORIGIN}
+                scoreTally={{ isMain: true }}
+                user={this.props.peopleGraph.mainPerson}
+            />
+        );
+    }
+
+    private renderMainPersonConnections() {
+        return Object.keys(this.props.peopleGraph.mainPerson.connections).map((userID: string) => {
+            const user = this.props.userData[userID];
+            return (
+                <RenderPerson
+                    changeInfoPerson={this.changeInfoPerson}
+                    changeMainPerson={this.changeMainPerson}
+                    dimension={this.props.peopleGraph.dimension}
+                    key={userID}
+                    lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.connections[userID])}
+                    location={this.props.peopleGraph.locations[userID]}
+                    scoreTally={calculateScore(user, this.props.peopleGraph.mainPerson)}
+                    user={user}
+                />
+            );
+        });
+    }
+
+    private changeInfoPerson = (user: User) => {
+        return () => this.props.setInfoPerson(user);
+    }
+
+    private changeMainPerson = (user: User) => {
+        return () => this.props.setMainPerson(user);
+    }
+
+    private renderConnectionLines() {
+        if (this.props.graphRef === null) {
+            return null;
+        }
+        const origin = this.convertToAbsolutePoint(ORIGIN);
+        return (
+            <svg height={this.props.graphRef.clientHeight} width={this.props.graphRef.clientWidth}>
+                {this.renderPeopleGraphConnections(origin)}
             </svg>
-        )
+        );
     }
 
-    private renderSingleLine(strokeSettings: {}) {
-        return (singleLine: [string, {}], index: number) => {
-            const location = this.state.locations && this.state.locations[parseInt(singleLine[0], 10)];
-            if(location){
-                const circleSettings = { index: index + strokeSettings['stroke'], positions: this.convertToAbsolutePoint(location.x, location.y), origin: this.convertToAbsolutePoint(X_ORIGIN, Y_ORIGIN) }
-                return(
-                    <svg key={index + strokeSettings['stroke']}>
-                        {singleLine[1]['fromHost'] && this.renderMovingCircleAndLine(circleSettings.index + '_from', strokeSettings, { to: circleSettings.positions['x'], from: circleSettings.origin['x'] }, { to: circleSettings.positions['y'], from: circleSettings.origin['y'] })}
-                        {singleLine[1]['toHost'] && this.renderMovingCircleAndLine(circleSettings.index + '_to', strokeSettings, { from: circleSettings.positions['x'], to: circleSettings.origin['x'] }, { from: circleSettings.positions['y'], to: circleSettings.origin['y'] })}
-                        <path d={'M' + circleSettings.positions['x'] + ' ' + circleSettings.positions['y'] + ' L' + circleSettings.origin['x'] + ' ' + circleSettings.origin['y']} style={{ opacity: (singleLine[1]['fromHost'] && singleLine[1]['toHost']) ? 1 : 0.15 }} {...strokeSettings} />
-                    </svg>
-                )
-            }
-            return <div key={index + strokeSettings['stroke']} />       
+    private renderPeopleGraphConnections(origin: ISingleLocation) {
+        return Object.entries(this.props.peopleGraph.connections).map((line) => (
+            <RenderLine
+                key={line[0]}
+                index={line[0]}
+                lineSettings={line[1]}
+                location={this.convertToAbsolutePoint(this.props.peopleGraph.locations[line[0]])}
+                origin={origin}
+            />
+        ));
+    }
+
+    private convertToAbsolutePoint(location: ISingleLocation) {
+        if (this.props.graphRef == null) {
+            return {x: 0, y: 0 };
         }
+        return {
+            x: (this.props.graphRef.clientWidth * location.x / 100),
+            y: (this.props.graphRef.clientHeight * location.y / 100),
+        };
     }
+}
 
-    private returnPositionOnCircle(origin: number, mathFunction: (position: number) => number, index: number){
-        return origin + (mathFunction(MAX_RADIANS / this.totalConnections * index) * RADIUS)
-    }
-
-    private sendToRenderSinglePerson(userID: number, index: number){
-        return this.renderSinglePerson(this.props.userData[userID], { x: this.returnPositionOnCircle(X_ORIGIN, Math.cos, index), y: this.returnPositionOnCircle(Y_ORIGIN, Math.sin, index) })
-    }
-
-    private handleAddingRedAndGreenList(user: User){
-        if(user.id !== this.props.mainPerson.id){
-            if(user.redList.includes(this.props.mainPerson.id)){ this.redLines[user.id] = Object.assign({}, this.redLines[user.id], { toHost: true }) }
-            if(user.greenList.includes(this.props.mainPerson.id)){ this.greenLines[user.id] = Object.assign({}, this.greenLines[user.id], { toHost: true }) }
-        } else {
-            user.redList.map((singlePerson) => this.redLines[singlePerson] = { fromHost: true })
-            user.greenList.map((singlePerson) => this.greenLines[singlePerson] = { fromHost: true })
-        }
-    }
-
-    private handleDragStart(event: any){
-        event.dataTransfer.setData('text', event.currentTarget.id)
-        const img = document.createElement('img')
-        img.src = 'https://d30y9cdsu7xlg0.cloudfront.net/png/5024-200.png'
-        event.dataTransfer.setDragImage(img, 50, 150)
-    }
-
-    private calcuateTimeDifferenceInDays(time: string){
-        const timeDiff = (new Date().getTime() - new Date(time).getTime()) / (MILLISECONDS_IN_DAY)
-        if(timeDiff < 14){
-            return 'G'
-        } else if (timeDiff < 28){
-            return 'Y'
-        }
-        return 'R'
-    }
-
-    private renderSinglePerson(user: User, position: { x: number, y: number }){
-        this.handleAddingRedAndGreenList(user)
-        this.locations[user.id] = position
-        const scoreTally = (user.id !== this.props.mainPerson.id ? calculateScore(user, this.props.mainPerson) : { isMain: true })
-        return(
-            <div key={user.id} style={{ position: 'absolute', left: position.x + '%', top: position.y + '%', transform: 'translate(-50%, -50%)' }}>
-                <div className={'user-node time-difference ' + this.calcuateTimeDifferenceInDays(this.props.eventData[user.events.slice(-1)[0]].date)} style={{ width: this.dimension + 1 + 'vmin', height: this.dimension + 1 + 'vmin' }} />
-                <div id={user.gender + '_' + user.id} className={'user-node' + ' ' + user.gender} draggable={true} onDragStart={this.handleDragStart} onDoubleClick={this.changeMainPerson(user)} onClick={this.changeInfoPerson(user)} style={{ width: this.dimension + 'vmin', height: this.dimension + 'vmin' }}>
-                    <div className='centered flexbox-column-centered' style={{ color: 'white' }}>
-                        <div> {user.name} </div>
-                        <div> {scoreTally.isMain ? 'Main' : scoreTally['finalScore']} </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-    
-    private assemblePeople(mainPerson: User): JSX.Element {
-        return(
-            <div>
-                {this.renderSinglePerson(mainPerson, { x: X_ORIGIN, y: Y_ORIGIN } )}
-                {_.toPairs(mainPerson.connections).map((connection, index) => this.sendToRenderSinglePerson(parseInt(connection[0], 10), index))}
-            </div>
-        )
-    }
-
-    private returnStateWithPerson(user: User): IDisplayGraphState{
-        if(this.containerDimensions && _.keys(this.props.userData).length){
-            this.totalConnections = _.keys(user.connections).length
-            this.redLines = {}
-            this.greenLines = {}
-            this.locations = {}
-            this.dimension = (-(this.totalConnections) / 2.25) + 19
-            const peopleRender = this.assemblePeople(user)
-            return { peopleRender, locations: this.locations, redLines: this.redLines, greenLines: this.greenLines }
-        }
-        return {}
-    }
-
-    private changeMainPerson(user: User){
-        return () => {
-            this.props.setMainPerson(user)
-        }
-    }
-
-    private changeInfoPerson(user: User){
-        return () => {
-            this.props.setInfoPerson(user)
-        }
-    }
+function mapStateToProps(state: IStoreState): IDisplayGraphStateProps {
+    return {
+        eventData: state.GoogleReducer.eventData || {},
+        graphRef: state.WebsiteReducer.graphRef,
+        peopleGraph: selectMainPersonGraph(state),
+        userData: state.GoogleReducer.userData || {},
+    };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {
     return bindActionCreators({
+        setGraphRef: SetGraphRef.create,
         setInfoPerson: SetInfoPerson.create,
         setMainPerson: SetMainPerson.create,
-    }, dispatch)
+    }, dispatch);
 }
 
-export const DisplayGraph = connect(undefined, mapDispatchToProps)(PureDispayGraph);
+export const DisplayGraph = connect(mapStateToProps, mapDispatchToProps)(PureDispayGraph);

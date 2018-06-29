@@ -1,6 +1,7 @@
 {
-  "extends": ["tslint-react", "./tsconfig.json"],
+  "extends": ["tslint-react", "tslint:recommended", "./tsconfig.json"],
   "rules": {
+    "prettier": false,
     "no-console": false,
     "no-var-requires": false,
     "no-string-literal": false,

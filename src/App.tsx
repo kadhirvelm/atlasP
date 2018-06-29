@@ -21,7 +21,7 @@ export interface IAppDispatchProps {
 
 class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps> {
   public state = {
-    receivedUpdate: false
+    receivedUpdate: false,
   };
 
   public componentWillMount() {
@@ -36,16 +36,16 @@ class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps> {
     );
   }
 
-  private renderMainPage(){
+  private renderMainPage() {
     if (!this.state.receivedUpdate) {
       return <Spinner className="centered" />;
     }
     return this.renderSignedInPage();
   }
 
-  private renderSignedInPage(){
-    if(this.props.isSignedIn){
-      return <Main />
+  private renderSignedInPage() {
+    if (this.props.isSignedIn) {
+      return <Main />;
     }
     return (
       <Button
@@ -65,41 +65,41 @@ class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps> {
           apiKey: process.env.REACT_APP_API_KEY,
           clientId: process.env.REACT_APP_CLIENT_ID,
           discoveryDocs: [
-            "https://sheets.googleapis.com/$discovery/rest?version=v4"
+            "https://sheets.googleapis.com/$discovery/rest?version=v4",
           ],
-          scope: "https://www.googleapis.com/auth/spreadsheets.readonly"
+          scope: "https://www.googleapis.com/auth/spreadsheets.readonly",
         })
         .then(() => {
           window["gapi"].auth2
             .getAuthInstance()
             .isSignedIn.listen(this.updateSigninStatus);
           this.updateSigninStatus(
-            window["gapi"].auth2.getAuthInstance().isSignedIn.get()
+            window["gapi"].auth2.getAuthInstance().isSignedIn.get(),
           );
         });
     });
-  };
+  }
 
   private updateSigninStatus = (isSignedIn: boolean) => {
     this.setState({ receivedUpdate: true }, () => {
       this.props.changeSignInStatus(isSignedIn);
     });
-  };
+  }
 
   private handleSignIn = () => {
     window["gapi"].auth2.getAuthInstance().signIn();
-  };
+  }
 }
 
 function mapStateToProps(state: IStoreState) {
   return {
     fetching: state.GoogleReducer.isFetching,
-    isSignedIn: state.GoogleReducer.isSignedIn
+    isSignedIn: state.GoogleReducer.isSignedIn,
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IAppDispatchProps {
-  return bindActionCreators({ changeSignInStatus: ChangeSignIn.create }, dispatch)
+  return bindActionCreators({ changeSignInStatus: ChangeSignIn.create }, dispatch);
 }
 
 export const App = connect(mapStateToProps, mapDispatchToProps)(PureApp);

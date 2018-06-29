@@ -16,13 +16,13 @@ const store = configureStore(loadState());
 store.subscribe(
   _.throttle(() => {
     saveState(store.getState());
-  }, 1000)
+  }, 1000),
 );
 
 ReactDOM.render(
   <Provider store={store}>
     <App />
   </Provider>,
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 registerServiceWorker();
