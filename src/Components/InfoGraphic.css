@@ -67,18 +67,21 @@ div.party-holder {
 }
 
 .full-width-height {
+    display: flex;
     justify-content: "center";
     align-content: "center";
-    height: "100%";
-    width: "100%";
-    position: "relative"
+    margin-bottom: 15px;
+}
+
+.info-person-name {
+    display: flex;
+    flex: 1 0 auto;
+    font-size: 1.5vw;
 }
 
 .centered {
-    margin-left: "15px";
-    top: "50%";
-    position: "absolute";
-    transform: "translateY(-50%)"
+    display: flex;
+    align-items: center;
 }
 
 .user-div {
@@ -114,7 +117,6 @@ Button.removal-button {
     flex-basis: 40%;
     margin-top: 5px;
     padding-top: 5px;
-    border-top: solid 1px white;
 }
 
 .padding-box {
