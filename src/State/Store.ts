@@ -4,7 +4,7 @@ import { applyMiddleware, Store } from "redux";
 import { RootReducer } from "./CombineReducers";
 import IStoreState from "./IStoreState";
 
-export default function configureStore(savedState: any): Store<IStoreState> {
+export default function configureStore(savedState: IStoreState): Store<IStoreState> {
   const logging = applyMiddleware(loggingMiddleware()) as StoreEnhancer;
   const initialState: IStoreState = Object.assign({}, {
     GoogleReducer: {

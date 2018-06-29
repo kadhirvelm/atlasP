@@ -4,8 +4,7 @@ import User from "./User";
 
 const MAX_RADIANS = 2 * Math.PI;
 const RADIUS = 42;
-export const X_ORIGIN = 50;
-export const Y_ORIGIN = 50;
+export const ORIGIN = {x: 50, y: 50 };
 
 export interface ISingleLine {
   fromHost?: boolean;
@@ -84,8 +83,8 @@ export const selectConnectionLocations = createSelector(
 
     Object.keys(mainPerson.connections).map((userID: string, index: number) => {
       locations[userID] = {
-        x: returnPositionOnCircle(X_ORIGIN, Math.cos, index),
-        y: returnPositionOnCircle(Y_ORIGIN, Math.sin, index),
+        x: returnPositionOnCircle(ORIGIN.x, Math.cos, index),
+        y: returnPositionOnCircle(ORIGIN.y, Math.sin, index),
       };
     });
     return locations;

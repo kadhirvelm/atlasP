@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { calculateScore } from "../Helpers/GraphHelpers";
-import { IPeopleGraph, ISingleLocation, selectMainPersonGraph, X_ORIGIN, Y_ORIGIN } from "../Helpers/Selectors";
+import { IPeopleGraph, ISingleLocation, ORIGIN, selectMainPersonGraph } from "../Helpers/Selectors";
 import User from "../Helpers/User";
 import IStoreState, { IEventMap, IUserMap } from "../State/IStoreState";
 import { SetGraphRef, SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
@@ -20,14 +20,12 @@ export interface IDisplayGraphStateProps {
 }
 
 export interface IDisplayGraphDispatchProps {
-    setInfoPerson(infoPerson: User): void;
     setGraphRef(ref: HTMLElement | null): void;
+    setInfoPerson(infoPerson: User): void;
     setMainPerson(mainPerson: User): void;
 }
 
 class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplayGraphDispatchProps> {
-    public ORIGIN = {x: X_ORIGIN, y: Y_ORIGIN };
-
     public setRef = (ref: HTMLElement | null ) => {
         if (this.props.graphRef == null) {
             this.props.setGraphRef(ref);
@@ -54,13 +52,13 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
     private renderMainPerson() {
         return (
             <RenderPerson
-                dimension={this.props.peopleGraph.dimension}
-                lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.events)}
-                location={this.ORIGIN}
-                scoreTally={{ isMain: true }}
-                user={this.props.peopleGraph.mainPerson}
                 changeInfoPerson={this.changeInfoPerson}
                 changeMainPerson={this.changeMainPerson}
+                dimension={this.props.peopleGraph.dimension}
+                lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.events)}
+                location={ORIGIN}
+                scoreTally={{ isMain: true }}
+                user={this.props.peopleGraph.mainPerson}
             />
         );
     }
@@ -70,14 +68,14 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
             const user = this.props.userData[userID];
             return (
                 <RenderPerson
-                    key={userID}
+                    changeInfoPerson={this.changeInfoPerson}
+                    changeMainPerson={this.changeMainPerson}
                     dimension={this.props.peopleGraph.dimension}
+                    key={userID}
                     lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.connections[userID])}
                     location={this.props.peopleGraph.locations[userID]}
                     scoreTally={calculateScore(user, this.props.peopleGraph.mainPerson)}
                     user={user}
-                    changeInfoPerson={this.changeInfoPerson}
-                    changeMainPerson={this.changeMainPerson}
                 />
             );
         });
@@ -95,7 +93,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
         if (this.props.graphRef === null) {
             return null;
         }
-        const origin = this.convertToAbsolutePoint(this.ORIGIN);
+        const origin = this.convertToAbsolutePoint(ORIGIN);
         return (
             <svg height={this.props.graphRef.clientHeight} width={this.props.graphRef.clientWidth}>
                 {this.renderPeopleGraphConnections(origin)}
