@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -10,8 +9,9 @@ import { calculateScore, IScore } from "../Helpers/GraphHelpers";
 import User from "../Helpers/User";
 import IStoreState from "../State/IStoreState";
 import { ChangeParty, SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
-import { ScoreDisplay } from "./ScoreDisplay";
-import { SinglePersonDataDialog } from "./SinglePersonDataDialog";
+import { CurrentDinnerParty } from "./InfoGraphicHelpers/CurrentDinnerParty";
+import { ScoreDisplay } from "./InfoGraphicHelpers/ScoreDisplay";
+import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
 
 import "./InfoGraphic.css";
 
@@ -42,14 +42,10 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
         openPopover: false,
     };
 
-    public componentWillMount() {
-      this.renderSingleIndividual = this.renderSingleIndividual.bind(this);
-    }
-
     public render() {
         return(
             <div className="info-graphic flexbox-column pt-dark" style={{ padding: "15px" }}>
-                {this.renderCurrentDinnerParty()}
+                <CurrentDinnerParty />
                 {this.renderPerson(this.props.infoPerson)}
                 {this.maybeRenderSinglePersonDataDialog()}
             </div>
@@ -71,55 +67,6 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
             />
         );
     }
-
-    private makeInfoPerson(user: User) {
-      return () => this.props.setInfoPerson(user);
-    }
-
-    private removePerson(user: User) {
-      return () => this.props.setParty(_.filter(this.props.party, (id) => parseInt(id, 10) !== user.id));
-    }
-
-    private receiveNewPerson = (event: any) => {
-        event.preventDefault();
-        this.props.setParty(_.uniq((this.props.party || []).concat(event.dataTransfer.getData("text").split("_")[1])));
-    }
-
-    private preventDefault(event: any) {
-        event.preventDefault();
-    }
-
-    private renderCurrentDinnerParty() {
-        return(
-            <div
-                className="flexbox-column"
-                style={{ position: "relative", flexBasis: "60%" }}
-                onDrop={this.receiveNewPerson}
-                onDragOver={this.preventDefault}
-            >
-                <h4> Current Party </h4>
-                <div className="party-holder">
-                    {this.props.party ? this.props.party.map(this.renderSingleIndividual) : <div />}
-                </div>
-            </div>
-        );
-    }
-
-    private renderSingleIndividual(id: string) {
-        const user = this.props.userData && this.props.userData[id];
-        if (user == null) {
-            return null;
-        }
-        return(
-          <div key={id} style={{ position: "relative", fontSize: "1vw" }} className="user-display">
-              <div className="user-div">
-                  <div> {user.name} </div>
-              </div>
-              <button onClick={this.makeInfoPerson(user)} className="render-person" />
-              <Button className="removal-button" icon="cross" onClick={this.removePerson(user)} />
-          </div>
-        );
-      }
 
     private openPopoverHover = () => this.setState({ openPopover: true });
     private closePopoverHover = () => this.setState({ openPopover: false });

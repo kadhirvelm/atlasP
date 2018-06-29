@@ -1,8 +1,8 @@
 import * as React from "react";
 
-import { IScore } from "../Helpers/GraphHelpers";
+import { IScore } from "../../Helpers/GraphHelpers";
 
-import "./InfoGraphic.css";
+import "../InfoGraphic.css";
 
 interface IScoreDisplayProps {
     score: IScore | null;

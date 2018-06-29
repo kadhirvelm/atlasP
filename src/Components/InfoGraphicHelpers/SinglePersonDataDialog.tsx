@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 
 import { Dialog, Icon, Popover, Position } from "@blueprintjs/core";
 
-import Event from "../Helpers/Event";
-import User from "../Helpers/User";
-import IStoreState, { IEventMap, IUserMap } from "../State/IStoreState";
+import Event from "../../Helpers/Event";
+import User from "../../Helpers/User";
+import IStoreState, { IEventMap, IUserMap } from "../../State/IStoreState";
 
 export interface ISinglePersonDataDialogProps {
     events: number[];
