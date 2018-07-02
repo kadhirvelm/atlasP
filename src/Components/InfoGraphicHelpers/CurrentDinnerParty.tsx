@@ -9,6 +9,8 @@ import User from "../../Helpers/User";
 import IStoreState, { IUserMap } from "../../State/IStoreState";
 import { ChangeParty, SetInfoPerson, SetMainPerson } from "../../State/WebsiteActions";
 
+import "./GlobalInfoGraphicHelpers.css";
+
 export interface ICurrentDinnerPartyStoreProps {
     party?: string[];
     userData?: IUserMap;
@@ -30,8 +32,7 @@ export class PureCurrentDinnerParty extends React.Component<
     public render() {
         return (
             <div
-                className="flexbox-column"
-                style={{ position: "relative", flexBasis: "60%" }}
+                className="flexbox-column dark-background pt-dark current-dinner-party"
                 onDrop={this.receiveNewPerson}
                 onDragOver={this.preventDefault}
             >

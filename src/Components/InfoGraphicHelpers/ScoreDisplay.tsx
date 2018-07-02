@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { IScore } from "../../Helpers/GraphHelpers";
 
-import "../InfoGraphic.css";
+import "./GlobalInfoGraphicHelpers.css";
 
 interface IScoreDisplayProps {
     score: IScore | null;

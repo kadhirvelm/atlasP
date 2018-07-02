@@ -1,0 +1,57 @@
+@import "../DisplayGraph.css";
+
+.dark-background {
+    background: #394b59;
+    color: white;
+    animation: fade-in 1s ease-in;
+    position: relative;
+}
+
+.flexbox-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.flexbox-row {
+    display: flex;
+}
+
+.justify-end {
+    position: absolute;
+    right: 0%;
+    margin-right: 10px;
+}
+
+.current-dinner-party {
+    flex-basis: 40%;
+}
+
+.info-person {
+    flex-basis: 60%;
+}
+
+.no-person {
+    display: flex;
+    flex: 1 0 auto;
+    justify-content: center;
+    align-items: center;
+    word-wrap: break-word;
+}
+
+.big-icon {
+    size: 50px;
+}
+
+.show-change {
+    animation: flash 1s ease-in-out;
+}
+
+@keyframes flash {
+    50% {
+        background: #AED6F1;
+    }
+}

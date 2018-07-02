@@ -2,15 +2,12 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Button, Icon, Intent, Popover } from "@blueprintjs/core";
-
 import Event from "../Helpers/Event";
-import { calculateScore, IScore } from "../Helpers/GraphHelpers";
 import User from "../Helpers/User";
 import IStoreState from "../State/IStoreState";
 import { ChangeParty, SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
 import { CurrentDinnerParty } from "./InfoGraphicHelpers/CurrentDinnerParty";
-import { ScoreDisplay } from "./InfoGraphicHelpers/ScoreDisplay";
+import { InfoPerson } from "./InfoGraphicHelpers/InfoPerson";
 import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
 
 import "./InfoGraphic.css";
@@ -44,9 +41,16 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
 
     public render() {
         return(
-            <div className="info-graphic flexbox-column pt-dark" style={{ padding: "15px" }}>
+            <div className="flexbox">
                 <CurrentDinnerParty />
-                {this.renderPerson(this.props.infoPerson)}
+                <InfoPerson
+                    mainPerson={this.props.mainPerson}
+                    openPopover={this.state.openPopover}
+                    person={this.props.infoPerson}
+                    closePopoverHover={this.closePopoverHover}
+                    openInformationDialog={this.openInformationDialog}
+                    openPopoverHover={this.openPopoverHover}
+                />
                 {this.maybeRenderSinglePersonDataDialog()}
             </div>
         );
@@ -73,75 +77,6 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
 
     private openInformationDialog = () => this.setState({ openDialog: true });
     private closeInformationDialog = () => this.setState({ openDialog: false });
-
-    private renderPerson(user?: User) {
-        if (user === undefined) {
-            return this.renderNoPerson();
-        }
-        return(
-            <div className="flexbox-column info-person">
-                <div key={user.id} className="show-change">
-                    <div className="flexbox-row full-width-height">
-                        <div className="info-person-name"> {user.name} </div>
-                        <Popover isOpen={this.state.openPopover}>
-                            <div className="centered">
-                                <Icon
-                                    onMouseEnter={this.openPopoverHover}
-                                    onMouseLeave={this.closePopoverHover}
-                                    onClick={this.openInformationDialog}
-                                    icon="help"
-                                />
-                            </div>
-                            <div
-                                style={{ padding: "15px", textAlign: "center" }}
-                                className={user.gender === "M" ? "blue-box" : "red-box"}
-                            >
-                                <div className="padding-box"> {user.fullName} ({user.id}) </div>
-                                <div className="padding-box"> {user.contact} </div>
-                                <div className="padding-box"> {user.age}, {user.location} </div>
-                            </div>
-                        </Popover>
-                    </div>
-                    {this.renderScore(user)}
-                    <div style={{ position: "absolute", left: "50%", bottom: "1%", transform: "translate(-50%, -1%)" }}>
-                        <Button
-                            icon="exchange"
-                            text={"Make " + user.name + " Main"}
-                            onClick={this.setMainPerson}
-                            intent={Intent.WARNING}
-                            className="grow"
-                        />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    private renderNoPerson() {
-        return (
-            <div className="flexbox-column info-person">
-                <div key="Unknown" className="show-change">
-                    <div className="flexbox-row" style={{ justifyContent: "center" }}>
-                        <h4> None Selected </h4>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    private renderScore(user: User) {
-        const score: IScore | null = (
-            (this.props.mainPerson && (user.id !== this.props.mainPerson.id)) &&
-                calculateScore(user, this.props.mainPerson)
-        ) || null;
-        return <ScoreDisplay score={score} />;
-    }
-
-    private setMainPerson = () => {
-        if (this.props.infoPerson && this.props.setMainPerson) {
-            this.props.setMainPerson(this.props.infoPerson);
-        }
-    }
 }
 
 function mapStateToProps(state: IStoreState) {

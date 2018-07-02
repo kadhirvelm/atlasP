@@ -7,6 +7,8 @@ import Event from "../../Helpers/Event";
 import User from "../../Helpers/User";
 import IStoreState, { IEventMap, IUserMap } from "../../State/IStoreState";
 
+import "./GlobalInfoGraphicHelpers.css";
+
 export interface ISinglePersonDataDialogProps {
     events: number[];
     isOpen: boolean;
