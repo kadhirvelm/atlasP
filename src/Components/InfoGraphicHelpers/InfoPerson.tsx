@@ -53,7 +53,7 @@ export class PurePersonInformation extends React.Component<
 
     private renderPopover(person: User) {
         return (
-            <Popover isOpen={this.props.openPopover}>
+            <Popover isOpen={this.props.openPopover} className="change-to-pointer">
                 <div>
                     <Icon
                         onMouseEnter={this.props.openPopoverHover}

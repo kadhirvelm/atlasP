@@ -22,3 +22,35 @@ div.Y {
 div.G {
     background: #7DCEA0;
 }
+
+.user-node {
+    border-radius: 50%;
+    animation: fade-in 1s ease-in;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    transition: all 300ms ease-in-out;
+}
+
+.user-node:hover {
+    width: 15vmin;
+    height: 15vmin;
+    font-size: 2.7vmin;
+    background: #9A7D0A;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+div.F {
+    background: #7B241C;
+}
+
+div.M {
+    background: #1A5276;
+}

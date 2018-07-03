@@ -62,10 +62,9 @@ export class PureCurrentDinnerParty extends React.Component<
 
         return(
           <div key={id} style={{ position: "relative", fontSize: "1vw" }} className="user-display">
-              <div className="user-div">
+              <div className="user-div" onClick={this.makeInfoPerson(user)}>
                   <div> {user.name} </div>
               </div>
-              <button onClick={this.makeInfoPerson(user)} className="render-person" />
               <Button className="removal-button" icon="cross" onClick={this.removePerson(user)} />
           </div>
         );
