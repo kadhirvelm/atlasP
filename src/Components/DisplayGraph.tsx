@@ -10,8 +10,6 @@ import { SetGraphRef, SetInfoPerson, SetMainPerson } from "../State/WebsiteActio
 import { RenderLine } from "./DisplayGraphHelpers/RenderLine";
 import { RenderPerson } from "./DisplayGraphHelpers/RenderPerson";
 
-import "./DisplayGraph.css";
-
 export interface IDisplayGraphStateProps {
     graphRef: HTMLElement | null;
     eventData: IEventMap;
