@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Button, Classes, Dialog, EditableText, Intent } from "@blueprintjs/core";
-import User from "../Helpers/User";
-import IStoreState from "../State/IStoreState";
-import { SetMainPerson } from "../State/WebsiteActions";
+import User from "../../Helpers/User";
+import IStoreState from "../../State/IStoreState";
+import { SetMainPerson } from "../../State/WebsiteActions";
 
 import "./FetchPerson.css";
 

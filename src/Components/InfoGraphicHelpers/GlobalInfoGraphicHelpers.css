@@ -48,11 +48,11 @@
 }
 
 .current-dinner-party {
-    flex-basis: 40%;
+    flex-basis: 50%;
 }
 
 .info-person {
-    flex-basis: 60%;
+    flex-basis: 50%;
 }
 
 .no-person {

@@ -4,6 +4,7 @@ import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
 import "@blueprintjs/core/lib/css/blueprint.css";
+import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 
 import { App } from "./App";

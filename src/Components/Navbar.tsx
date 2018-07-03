@@ -16,11 +16,13 @@ import {
 import User from "../Helpers/User";
 import { fetchGoogleSheetData } from "../State/GoogleSheetActions";
 import IStoreState from "../State/IStoreState";
-import { FetchPerson } from "./FetchPerson";
+import { AddNewEvent } from "./Dialogs/AddNewEvent";
+import { FetchPerson } from "./Dialogs/FetchPerson";
 
 import "./Main.css";
 
 interface INavbarState {
+  eventEntryDialogOpen: boolean;
   mainPersonDialogOpen: boolean;
 }
 
@@ -36,30 +38,45 @@ export interface INavbarDispatchProps {
 
 class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDispatchProps, INavbarState> {
     public state = {
+        eventEntryDialogOpen: false,
         mainPersonDialogOpen: false,
     };
 
     public render() {
         return(
             <Navbar className="pt-dark" style={{ zIndex: 10 }}>
-                <NavbarGroup align={Alignment.LEFT}>
-                    <NavbarHeading> Dinner Table </NavbarHeading>
-                    <NavbarDivider />
-                    <Button
-                        icon="refresh"
-                        onClick={this.props.fetchGoogleSheetData}
-                        text="Refresh Data"
-                        intent={this.returnIntent()}
-                    />
-                        {this.props.fetching && <Spinner className="pt-small" intent={Intent.WARNING} />}
-                    <Button icon="exchange" onClick={this.handleChangeMainPersonDialog} text="Change User" />
-                </NavbarGroup>
-                <NavbarGroup align={Alignment.RIGHT}>
-                    <Button icon="link" text="Google Sheet" onClick={this.openSheet} />
-                    <Button icon="log-out" onClick={this.handleSignOut} />
-                </NavbarGroup>
+                {this.renderLeftButtonGroup()}
+                {this.renderRightButtonGroup()}
                 {this.maybeRenderNewPersonDialog()}
+                {this.renderNewEventDialog()}
             </Navbar>
+        );
+    }
+
+    private renderLeftButtonGroup() {
+        return (
+            <NavbarGroup align={Alignment.LEFT}>
+                <NavbarHeading> Dinner Table </NavbarHeading>
+                <NavbarDivider />
+                <Button
+                    icon="refresh"
+                    onClick={this.props.fetchGoogleSheetData}
+                    text="Refresh Data"
+                    intent={this.returnIntent()}
+                />
+                    {this.props.fetching && <Spinner className="pt-small" intent={Intent.WARNING} />}
+                <Button icon="exchange" onClick={this.handleChangeMainPersonDialog} text="Change User" />
+                <Button icon="add" onClick={this.handleOpenEventEntryDialog} text="Enter Event" />
+            </NavbarGroup>
+        );
+    }
+
+    private renderRightButtonGroup() {
+        return (
+            <NavbarGroup align={Alignment.RIGHT}>
+                <Button icon="link" text="Google Sheet" onClick={this.openSheet} />
+                <Button icon="log-out" onClick={this.handleSignOut} />
+            </NavbarGroup>
         );
     }
 
@@ -69,6 +86,14 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
 
     private handleMainPersonDialogClose = () => {
         this.setState({ mainPersonDialogOpen: false });
+    }
+
+    private handleOpenEventEntryDialog = () => {
+        this.setState({ eventEntryDialogOpen: true });
+    }
+
+    private handleCloseEventEntryDialog = () => {
+        this.setState({ eventEntryDialogOpen: false });
     }
 
     private openSheet() {
@@ -84,6 +109,15 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
             <FetchPerson
                 handleMainPersonDialogClose={this.handleMainPersonDialogClose}
                 mainPersonDialogOpen={this.state.mainPersonDialogOpen}
+            />
+        );
+    }
+
+    private renderNewEventDialog() {
+        return (
+            <AddNewEvent
+                isOpen={this.state.eventEntryDialogOpen}
+                onClose={this.handleCloseEventEntryDialog}
             />
         );
     }
