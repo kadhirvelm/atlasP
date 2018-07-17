@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Button, Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
+import { IUser } from '../../Helpers/User';
 import IStoreState, { IUserMap } from "../../State/IStoreState";
 import { Autocomplete } from "../Common/Autocomplete";
 
@@ -22,7 +23,7 @@ export interface IAddNewEventState {
     finalEvent: {
         attendees: string[];
         date: string;
-        host: number;
+        host: IUser | undefined;
     };
 }
 
@@ -31,7 +32,7 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
         finalEvent: {
             attendees: [],
             date: "",
-            host: 0,
+            host: undefined,
         },
     };
 
@@ -48,8 +49,9 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
                         <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder="Date" />
                         <Autocomplete
                             dataSource={this.props.users}
-                            displayKey={"name"}
+                            displayKey="name"
                             placeholderText="Enter host name..."
+                            values={this.hostValues()}
                             onSelection={this.handleHostSelection}
                         />
                         <InputGroup
@@ -68,16 +70,31 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
         );
     }
 
-    private handleHostSelection = (item: {}) => {
-        console.log(item);
+    private isUser = (object: IUser | undefined): object is IUser => {
+        return object != null && object.name != null;
+    }
+
+    private hostValues = () => {
+        const finalHost = this.state.finalEvent.host;
+        if(this.isUser(finalHost)) {
+            return [finalHost.name];
+        }
+        return []
+    }
+
+    private handleHostSelection = (item: IUser) => {
+        this.adjustFinalEvent("host", item);
     }
 
     private handleChange = (key: string) => {
         return handleStringChange(
             (newValue) => {
-                console.log(newValue, key);
-                this.setState({ finalEvent: {...this.state.finalEvent, [key]: newValue } });
+                this.adjustFinalEvent(key, newValue);
         });
+    }
+    
+    private adjustFinalEvent = (key: string, newValue: any) => {
+        this.setState({ finalEvent: {...this.state.finalEvent, [key]: newValue } });
     }
 }
 

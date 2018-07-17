@@ -127,6 +127,13 @@
     classnames "^2.2"
     tslib "^1.9.0"
 
+"@blueprintjs/icons@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/icons/-/icons-3.0.0.tgz#2eed041dd52c9feed2758ca526f4505911813a31"
+  dependencies:
+    classnames "^2.2"
+    tslib "^1.9.0"
+
 "@blueprintjs/select@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@blueprintjs/select/-/select-2.0.1.tgz#4746aff7ed534113b17d0663bf548b2867dc4b2a"
