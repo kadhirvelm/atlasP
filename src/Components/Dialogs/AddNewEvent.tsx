@@ -39,6 +39,7 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
     public render() {
         return(
             <Dialog
+                canEscapeKeyClose={false}
                 canOutsideClickClose={false}
                 isOpen={this.props.isOpen}
                 onClose={this.props.onClose}

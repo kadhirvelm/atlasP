@@ -26,22 +26,25 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
 
     public componentDidMount() {
         this.handleSelection = this.handleSelection.bind(this);
+        window.addEventListener("keydown", this.handleKeyboardClick)
     }
 
     public render() {
         return(
             <div className="total-container">
-                <InputGroup
-                    autoComplete="off"
-                    type="text"
-                    className="input-group"
-                    onChange={this.handleChange()}
-                    onClick={this.openAutofill}
-                    placeholder={this.props.placeholderText}
-                    value={this.state.searchText}
-                />
+                <div className="values-container">
+                    {this.maybeRenderValues()}
+                    <InputGroup
+                        autoComplete="off"
+                        type="text"
+                        className="autofill-input"
+                        onChange={this.handleChange()}
+                        onClick={this.openAutofill}
+                        placeholder={this.props.placeholderText}
+                        value={this.state.searchText}
+                    />
+                </div>
                 {this.maybeRenderAutofill()}
-                {this.maybeRenderValues()}
             </div>
         );
     }
@@ -50,8 +53,8 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
         if (this.props.values == null) {
             return null;
         }
-        return this.props.values.map( (value) => (
-            <div className="autocomplete-tag">
+        return this.props.values.map( (value, index) => (
+            <div className="autocomplete-tag" key={index}>
                 {value}
             </div>
         ))
@@ -74,10 +77,10 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                         return key.includes(this.state.searchText) ||
                             dataSource[key][display].includes(this.state.searchText);
                     })
-                    .map((key) => (
+                    .map((key, index) => (
                         <div
                             className="autocomplete-row"
-                            key={key}
+                            key={index}
                             onClick={this.handleSelection(key)}
                         >
                             {key} – {dataSource[key][display]}
@@ -86,6 +89,13 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                 }
             </div>
         );
+    }
+
+    private handleKeyboardClick = (event: KeyboardEvent) => {
+        if (event.key === "Escape") {
+            this.closeAutofill();
+            event.preventDefault();
+        }
     }
 
     private handleSelection(key: string) {
