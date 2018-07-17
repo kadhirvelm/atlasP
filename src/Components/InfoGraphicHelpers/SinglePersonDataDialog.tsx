@@ -40,13 +40,13 @@ export class PureSinglePersonDataDialog extends React.Component<
                 onClose={this.props.onClose}
                 title="Person Info"
             >
-                <div className="pt-dialog-body flexbox-column">
-                    <div className="flexbox-row" style={{ flexGrow: 1, marginBottom: "15px" }}>
-                        <u className="flex-basis flex-basis-20">ID</u>
-                        <u className="flex-basis flex-basis-15">Host</u>
-                        <u className="flex-basis flex-basis-35">Description</u>
-                        <u className="flex-basis flex-basis-15">Date</u>
-                        <u className="flex-basis flex-basis-15" style={{ justifyContent: "center" }}>People</u>
+                <div className="flexbox-column">
+                    <div className="flexbox-row">
+                        <u className="flex-basis-20">Event ID</u>
+                        <u className="flex-basis-15">Host</u>
+                        <u className="flex-basis-10">People</u>
+                        <u className="flex-basis-15 flexbox-centered">Date</u>
+                        <u className="flex-basis-35 flexbox-centered">Description</u>
                     </div>
                     {this.renderInfoPersonContent()}
                 </div>
@@ -70,19 +70,26 @@ export class PureSinglePersonDataDialog extends React.Component<
         }
         return (
             <div key={index} className="flexbox-row" style={{ flexGrow: 1 }}>
-                <div className="flex-basis flex-basis-20">
+                <div className="flex-basis-20">
                     {event.id}
                 </div>
-                <div className="flex-basis flex-basis-15">
+                <div className="flex-basis-15">
                     {this.props.userData && this.props.userData[event.host].name}
                 </div>
-                <div className="flex-basis flex-basis-35" style={{ wordWrap: "break-word" }}>
-                    {event.description}
-                </div>
-                <div className="flex-basis flex-basis-15">
+                {this.renderPeoplePopover(event)}
+                <div className="flex-basis-15 flexbox-centered">
                     {event.date}
                 </div>
-                <div className="flex-basis flex-basis-15" style={{ justifyContent: "center" }}>
+                <div className="flex-basis-35 flexbox-centered">
+                    {event.description}
+                </div>
+            </div>
+        );
+    }
+
+    private renderPeoplePopover(event: Event) {
+        return (
+            <div className="flex-basis-10" style={{ justifyContent: "center" }}>
                     <Popover isOpen={this.state.openInformationPopover} position={Position.RIGHT}>
                         <Icon
                             onMouseEnter={this.openInformationHover}
@@ -96,7 +103,6 @@ export class PureSinglePersonDataDialog extends React.Component<
                         </div>
                     </Popover>
                 </div>
-            </div>
         );
     }
 

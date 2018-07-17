@@ -1,0 +1,41 @@
+version: 2
+jobs:
+  build_test:
+    docker:
+      - image: circleci/node:7.10
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: yarn install
+      - run: 
+          name: Test
+          command: yarn test
+      - run: 
+          name: Build
+          command: yarn build
+  install:
+    docker:
+      - image: circleci/node:7.10
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore yarn package cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install dependencies
+          command: yarn install && yarn compile
+      - save_cache:
+          name: Save yarn package cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - install
+      - build_test:
+          requires:
+            - install
