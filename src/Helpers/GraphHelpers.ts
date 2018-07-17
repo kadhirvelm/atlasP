@@ -32,12 +32,11 @@ export function calculateScore(user: User, mainPerson: User): IScore {
     // tslint:disable-next-line:trailing-comma
     likeScore: returnLikeScore(user, mainPerson) * returnLikeScore(mainPerson, user)
   };
-  return Object.assign({}, finalTally, {
+  return {...finalTally, 
     finalScore:
       (finalTally.eventScore + finalTally.genderScore + finalTally.ageScore) *
       returnLikeScore(user, mainPerson) *
       finalTally.likeScore *
       // tslint:disable-next-line:trailing-comma
-      finalTally.dislikeScore
-  });
+      finalTally.dislikeScore};
 }

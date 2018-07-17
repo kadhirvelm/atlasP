@@ -11,14 +11,13 @@ const extractIntoNumberArray = (rawNumbers: string): number[] => {
 
 function assembleEventData(eventData: string[][]) {
     return eventData.slice(1).forEach((event: string[]) => {
-        const newEvent = new Event(parseInt(event[0], 10), parseInt(event[1], 10), event[2], event[3]);
+        const newEvent = new Event(parseInt(event[0], 10), parseInt(event[1], 10), event[2], event.slice(3).join(","));
         finalEventsData[newEvent.id] = newEvent;
     });
 }
 
 function assembleUserData(userData: string[][]) {
     return userData.slice(1).map((person: string[]) => {
-        console.log(person);
         const newUser = new User(
             parseInt(person[0], 10),
             person[1],
@@ -26,9 +25,9 @@ function assembleUserData(userData: string[][]) {
             parseInt(person[3], 10),
             person[4],
             person[5],
-            extractIntoNumberArray(person[6]),
             extractIntoNumberArray(person[7]),
-            extractIntoNumberArray(person.slice(8).join(",")));
+            extractIntoNumberArray(person[8]),
+            extractIntoNumberArray(person.slice(9).join(",")));
         finalUserData[newUser.id] = newUser;
         newUser.events.forEach((event: number) => {
             if (finalEventsData[event]) {

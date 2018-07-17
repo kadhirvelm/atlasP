@@ -1,10 +1,8 @@
 {
-  "extends": ["tslint-react", "tslint:recommended", "./tsconfig.json"],
+  "extends": ["tslint-react", "tslint:latest", "tslint-eslint-rules", "tslint-config-prettier"],
   "rules": {
-    "prettier": false,
     "no-console": false,
     "no-var-requires": false,
-    "no-string-literal": false,
-    "indent": [true, "spaces", 2]
+    "no-string-literal": false
   }
 }

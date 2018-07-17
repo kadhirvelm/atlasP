@@ -64,8 +64,13 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                     text="Refresh Data"
                     intent={this.returnIntent()}
                 />
-                    {this.props.fetching && <Spinner className="pt-small" intent={Intent.WARNING} />}
-                <Button icon="exchange" onClick={this.handleChangeMainPersonDialog} text="Change User" />
+                {this.props.fetching && <Spinner className="pt-small" intent={Intent.WARNING} />}
+                <Button
+                    icon="exchange"
+                    onClick={this.handleChangeMainPersonDialog}
+                    style={{marginLeft: "10px", marginRight: "10px"}}
+                    text="Change User"
+                />
                 <Button icon="add" onClick={this.handleOpenEventEntryDialog} text="Enter Event" />
             </NavbarGroup>
         );

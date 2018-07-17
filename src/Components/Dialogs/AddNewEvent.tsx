@@ -1,9 +1,17 @@
 import * as React from "react";
+import { connect } from "react-redux";
 
 import { Button, Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
+import IStoreState, { IUserMap } from "../../State/IStoreState";
+import { Autocomplete } from "../Common/Autocomplete";
+
 import "./AddNewEvent.css";
+
+export interface IAddNewEventStateProps {
+    users: IUserMap | undefined;
+}
 
 interface IAddNewEventProps {
     isOpen: boolean;
@@ -18,7 +26,7 @@ export interface IAddNewEventState {
     };
 }
 
-export class AddNewEvent extends React.Component<IAddNewEventProps, IAddNewEventState> {
+export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNewEventStateProps, IAddNewEventState> {
     public state = {
         finalEvent: {
             attendees: [],
@@ -28,7 +36,6 @@ export class AddNewEvent extends React.Component<IAddNewEventProps, IAddNewEvent
     };
 
     public render() {
-        console.log(this.state.finalEvent);
         return(
             <Dialog
                 canOutsideClickClose={false}
@@ -39,10 +46,11 @@ export class AddNewEvent extends React.Component<IAddNewEventProps, IAddNewEvent
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup>
                         <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder="Date" />
-                        <InputGroup
-                            className="input-group"
-                            onChange={this.handleChange("host")}
-                            placeholder="Host Name or ID"
+                        <Autocomplete
+                            dataSource={this.props.users}
+                            displayKey={"name"}
+                            placeholderText="Enter host name..."
+                            onSelection={this.handleHostSelection}
                         />
                         <InputGroup
                             className="input-group"
@@ -60,6 +68,10 @@ export class AddNewEvent extends React.Component<IAddNewEventProps, IAddNewEvent
         );
     }
 
+    private handleHostSelection = (item: {}) => {
+        console.log(item);
+    }
+
     private handleChange = (key: string) => {
         return handleStringChange(
             (newValue) => {
@@ -68,3 +80,11 @@ export class AddNewEvent extends React.Component<IAddNewEventProps, IAddNewEvent
         });
     }
 }
+
+function mapStateToProps(state: IStoreState): IAddNewEventStateProps {
+    return {
+        users: state.GoogleReducer.userData,
+    };
+}
+
+export const AddNewEvent = connect(mapStateToProps)(PureAddNewEvent);
