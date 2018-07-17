@@ -7,6 +7,7 @@
     "@blueprintjs/docs-theme": "^2.1.1",
     "axios": "^0.18.0",
     "googleapis": "^32.0.0",
+    "husky": "^0.14.3",
     "lodash": "^4.17.5",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
@@ -24,6 +25,8 @@
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
+    "precommit": "pretty-quick --staged",
+    "lint": "tslint src/**/*.ts && tslint src/**/*.tsx",
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
@@ -42,5 +45,21 @@
     "pretty-quick": "^1.6.0",
     "react-scripts-ts": "2.16.0",
     "typescript": "^2.8.1"
+  },
+  "collectCoverageFrom": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "!src/**/*.test.ts",
+    "!src/**/*.test.tsx",
+    "!src/index.tsx",
+    "!src/registerServiceWorker.ts"
+  ],
+  "coverageThreshold": {
+    "global": {
+      "branches": 80,
+      "functions": 80,
+      "lines": 80,
+      "statements": 100
+    }
   }
 }
