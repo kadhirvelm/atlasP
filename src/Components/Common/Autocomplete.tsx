@@ -37,7 +37,7 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
         window.addEventListener("click", this.handleOutsideClick);
     }
 
-    public componentWillUnmount(){
+    public componentWillUnmount() {
         window.removeEventListener("keydown", this.handleKeyboardClick);
     }
 
@@ -73,14 +73,14 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
             <div className="autocomplete-tag" key={index}>
                 {value}
             </div>
-        ))
+        ));
     }
 
     private handleOutsideClick = (event: MouseEvent) => {
         if (this.state.openAutofill) {
             const parentElement = document.getElementById(this.id());
             if (parentElement != null && !parentElement.contains(event.toElement)) {
-                this.closeAutofill();   
+                this.closeAutofill();
             }
         }
     }
@@ -104,7 +104,12 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                     })
                     .map((key, index) => (
                         <div
-                            className={classNames("autocomplete-row", { "autocomplete-row-selected": this.isSelected(key) })}
+                            className={
+                                classNames(
+                                    "autocomplete-row",
+                                    { "autocomplete-row-selected": this.isSelected(key) },
+                                )
+                            }
                             key={index}
                             onClick={this.handleSelection(key)}
                         >
@@ -140,7 +145,7 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                 this.closeAutofill();
             }
             this.setState({ searchText: "" });
-        }
+        };
     }
 
     private handleChange = () => {

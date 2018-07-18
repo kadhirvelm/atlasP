@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { calculateScore } from "../Helpers/GraphHelpers";
-import { IPeopleGraph, ISingleLocation, ORIGIN, selectMainPersonGraph } from "../Helpers/Selectors";
+import { IPeopleGraph, ISingleLocation, ORIGIN, selectMainPersonGraph } from "../Helpers/selectors";
 import User from "../Helpers/User";
 import IStoreState, { IEventMap, IUserMap } from "../State/IStoreState";
 import { SetGraphRef, SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
