@@ -17,7 +17,7 @@ jobs:
       #     command: CI=true yarn test
       - run: 
           name: Build
-          command: CI=true yarn build
+          command: yarn build
   install:
     docker:
       - image: circleci/node:7.10
