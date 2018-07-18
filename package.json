@@ -5,6 +5,7 @@
   "dependencies": {
     "@blueprintjs/core": "^2.1.1",
     "@blueprintjs/docs-theme": "^2.1.1",
+    "@types/classnames": "^2.2.5",
     "axios": "^0.18.0",
     "googleapis": "^32.0.0",
     "husky": "^0.14.3",
@@ -26,6 +27,7 @@
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "lint": "tslint src/**/*.ts && tslint src/**/*.tsx",
+    "lint:fix": "tslint src/**/*.ts --fix && tslint src/**/*.tsx --fix",
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
