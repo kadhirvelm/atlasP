@@ -6,15 +6,14 @@ import IStoreState from "./IStoreState";
 
 export default function configureStore(savedState: IStoreState): Store<IStoreState> {
   const logging = applyMiddleware(loggingMiddleware()) as StoreEnhancer;
-  const initialState: IStoreState = Object.assign({}, {
+  const initialState: IStoreState = {
     GoogleReducer: {
       isFetching: false,
       isSignedIn: false,
     },
     WebsiteReducer: {
       graphRef: null,
-    },
-  }, savedState);
+    }, ...savedState};
 
   return createStore(RootReducer, initialState, logging);
 }

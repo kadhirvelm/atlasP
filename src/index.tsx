@@ -3,7 +3,11 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
+// tslint:disable-next-line:no-submodule-imports
 import "@blueprintjs/core/lib/css/blueprint.css";
+// tslint:disable-next-line:no-submodule-imports
+import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
+// tslint:disable-next-line:no-submodule-imports
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 
 import { App } from "./App";

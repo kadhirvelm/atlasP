@@ -1,4 +1,10 @@
 {
   "printWidth": 100,
-  "parser": "flow"
+  "parser": "flow",
+  "overrides": [
+    {
+      "files": "*.json",
+      "options": { "parser": "json" }
+    }
+  ]
 }

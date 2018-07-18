@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Button, Classes, Dialog, EditableText, Intent } from "@blueprintjs/core";
-import User from "../Helpers/User";
-import IStoreState from "../State/IStoreState";
-import { SetMainPerson } from "../State/WebsiteActions";
+import User from "../../Helpers/User";
+import IStoreState from "../../State/IStoreState";
+import { SetMainPerson } from "../../State/WebsiteActions";
 
 import "./FetchPerson.css";
 
@@ -56,7 +56,7 @@ class PureFetchPerson extends React.Component<
                                 />
                             </h2>
                         </div>
-                        <div className="flexbox-row" style={{ flexBasis: "50%", justifyContent: "flex-start" }}>
+                        <div className="flexbox-row" style={{ flexBasis: "50%", alignItems: "center", justifyContent: "flex-start" }}>
                             <h3 style={{ marginLeft: "15px", color: "#1D8348" }}>
                                 {this.maybeRenderFullName()}
                             </h3>
@@ -82,7 +82,7 @@ class PureFetchPerson extends React.Component<
         if (this.state.id && this.props.userData && this.props.userData[this.state.id]) {
             return this.props.userData[this.state.id].fullName;
         }
-        return "Error Fetching Name";
+        return this.state.id !== "" ? "Error Fetching Name" : "";
     }
 
     private changeValue = (value: string) => this.setState({ id: value });

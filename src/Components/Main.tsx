@@ -53,7 +53,7 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
 
   private maybeRenderGraph() {
     if (this.props.mainPerson === undefined) {
-      return null;
+      return <div className="centered"> Click the “Change User” above to get started! </div>;
     }
     return <DisplayGraph />;
   }

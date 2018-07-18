@@ -88,7 +88,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
     }
 
     private renderConnectionLines() {
-        if (this.props.graphRef === null) {
+        if (this.props.graphRef == null) {
             return null;
         }
         const origin = this.convertToAbsolutePoint(ORIGIN);
