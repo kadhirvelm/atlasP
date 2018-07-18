@@ -13,8 +13,8 @@ import {
     Spinner,
 } from "@blueprintjs/core";
 
+import { GoogleDispatcher } from "../Dispatchers/GoogleDispatcher";
 import User from "../Helpers/User";
-import { fetchGoogleSheetData } from "../State/GoogleSheetActions";
 import IStoreState from "../State/IStoreState";
 import { AddNewEvent } from "./Dialogs/AddNewEvent";
 import { FetchPerson } from "./Dialogs/FetchPerson";
@@ -145,9 +145,10 @@ function mapStateToProps(state: IStoreState): INavbarStateProps {
 }
 
 function mapDispatchToProps(dispatch: Dispatch): INavbarDispatchProps {
-  return {
-    fetchGoogleSheetData: fetchGoogleSheetData(dispatch),
-  };
+    const googleDispatcher = new GoogleDispatcher(dispatch);
+    return {
+        fetchGoogleSheetData: googleDispatcher.fetchGoogleSheetData,
+    };
 }
 
 export const AtlaspNavbar = connect(mapStateToProps, mapDispatchToProps)(PureAtlaspNavbar);
