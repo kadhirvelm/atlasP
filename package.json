@@ -25,7 +25,6 @@
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
-    "precommit": "pretty-quick --staged",
     "lint": "tslint src/**/*.ts && tslint src/**/*.tsx",
     "eject": "react-scripts-ts eject"
   },

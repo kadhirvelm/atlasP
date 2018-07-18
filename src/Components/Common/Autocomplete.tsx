@@ -104,7 +104,12 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                     })
                     .map((key, index) => (
                         <div
-                            className={classNames("autocomplete-row", { "autocomplete-row-selected": this.isSelected(key) })}
+                            className={
+                                classNames(
+                                    "autocomplete-row",
+                                    { "autocomplete-row-selected": this.isSelected(key) },
+                                )
+                            }
                             key={index}
                             onClick={this.handleSelection(key)}
                         >

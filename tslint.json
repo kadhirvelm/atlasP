@@ -5,6 +5,7 @@
     "no-console": false,
     "no-var-requires": false,
     "no-string-literal": false,
-    "indent": [true, "spaces", 2]
+    "indent": [true, "spaces", 2],
+    "jsx-no-multiline-js": false
   }
 }
