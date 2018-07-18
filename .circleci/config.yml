@@ -11,9 +11,9 @@ jobs:
       - run: 
           name: Lint
           command: yarn lint
-      - run: 
-          name: Test
-          command: yarn test
+      # - run: 
+      #     name: Test
+      #     command: CI=true yarn test
       - run: 
           name: Build
           command: yarn build
