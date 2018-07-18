@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
     "declaration": true,
     "experimentalDecorators": true,
     "importHelpers": true,
