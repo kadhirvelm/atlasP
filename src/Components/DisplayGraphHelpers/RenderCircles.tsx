@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { ISingleLine, ISingleLocation } from "../../Helpers/Selectors";
+import { ISingleLine, ISingleLocation } from "../../Helpers/selectors";
 import { IStrokeSettings } from "./RenderLine";
 
 export interface IRenderCirclesProps {
