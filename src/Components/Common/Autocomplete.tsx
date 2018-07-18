@@ -1,3 +1,4 @@
+import * as classNames from "classnames";
 import * as React from "react";
 
 import { InputGroup } from "@blueprintjs/core";
@@ -5,11 +6,17 @@ import { handleStringChange } from "@blueprintjs/docs-theme";
 
 import "./Autocomplete.css";
 
+export interface IAutcompleteValuesProps {
+    [key: string]: string;
+}
+
 export interface IAutocompleteProps {
+    className?: string;
     dataSource?: {[key: string]: any};
     displayKey?: string;
-    placeholderText: string;
-    values?: string[];
+    multiselection?: boolean;
+    placeholderText?: string;
+    values?: IAutcompleteValuesProps;
     onSelection?(item: {}): void;
 }
 
@@ -26,14 +33,21 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
 
     public componentDidMount() {
         this.handleSelection = this.handleSelection.bind(this);
-        window.addEventListener("keydown", this.handleKeyboardClick)
+        window.addEventListener("keydown", this.handleKeyboardClick);
+        window.addEventListener("click", this.handleOutsideClick);
+    }
+
+    public componentWillUnmount(){
+        window.removeEventListener("keydown", this.handleKeyboardClick);
     }
 
     public render() {
         return(
-            <div className="total-container">
+            <div id={this.id()} className={classNames(this.props.className, "total-container")}>
                 <div className="values-container">
-                    {this.maybeRenderValues()}
+                    <div className="rendered-values-container">
+                        {this.maybeRenderValues()}
+                    </div>
                     <InputGroup
                         autoComplete="off"
                         type="text"
@@ -49,17 +63,27 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
         );
     }
 
+    private id = () => "Autocomplete#" + this.props.displayKey + this.props.placeholderText;
+
     private maybeRenderValues() {
         if (this.props.values == null) {
             return null;
         }
-        return this.props.values.map( (value, index) => (
+        return Object.values(this.props.values).reverse().map( (value, index) => (
             <div className="autocomplete-tag" key={index}>
                 {value}
             </div>
         ))
     }
 
+    private handleOutsideClick = (event: MouseEvent) => {
+        if (this.state.openAutofill) {
+            const parentElement = document.getElementById(this.id());
+            if (parentElement != null && !parentElement.contains(event.toElement)) {
+                this.closeAutofill();   
+            }
+        }
+    }
     private closeAutofill = () => this.setState({ openAutofill: false });
     private openAutofill = () => this.setState({ openAutofill: true });
 
@@ -74,21 +98,30 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                 {
                     Object.keys(dataSource)
                     .filter((key) => {
-                        return key.includes(this.state.searchText) ||
-                            dataSource[key][display].includes(this.state.searchText);
+                        const searchText = this.state.searchText.toLowerCase();
+                        return key.toLowerCase().includes(searchText) ||
+                            dataSource[key][display].toLowerCase().includes(searchText);
                     })
                     .map((key, index) => (
                         <div
-                            className="autocomplete-row"
+                            className={classNames("autocomplete-row", { "autocomplete-row-selected": this.isSelected(key) })}
                             key={index}
                             onClick={this.handleSelection(key)}
                         >
-                            {key} – {dataSource[key][display]}
+                            <strong className="key"> {key} </strong>
+                            <div className="value"> {dataSource[key][display]} </div>
                         </div>
                     ))
                 }
             </div>
         );
+    }
+
+    private isSelected(key: string) {
+        if (this.props.values !== undefined && this.props.values[key] != null) {
+            return true;
+        }
+        return false;
     }
 
     private handleKeyboardClick = (event: KeyboardEvent) => {
@@ -103,7 +136,10 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
             if (this.props.onSelection != null && this.props.dataSource != null) {
                 this.props.onSelection(this.props.dataSource[key]);
             }
-            this.closeAutofill();
+            if (!this.props.multiselection) {
+                this.closeAutofill();
+            }
+            this.setState({ searchText: "" });
         }
     }
 

@@ -6,7 +6,7 @@ import { handleStringChange } from "@blueprintjs/docs-theme";
 
 import { IUser } from '../../Helpers/User';
 import IStoreState, { IUserMap } from "../../State/IStoreState";
-import { Autocomplete } from "../Common/Autocomplete";
+import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
 
 import "./AddNewEvent.css";
 
@@ -21,20 +21,22 @@ interface IAddNewEventProps {
 
 export interface IAddNewEventState {
     finalEvent: {
-        attendees: string[];
+        attendees: IUser[];
         date: string;
         host: IUser | undefined;
     };
 }
 
+const EMPTY_STATE: IAddNewEventState = {
+    finalEvent: {
+        attendees: [],
+        date: "",
+        host: undefined,
+    },
+}
+
 export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNewEventStateProps, IAddNewEventState> {
-    public state = {
-        finalEvent: {
-            attendees: [],
-            date: "",
-            host: undefined,
-        },
-    };
+    public state: IAddNewEventState = EMPTY_STATE;
 
     public render() {
         return(
@@ -42,23 +44,27 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
                 canEscapeKeyClose={false}
                 canOutsideClickClose={false}
                 isOpen={this.props.isOpen}
-                onClose={this.props.onClose}
+                onClose={this.resetStateAndClose}
                 title="Add New Event"
             >
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup>
                         <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder="Date" />
                         <Autocomplete
+                            className="autocomplete-margin"
                             dataSource={this.props.users}
                             displayKey="name"
-                            placeholderText="Enter host name..."
-                            values={this.hostValues()}
+                            placeholderText="Search for host..."
+                            values={this.finalEventValue("host")}
                             onSelection={this.handleHostSelection}
                         />
-                        <InputGroup
-                            className="input-group"
-                            onChange={this.handleChange("attendees")}
-                            placeholder="Attendees (comma separated)"
+                        <Autocomplete
+                            dataSource={this.props.users}
+                            displayKey="name"
+                            multiselection={true}
+                            placeholderText="Search for users..."
+                            values={this.finalEventValue("attendees")}
+                            onSelection={this.handleAttendeeSelection}
                         />
                     </FormGroup>
                 </div>
@@ -71,16 +77,41 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
         );
     }
 
+    private resetStateAndClose = () => {
+        this.setState(EMPTY_STATE, () => {
+            console.log(this.state);
+            this.props.onClose();
+        });
+    }
+
     private isUser = (object: IUser | undefined): object is IUser => {
         return object != null && object.name != null;
     }
 
-    private hostValues = () => {
-        const finalHost = this.state.finalEvent.host;
-        if(this.isUser(finalHost)) {
-            return [finalHost.name];
+    private finalEventValue = (key: string) => {
+        const finalValue = this.state.finalEvent[key];
+        if (finalValue == null) {
+            return;
+        } else if(this.isUser(finalValue)) {
+            return {[finalValue.id]: finalValue.name};
+        } else if (this.isUser(finalValue[0])) {
+            return finalValue.map((user: IUser) => {
+                return {[user.id]: user.name}
+            }).reduce((a: IAutcompleteValuesProps, b: IAutcompleteValuesProps) => {
+                return {...b, ...a}
+            });
         }
-        return []
+        return finalValue
+    }
+
+    private handleAttendeeSelection = (item: IUser) => {
+        if (!this.state.finalEvent.attendees.includes(item)) {
+            this.adjustFinalEvent("attendees", [item, ...this.state.finalEvent.attendees]);
+        } else {
+            const finalAttendees = this.state.finalEvent.attendees.slice();
+            finalAttendees.splice(finalAttendees.map(a => a.id).indexOf(item.id), 1);
+            this.adjustFinalEvent("attendees", finalAttendees);
+        }
     }
 
     private handleHostSelection = (item: IUser) => {
