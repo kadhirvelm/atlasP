@@ -1,0 +1,116 @@
+.autocomplete-tag {
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    flex: 0 0 auto;
+    color: white;
+    background: #154360;
+    border-radius: 8px;
+    font-size: 12px;
+    padding: 3px;
+    margin-right: 10px;
+    animation: fade-in 200ms ease-in;
+}
+
+.autocomplete-row {
+    display: flex;
+    flex: 1;
+    background-color: white;
+    transition: background-color 200ms ease;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.autocomplete-row .key {
+    display: flex;
+    flex: 1 0 30%;
+}
+
+.autocomplete-row .value {
+    display: flex;
+    flex: 1 0 70%;
+    justify-content: flex-start;
+    text-overflow: ellipsis;
+}
+
+.autocomplete-row:hover {
+    background-color: #85C1E9;
+    transition: background-color 200ms ease;
+}
+
+.autocomplete-row-selected {
+    background-color: #7DCEA0;
+    transition: background-color 200ms ease;
+}
+
+.autocomplete-row-selected:hover {
+    background-color: #F1948A;
+    transition: background-color 200ms ease;
+}
+
+.autofill-container {
+    z-index: 10;
+    position: absolute;
+    width: 95%;
+    left: 10px;
+
+    padding: 10px;
+    justify-content: center;
+    background-color: white;
+    border: 1px solid #1B4F72;
+    border-radius: 2px 2px 15px 15px;
+
+    height: 200px;
+    overflow-y: auto;
+    animation: fade-in-grow 200ms ease-in;
+}
+
+.autofill-input {
+    display: flex;
+    flex-grow: 1;
+    margin-right: 10px;
+    transition: width 200ms ease;
+}
+
+.rendered-values-container {
+    display: flex;
+    max-width: 75%;
+    overflow-x: auto;
+    align-items: center;
+}
+
+.rendered-values-container::-webkit-scrollbar {
+    background: transparent;
+}
+
+.total-container {
+    position: relative;
+}
+
+.values-container {
+    display: flex;
+    flex-grow: 1;
+    margin-left: 10px;
+    align-items: baseline;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+
+@keyframes fade-in-grow {
+    0% {
+        opacity: 0;
+        max-height: 0px;
+    }
+    100% {
+        opacity: 1;
+        max-height: 200px;
+    }
+}

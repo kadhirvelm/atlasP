@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { IScore, IScoreMainPerson } from "../../Helpers/GraphHelpers";
-import { ISingleLocation } from "../../Helpers/Selectors";
+import { ISingleLocation } from "../../Helpers/selectors";
 import User from "../../Helpers/User";
 
 import "./RenderPerson.css";
