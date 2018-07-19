@@ -11,11 +11,12 @@ export interface IEventMap {
 
 export default interface IStoreState {
     GoogleReducer: {
-        isFetching: boolean;
-        userData?: IUserMap;
         eventData?: IEventMap;
         googleSheetDataError?: object;
+        isFetching: boolean;
         isSignedIn: boolean;
+        rawData?: any;
+        userData?: IUserMap;
     };
     WebsiteReducer: {
         infoPerson?: User;

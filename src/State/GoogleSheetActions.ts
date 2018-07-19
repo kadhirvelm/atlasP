@@ -6,6 +6,7 @@ export const StartingDataFetch = TypedAction.defineWithoutPayload(
 
 export const SuccessfulDataFetch = TypedAction.define("GoogleSheetActions//SUCCESSFUL_DATA_FETCH")<{
   eventData: string[][],
+  rawData: any,
   userData: string[][],
 }>();
 

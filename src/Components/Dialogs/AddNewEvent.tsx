@@ -1,9 +1,11 @@
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect, Dispatch } from "react-redux";
 
-import { Button, Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Button, Classes, Dialog, FormGroup, InputGroup, Intent, Toaster } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
+import { GoogleDispatcher } from "../../Dispatchers/GoogleDispatcher";
+import Event from "../../Helpers/Event";
 import { IUser } from '../../Helpers/User';
 import IStoreState, { IUserMap } from "../../State/IStoreState";
 import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
@@ -11,7 +13,12 @@ import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
 import "./AddNewEvent.css";
 
 export interface IAddNewEventStateProps {
+    rawData: any;
     users: IUserMap | undefined;
+}
+
+export interface IAddNewEventDispatchProps {
+    writeData(event: Event, users: IUser[], rawData: any): Promise<string | boolean>;
 }
 
 interface IAddNewEventProps {
@@ -19,24 +26,38 @@ interface IAddNewEventProps {
     onClose(): void;
 }
 
+interface IFinalEventEmpty {
+    attendees: IUser[];
+    date: string;
+    description: string;
+    host: IUser | undefined;
+}
+
+interface IFinalEventChecked extends IFinalEventEmpty {
+    host: IUser;
+}
+
 export interface IAddNewEventState {
-    finalEvent: {
-        attendees: IUser[];
-        date: string;
-        host: IUser | undefined;
-    };
+    finalEvent: IFinalEventEmpty | IFinalEventChecked;
 }
 
 const EMPTY_STATE: IAddNewEventState = {
     finalEvent: {
         attendees: [],
         date: "",
+        description: "",
         host: undefined,
     },
 }
 
-export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNewEventStateProps, IAddNewEventState> {
+export class PureAddNewEvent extends React.Component<
+    IAddNewEventProps & IAddNewEventStateProps & IAddNewEventDispatchProps, IAddNewEventState> {
     public state: IAddNewEventState = EMPTY_STATE;
+
+    private toaster: Toaster;
+    private refHandler = {
+        toaster: (ref: Toaster) => (this.toaster = ref),
+    };
 
     public render() {
         return(
@@ -50,6 +71,7 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup>
                         <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder="Date" />
+                        <InputGroup className="input-group" onChange={this.handleChange("description")} placeholder="Description" />
                         <Autocomplete
                             className="autocomplete-margin"
                             dataSource={this.props.users}
@@ -70,18 +92,55 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
                 </div>
                 <div className={Classes.DIALOG_FOOTER}>
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                        <Button text="Cancel" onClick={this.props.onClose} />
+                        <Button onClick={this.props.onClose} text="Cancel" />
+                        <Button intent={Intent.PRIMARY} onClick={this.handleSubmit} text="Submit" />
                     </div>
                 </div>
+                <Toaster ref={this.refHandler.toaster} />
             </Dialog>
         );
     }
 
     private resetStateAndClose = () => {
         this.setState(EMPTY_STATE, () => {
-            console.log(this.state);
             this.props.onClose();
         });
+    }
+
+    private handleSubmit = () => {
+        const { finalEvent } = this.state;
+        if (this.isCompleteEvent(finalEvent)) {
+            finalEvent.attendees.push(finalEvent.host);
+            this.sendEventAndUsersToAPI(finalEvent);
+        } else {
+            this.toaster.show({ intent: Intent.DANGER, message: "Cannot leave fields blank." });
+        }
+    }
+
+    private sendEventAndUsersToAPI = async (finalEvent: IFinalEventChecked) => {
+        const newEvent = new Event(
+            this.assembleEventID(finalEvent),
+            finalEvent.host.id,
+            finalEvent.date,
+            finalEvent.description
+        );
+        const resolution = await this.props.writeData(newEvent, finalEvent.attendees, this.props.rawData);
+        if (resolution) {
+            this.resetStateAndClose()
+        } else {
+            this.toaster.show({ intent: Intent.DANGER, message: "Error writing data to sheet. Check console for more details." });
+        }
+    }
+
+    private assembleEventID = (finalEvent: IFinalEventChecked) => (finalEvent.host.id + '_' + finalEvent.date).replace(/\s/g, "_");
+
+    private isCompleteEvent(finalEvent: IFinalEventEmpty): finalEvent is IFinalEventChecked{
+        return (
+            finalEvent.host !== undefined &&
+            finalEvent.attendees.length > 0 &&
+            finalEvent.date !== "" &&
+            finalEvent.description !== ""
+        );
     }
 
     private isUser = (object: IUser | undefined): object is IUser => {
@@ -132,8 +191,16 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
 
 function mapStateToProps(state: IStoreState): IAddNewEventStateProps {
     return {
+        rawData: state.GoogleReducer.rawData,
         users: state.GoogleReducer.userData,
     };
 }
 
-export const AddNewEvent = connect(mapStateToProps)(PureAddNewEvent);
+function mapDispatchToProps(dispatch: Dispatch): IAddNewEventDispatchProps {
+    const googleDispatch = new GoogleDispatcher(dispatch);
+    return {
+        writeData: googleDispatch.writeData,
+    };
+}
+
+export const AddNewEvent = connect(mapStateToProps, mapDispatchToProps)(PureAddNewEvent);

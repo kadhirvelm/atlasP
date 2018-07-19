@@ -12,8 +12,8 @@ import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 
 import { App } from "./App";
 import registerServiceWorker from "./registerServiceWorker";
-import { loadState, saveState } from "./State/LocalStorage";
 import configureStore from "./State/Store";
+import { loadState, saveState } from "./State/StoreCache";
 
 const store = configureStore(loadState());
 
