@@ -2,6 +2,9 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { Toaster } from "@blueprintjs/core";
+
+import { setToast } from "../Helpers/Toaster";
 import User from "../Helpers/User";
 import IStoreState from "../State/IStoreState";
 import { SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
@@ -10,6 +13,7 @@ import { InfoGraphic } from "./InfoGraphic";
 import { AtlaspNavbar } from "./Navbar";
 
 import "./Main.css";
+
 
 interface IMainProps {
   readonly fetching: boolean;
@@ -28,11 +32,16 @@ export interface IMainDispatchProps {
 }
 
 class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainState> {
+  private refHandler = {
+      toaster: setToast,
+  };
+
   public render() {
     return (
       <div style={{ display: "flex", flexDirection: "column" }}>
         <AtlaspNavbar />
         {this.renderGraphAndInfo()}
+        <Toaster ref={this.refHandler.toaster} />
       </div>
     );
   }

@@ -104,7 +104,6 @@ export class GoogleDispatcher {
                     values: newUserData,
                 }
             ).then((response: object) => {
-                console.log(response);
                 const newRawData = response["result"].updatedData.values;
                 this.dispatch(
                     SuccessfulDataFetch.create({

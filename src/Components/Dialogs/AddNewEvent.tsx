@@ -1,14 +1,13 @@
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 
-import { Button, Classes, Dialog, FormGroup, InputGroup, Intent, Toaster } from "@blueprintjs/core";
+import { Button, Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
-import { GoogleDispatcher } from "../../Dispatchers/GoogleDispatcher";
-import Event from "../../Helpers/Event";
 import { IUser } from '../../Helpers/User';
 import IStoreState, { IUserMap } from "../../State/IStoreState";
 import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
+import { DialogUtils } from "./DialogUtils";
 
 import "./AddNewEvent.css";
 
@@ -18,7 +17,7 @@ export interface IAddNewEventStateProps {
 }
 
 export interface IAddNewEventDispatchProps {
-    writeData(event: Event, users: IUser[], rawData: any): Promise<string | boolean>;
+    dialogUtils: DialogUtils;
 }
 
 interface IAddNewEventProps {
@@ -26,14 +25,14 @@ interface IAddNewEventProps {
     onClose(): void;
 }
 
-interface IFinalEventEmpty {
+export interface IFinalEventEmpty {
     attendees: IUser[];
     date: string;
     description: string;
     host: IUser | undefined;
 }
 
-interface IFinalEventChecked extends IFinalEventEmpty {
+export interface IFinalEventChecked extends IFinalEventEmpty {
     host: IUser;
 }
 
@@ -54,10 +53,9 @@ export class PureAddNewEvent extends React.Component<
     IAddNewEventProps & IAddNewEventStateProps & IAddNewEventDispatchProps, IAddNewEventState> {
     public state: IAddNewEventState = EMPTY_STATE;
 
-    private toaster: Toaster;
-    private refHandler = {
-        toaster: (ref: Toaster) => (this.toaster = ref),
-    };
+    public componentDidMount() {
+        this.props.dialogUtils.setDialog(this.props.rawData, this.resetStateAndClose);
+    }
 
     public render() {
         return(
@@ -96,7 +94,6 @@ export class PureAddNewEvent extends React.Component<
                         <Button intent={Intent.PRIMARY} onClick={this.handleSubmit} text="Submit" />
                     </div>
                 </div>
-                <Toaster ref={this.refHandler.toaster} />
             </Dialog>
         );
     }
@@ -109,38 +106,7 @@ export class PureAddNewEvent extends React.Component<
 
     private handleSubmit = () => {
         const { finalEvent } = this.state;
-        if (this.isCompleteEvent(finalEvent)) {
-            finalEvent.attendees.push(finalEvent.host);
-            this.sendEventAndUsersToAPI(finalEvent);
-        } else {
-            this.toaster.show({ intent: Intent.DANGER, message: "Cannot leave fields blank." });
-        }
-    }
-
-    private sendEventAndUsersToAPI = async (finalEvent: IFinalEventChecked) => {
-        const newEvent = new Event(
-            this.assembleEventID(finalEvent),
-            finalEvent.host.id,
-            finalEvent.date,
-            finalEvent.description
-        );
-        const resolution = await this.props.writeData(newEvent, finalEvent.attendees, this.props.rawData);
-        if (resolution) {
-            this.resetStateAndClose()
-        } else {
-            this.toaster.show({ intent: Intent.DANGER, message: "Error writing data to sheet. Check console for more details." });
-        }
-    }
-
-    private assembleEventID = (finalEvent: IFinalEventChecked) => (finalEvent.host.id + '_' + finalEvent.date).replace(/\s/g, "_");
-
-    private isCompleteEvent(finalEvent: IFinalEventEmpty): finalEvent is IFinalEventChecked{
-        return (
-            finalEvent.host !== undefined &&
-            finalEvent.attendees.length > 0 &&
-            finalEvent.date !== "" &&
-            finalEvent.description !== ""
-        );
+        this.props.dialogUtils.submitFinalEvent(finalEvent);
     }
 
     private isUser = (object: IUser | undefined): object is IUser => {
@@ -197,9 +163,8 @@ function mapStateToProps(state: IStoreState): IAddNewEventStateProps {
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IAddNewEventDispatchProps {
-    const googleDispatch = new GoogleDispatcher(dispatch);
     return {
-        writeData: googleDispatch.writeData,
+        dialogUtils: new DialogUtils(dispatch),
     };
 }
 
