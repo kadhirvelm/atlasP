@@ -11,15 +11,15 @@
     border-radius: 50%;
 }
 
-div.R {
+.R {
     background: #F1948A;
 }
 
-div.Y {
+.Y {
     background: #F7DC6F;
 }
 
-div.G {
+.G {
     background: #7DCEA0;
 }
 
@@ -47,10 +47,10 @@ div.G {
     }
 }
 
-div.F {
+.F {
     background: #7B241C;
 }
 
-div.M {
+.M {
     background: #1A5276;
 }
