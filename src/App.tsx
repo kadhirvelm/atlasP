@@ -5,6 +5,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { Button, Intent, Spinner } from "@blueprintjs/core";
 
 import { Main } from "./Components/Main";
+import { GoogleDispatcher } from "./Dispatchers/GoogleDispatcher";
 import { ChangeSignIn } from "./State/GoogleSheetActions";
 import IStoreState from "./State/IStoreState";
 
@@ -16,7 +17,9 @@ export interface IAppProps {
 }
 
 export interface IAppDispatchProps {
+  authorize(callback: (isSignedIn: boolean) => void): void;
   changeSignInStatus(isSignedIn: boolean): void;
+  signIn(): void;
 }
 
 class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps> {
@@ -24,8 +27,8 @@ class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps> {
     receivedUpdate: false,
   };
 
-  public componentWillMount() {
-    this.authorize();
+  public componentDidMount() {
+    this.props.authorize(this.updateSigninStatus);
   }
 
   public render() {
@@ -50,7 +53,7 @@ class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps> {
     return (
       <Button
         id="authorize-button"
-        onClick={this.handleSignIn}
+        onClick={this.props.signIn}
         text="Sign In"
         intent={Intent.PRIMARY}
         className="centered fade-in"
@@ -58,36 +61,10 @@ class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps> {
     );
   }
 
-  private authorize = () => {
-    window["gapi"].load("client:auth2", () => {
-      window["gapi"].client
-        .init({
-          apiKey: process.env.REACT_APP_API_KEY,
-          clientId: process.env.REACT_APP_CLIENT_ID,
-          discoveryDocs: [
-            "https://sheets.googleapis.com/$discovery/rest?version=v4",
-          ],
-          scope: "https://www.googleapis.com/auth/spreadsheets.readonly",
-        })
-        .then(() => {
-          window["gapi"].auth2
-            .getAuthInstance()
-            .isSignedIn.listen(this.updateSigninStatus);
-          this.updateSigninStatus(
-            window["gapi"].auth2.getAuthInstance().isSignedIn.get(),
-          );
-        });
-    });
-  }
-
   private updateSigninStatus = (isSignedIn: boolean) => {
     this.setState({ receivedUpdate: true }, () => {
       this.props.changeSignInStatus(isSignedIn);
     });
-  }
-
-  private handleSignIn = () => {
-    window["gapi"].auth2.getAuthInstance().signIn();
   }
 }
 
@@ -99,7 +76,12 @@ function mapStateToProps(state: IStoreState) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IAppDispatchProps {
-  return bindActionCreators({ changeSignInStatus: ChangeSignIn.create }, dispatch);
+  const googleDispatcher = new GoogleDispatcher(dispatch);
+  return {
+    authorize: googleDispatcher.authorize,
+    ...bindActionCreators({ changeSignInStatus: ChangeSignIn.create }, dispatch),
+    signIn: googleDispatcher.signIn,
+  }
 }
 
 export const App = connect(mapStateToProps, mapDispatchToProps)(PureApp);

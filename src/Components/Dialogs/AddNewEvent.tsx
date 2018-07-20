@@ -1,17 +1,23 @@
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect, Dispatch } from "react-redux";
 
-import { Button, Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Button, Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
 import { IUser } from '../../Helpers/User';
 import IStoreState, { IUserMap } from "../../State/IStoreState";
 import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
+import { DialogUtils } from "./DialogUtils";
 
 import "./AddNewEvent.css";
 
 export interface IAddNewEventStateProps {
+    rawData: any;
     users: IUserMap | undefined;
+}
+
+export interface IAddNewEventDispatchProps {
+    dialogUtils: DialogUtils;
 }
 
 interface IAddNewEventProps {
@@ -19,24 +25,37 @@ interface IAddNewEventProps {
     onClose(): void;
 }
 
+export interface IFinalEventEmpty {
+    attendees: IUser[];
+    date: string;
+    description: string;
+    host: IUser | undefined;
+}
+
+export interface IFinalEventChecked extends IFinalEventEmpty {
+    host: IUser;
+}
+
 export interface IAddNewEventState {
-    finalEvent: {
-        attendees: IUser[];
-        date: string;
-        host: IUser | undefined;
-    };
+    finalEvent: IFinalEventEmpty | IFinalEventChecked;
 }
 
 const EMPTY_STATE: IAddNewEventState = {
     finalEvent: {
         attendees: [],
         date: "",
+        description: "",
         host: undefined,
     },
 }
 
-export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNewEventStateProps, IAddNewEventState> {
+export class PureAddNewEvent extends React.Component<
+    IAddNewEventProps & IAddNewEventStateProps & IAddNewEventDispatchProps, IAddNewEventState> {
     public state: IAddNewEventState = EMPTY_STATE;
+
+    public componentDidMount() {
+        this.props.dialogUtils.setDialog(this.props.rawData, this.resetStateAndClose);
+    }
 
     public render() {
         return(
@@ -50,6 +69,7 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup>
                         <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder="Date" />
+                        <InputGroup className="input-group" onChange={this.handleChange("description")} placeholder="Description" />
                         <Autocomplete
                             className="autocomplete-margin"
                             dataSource={this.props.users}
@@ -70,7 +90,8 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
                 </div>
                 <div className={Classes.DIALOG_FOOTER}>
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                        <Button text="Cancel" onClick={this.props.onClose} />
+                        <Button onClick={this.props.onClose} text="Cancel" />
+                        <Button intent={Intent.PRIMARY} onClick={this.handleSubmit} text="Submit" />
                     </div>
                 </div>
             </Dialog>
@@ -79,9 +100,13 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
 
     private resetStateAndClose = () => {
         this.setState(EMPTY_STATE, () => {
-            console.log(this.state);
             this.props.onClose();
         });
+    }
+
+    private handleSubmit = () => {
+        const { finalEvent } = this.state;
+        this.props.dialogUtils.submitFinalEvent(finalEvent);
     }
 
     private isUser = (object: IUser | undefined): object is IUser => {
@@ -132,8 +157,15 @@ export class PureAddNewEvent extends React.Component<IAddNewEventProps & IAddNew
 
 function mapStateToProps(state: IStoreState): IAddNewEventStateProps {
     return {
+        rawData: state.GoogleReducer.rawData,
         users: state.GoogleReducer.userData,
     };
 }
 
-export const AddNewEvent = connect(mapStateToProps)(PureAddNewEvent);
+function mapDispatchToProps(dispatch: Dispatch): IAddNewEventDispatchProps {
+    return {
+        dialogUtils: new DialogUtils(dispatch),
+    };
+}
+
+export const AddNewEvent = connect(mapStateToProps, mapDispatchToProps)(PureAddNewEvent);

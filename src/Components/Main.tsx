@@ -2,14 +2,18 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { Toaster } from "@blueprintjs/core";
+
+import { setToast } from "../Helpers/Toaster";
 import User from "../Helpers/User";
-import { fetchGoogleSheetData } from "../State/GoogleSheetActions";
 import IStoreState from "../State/IStoreState";
 import { SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
 import { DisplayGraph } from "./DisplayGraph";
 import { InfoGraphic } from "./InfoGraphic";
-import "./Main.css";
 import { AtlaspNavbar } from "./Navbar";
+
+import "./Main.css";
+
 
 interface IMainProps {
   readonly fetching: boolean;
@@ -23,17 +27,21 @@ interface IMainState {
 }
 
 export interface IMainDispatchProps {
-  fetchGoogleSheetData(): void;
   setInfoPerson(user: User): void;
   setMainPerson(user: User): void;
 }
 
 class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainState> {
+  private refHandler = {
+      toaster: setToast,
+  };
+
   public render() {
     return (
       <div style={{ display: "flex", flexDirection: "column" }}>
         <AtlaspNavbar />
         {this.renderGraphAndInfo()}
+        <Toaster ref={this.refHandler.toaster} />
       </div>
     );
   }
@@ -74,7 +82,6 @@ function mapDispatchToProps(dispatch: Dispatch) {
       setInfoPerson: SetInfoPerson.create,
       setMainPerson: SetMainPerson.create,
     }, dispatch),
-    fetchGoogleSheetData: fetchGoogleSheetData(dispatch),
   };
 }
 

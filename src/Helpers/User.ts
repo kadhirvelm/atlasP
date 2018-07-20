@@ -24,7 +24,7 @@ export default class User implements IUser {
         public contact: string,
         public redList: number[],
         public greenList: number[],
-        public events: number[]) {
+        public events: string[]) {
         this.name = this.firstNameAndLastInitial(fullName);
         this.connections = {};
     }

@@ -22,6 +22,7 @@ export const GoogleReducer = TypedReducer.builder<IStoreState["GoogleReducer"]>(
       eventData: assembledObject.eventData,
       isFetching: false,
       isSignedIn: state.isSignedIn,
+      rawData: payload.rawData,
       userData: assembledObject.userData,
     });
   })

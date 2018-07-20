@@ -45,7 +45,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
         );
     }
 
-    private returnEventDate = (events: number[]) => this.props.eventData[events.slice(-1)[0]];
+    private returnEventDate = (events: string[]) => this.props.eventData[events.slice(-1)[0]];
 
     private renderMainPerson() {
         return (

@@ -44,3 +44,8 @@ workflows:
       - build_test:
           requires:
             - install
+deployment:
+  prod:
+    branch: master
+    commands:
+      - aws s3 sync build/ s3://atlasp --delete --region us-west-1
