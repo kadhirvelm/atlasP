@@ -2,10 +2,11 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Button, Classes, Dialog, EditableText, Intent } from "@blueprintjs/core";
+import { Button, Classes, Dialog, Intent } from "@blueprintjs/core";
 import User from "../../Helpers/User";
 import IStoreState from "../../State/IStoreState";
 import { SetMainPerson } from "../../State/WebsiteActions";
+import { Autocomplete } from "../Common/Autocomplete";
 
 import "./FetchPerson.css";
 
@@ -15,7 +16,7 @@ interface IFetchPersonProps {
 }
 
 interface IFetchPersonState {
-    id: string;
+    fetchPerson?: User;
 }
 
 export interface IFetchPersonStateProps {
@@ -31,8 +32,14 @@ class PureFetchPerson extends React.Component<
     IFetchPersonProps & IFetchPersonStateProps & IFetchPersonDispatchProps,
     IFetchPersonState> {
     public state = {
-        id: "",
+        fetchPerson: this.props.mainPerson,
     };
+
+    public componentWillUpdate(nextProps: IFetchPersonProps & IFetchPersonStateProps & IFetchPersonDispatchProps) {
+        if (nextProps.mainPerson !== this.props.mainPerson) {
+            this.setState({ fetchPerson: nextProps.mainPerson });
+        }
+    }
 
     public render() {
         return(
@@ -43,24 +50,15 @@ class PureFetchPerson extends React.Component<
                 title="Fetch Specific Person"
             >
                 <div className={Classes.DIALOG_BODY}>
-                    {this.props.mainPerson ? this.renderCurrentPerson(this.props.mainPerson) : "Unknown"}
                     <div className="flexbox-row flexbox-baseline">
-                        <div className="flexbox-row" style={{ flexBasis: "50%", justifyContent: "flex-end" }}>
-                            <h2 style={{ marginTop: "25px" }}>
-                                <EditableText
-                                    intent={Intent.PRIMARY}
-                                    maxLength={4}
-                                    placeholder="Enter ID"
-                                    value={this.state.id}
-                                    onChange={this.changeValue}
-                                />
-                            </h2>
-                        </div>
-                        <div className="flexbox-row" style={{ flexBasis: "50%", alignItems: "center", justifyContent: "flex-start" }}>
-                            <h3 style={{ marginLeft: "15px", color: "#1D8348" }}>
-                                {this.maybeRenderFullName()}
-                            </h3>
-                        </div>
+                        <Autocomplete
+                            className="autocomplete-margin"
+                            dataSource={this.props.userData}
+                            displayKey="name"
+                            placeholderText="Search for person..."
+                            values={this.returnPersonValue()}
+                            onSelection={this.handleSelection}
+                        />
                     </div>
                 </div>
                 <div className={Classes.DIALOG_FOOTER}>
@@ -70,7 +68,7 @@ class PureFetchPerson extends React.Component<
                         onClick={this.changeMainPerson}
                         intent={Intent.PRIMARY}
                         text="Select"
-                        disabled={!(this.props.userData && this.props.userData[this.state.id])}
+                        disabled={this.state.fetchPerson === undefined}
                     />
                     </div>
                 </div>
@@ -78,27 +76,23 @@ class PureFetchPerson extends React.Component<
         );
     }
 
-    private maybeRenderFullName() {
-        if (this.state.id && this.props.userData && this.props.userData[this.state.id]) {
-            return this.props.userData[this.state.id].fullName;
-        }
-        return this.state.id !== "" ? "Error Fetching Name" : "";
+    private fetchPersonIsDefined(fetchPerson: User | undefined): fetchPerson is User {
+        return fetchPerson !== undefined;
     }
 
-    private changeValue = (value: string) => this.setState({ id: value });
-    private changeMainPerson = () => {
-        if (this.props.userData) {
-            this.props.setMainPerson(this.props.userData[this.state.id]);
-            this.props.handleMainPersonDialogClose();
-            this.setState({ id: "" });
-        }
+    private returnPersonValue() {
+        const { fetchPerson } = this.state;
+        return this.fetchPersonIsDefined(fetchPerson) ? {[fetchPerson.id]: fetchPerson.name} : undefined;
     }
-    private renderCurrentPerson(user: User) {
-        return(
-            <div>
-                Current: <b> {user.name} - {user.id} </b>
-            </div>
-        );
+
+    private handleSelection = (fetchPerson: User) => this.setState({ fetchPerson });
+    private changeMainPerson = () => {
+        const { fetchPerson } = this.state;
+        if (this.props.userData && this.fetchPersonIsDefined(fetchPerson)) {
+            this.props.setMainPerson(fetchPerson);
+            this.props.handleMainPersonDialogClose();
+            this.setState({ fetchPerson: undefined });
+        }
     }
 }
 

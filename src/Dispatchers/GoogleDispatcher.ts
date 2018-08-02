@@ -4,6 +4,7 @@ import Event from "../Helpers/Event";
 import { IUser } from "../Helpers/User";
 import { FailedDataFetch, StartingDataFetch, SuccessfulDataFetch } from "../State/GoogleSheetActions";
 
+
 const EVENT_DATA_RANGE = "Events-Data!A1:L100";
 const USER_DATA_RANGE = "Users-Data!A1:AZ100";
 

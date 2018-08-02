@@ -54,7 +54,7 @@ export class PureAddNewEvent extends React.Component<
     public state: IAddNewEventState = EMPTY_STATE;
 
     public componentDidMount() {
-        this.props.dialogUtils.setDialog(this.props.rawData, this.resetStateAndClose);
+        this.props.dialogUtils.setReset(this.resetStateAndClose);
     }
 
     public render() {
@@ -106,6 +106,7 @@ export class PureAddNewEvent extends React.Component<
 
     private handleSubmit = () => {
         const { finalEvent } = this.state;
+        this.props.dialogUtils.setData(this.props.rawData);
         this.props.dialogUtils.submitFinalEvent(finalEvent);
     }
 

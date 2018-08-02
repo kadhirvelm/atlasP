@@ -103,7 +103,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
 
     private openSheet() {
         // tslint:disable-next-line:max-line-length
-        window.open("https://docs.google.com/spreadsheets/d/1fsQHaT2ZG1uRKmuHagoUjReNMpFH3_fSGw9HLLcphIg/edit#gid=123656038", "_blank");
+        window.open(`https://docs.google.com/spreadsheets/d/${process.env.REACT_APP_SPREADSHEET}`, "_blank");
     }
 
     private maybeRenderNewPersonDialog() {

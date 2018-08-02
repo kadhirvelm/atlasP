@@ -15,9 +15,12 @@ export class DialogUtils {
         this.googleDispatch = new GoogleDispatcher(this.dispatch);
     }
 
-    public setDialog(rawData: any, resetStateAndClose: () => void) {
-        this.rawData = rawData;
+    public setReset(resetStateAndClose: () => void) {
         this.resetStateAndClose = resetStateAndClose;
+    }
+
+    public setData(rawData: any) {
+        this.rawData = rawData;
     }
 
     public submitFinalEvent(finalEvent: IFinalEventEmpty) {
