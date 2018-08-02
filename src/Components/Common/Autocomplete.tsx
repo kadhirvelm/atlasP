@@ -54,7 +54,9 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                         className="autofill-input"
                         onChange={this.handleChange()}
                         onClick={this.openAutofill}
+                        onFocus={this.openAutofill}
                         placeholder={this.props.placeholderText}
+                        spellCheck={false}
                         value={this.state.searchText}
                     />
                 </div>

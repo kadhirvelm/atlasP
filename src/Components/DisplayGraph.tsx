@@ -112,7 +112,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
     }
 
     private convertToAbsolutePoint(location: ISingleLocation) {
-        if (this.props.graphRef == null) {
+        if (location == null || this.props.graphRef == null) {
             return {x: 0, y: 0 };
         }
         return {
