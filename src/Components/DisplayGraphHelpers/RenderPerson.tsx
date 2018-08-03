@@ -41,7 +41,7 @@ export class RenderPerson extends React.Component<IRenderPersonProps> {
                     onClick={this.props.changeInfoPerson(this.props.user)}
                     style={{ width: this.props.dimension + "vmin", height: this.props.dimension + "vmin" }}
                 >
-                    <div className="centered flexbox-column-centered" style={{ color: "white" }}>
+                    <div className="centered flexbox-column-centered" style={{ color: this.props.dimension > 0 ? "white" : "#2C3E50" }}>
                         <div> {this.props.user.name} </div>
                         <div> {this.maybeRenderScore(this.props.scoreTally)} </div>
                     </div>
@@ -51,7 +51,9 @@ export class RenderPerson extends React.Component<IRenderPersonProps> {
     }
 
     private maybeRenderScore(scoreTally: IScore | IScoreMainPerson) {
-        if (this.scoreTypeIsMainPerson(scoreTally)) {
+        if (this.props.dimension <= 0) {
+            return null;
+        } else if (this.scoreTypeIsMainPerson(scoreTally)) {
             return scoreTally.finalScore;
         }
         return "Main";

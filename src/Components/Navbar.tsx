@@ -20,6 +20,7 @@ import { AddNewEvent } from "./Dialogs/AddNewEvent";
 import { FetchPerson } from "./Dialogs/FetchPerson";
 
 import "./Main.css";
+import "./Navbar.css";
 
 interface INavbarState {
   eventEntryDialogOpen: boolean;
@@ -27,8 +28,10 @@ interface INavbarState {
 }
 
 export interface INavbarStateProps {
+    currentUser?: any;
     fetching: boolean;
     googleSheetDataError?: any;
+    isAdmin: boolean;
     userData?: { id?: User };
 }
 
@@ -47,7 +50,6 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
             <Navbar className="pt-dark" style={{ zIndex: 10 }}>
                 {this.renderLeftButtonGroup()}
                 {this.renderRightButtonGroup()}
-                {this.maybeRenderNewPersonDialog()}
                 {this.renderNewEventDialog()}
             </Navbar>
         );
@@ -59,30 +61,58 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                 <NavbarHeading> Dinner Table </NavbarHeading>
                 <NavbarDivider />
                 <Button
+                    className="navbar-button"
                     icon="refresh"
                     onClick={this.props.fetchGoogleSheetData}
                     text="Refresh Data"
                     intent={this.returnIntent()}
                 />
-                {this.props.fetching && <Spinner className="pt-small" intent={Intent.WARNING} />}
-                <Button
-                    icon="exchange"
-                    onClick={this.handleChangeMainPersonDialog}
-                    style={{marginLeft: "10px", marginRight: "10px"}}
-                    text="Change User"
-                />
-                <Button icon="add" onClick={this.handleOpenEventEntryDialog} text="Enter Event" />
+                {this.maybeRenderSpinner()}
+                <Button className="navbar-button" icon="add" onClick={this.handleOpenEventEntryDialog} text="Enter Event" />
+                {this.renderAdminOptions()}
             </NavbarGroup>
         );
+    }
+
+    private maybeRenderSpinner() {
+        if (!this.props.fetching) {
+            return null;
+        }
+        return <Spinner className="pt-small" intent={Intent.WARNING} />
+    }
+
+    private renderAdminOptions() {
+        if (!this.props.isAdmin) {
+            return null;
+        }
+        return (
+            <div>
+                <Button
+                    className="navbar-button"
+                    icon="exchange"
+                    onClick={this.handleChangeMainPersonDialog}
+                    text="Change User"
+                />
+                <Button className="navbar-button" icon="link" text="Google Sheet" onClick={this.openSheet} />
+                {this.maybeRenderNewPersonDialog()}
+            </div>
+        )
     }
 
     private renderRightButtonGroup() {
         return (
             <NavbarGroup align={Alignment.RIGHT}>
-                <Button icon="link" text="Google Sheet" onClick={this.openSheet} />
+                {this.maybeRenderUsername()}
                 <Button icon="log-out" onClick={this.handleSignOut} />
             </NavbarGroup>
         );
+    }
+
+    private maybeRenderUsername() {
+        if (this.props.currentUser === undefined) {
+            return null;
+        }
+        return <div style={ { marginRight: "10px" } }>{this.props.currentUser.ig}</div>;
     }
 
     private handleChangeMainPersonDialog = () => {
@@ -138,8 +168,10 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
 
 function mapStateToProps(state: IStoreState): INavbarStateProps {
   return {
+    currentUser: state.GoogleReducer.currentUser,
     fetching: state.GoogleReducer.isFetching,
     googleSheetDataError: state.GoogleReducer.googleSheetDataError,
+    isAdmin: state.GoogleReducer.isAdmin || false,
     userData: state.GoogleReducer.userData,
   };
 }

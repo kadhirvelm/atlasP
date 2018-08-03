@@ -6,12 +6,12 @@ const finalUserData = {};
 let hasFailed: boolean;
 
 const extractIntoNumberArray = (rawNumbers: string): number[] => {
-    return rawNumbers ? rawNumbers.split(",").map((rawNumber) => parseInt(rawNumber, 10)) : [];
+    return rawNumbers ? rawNumbers.split(",").filter((rawNumber) => rawNumber.length > 0).map((rawNumber) => parseInt(rawNumber, 10)) : [];
 };
 
 function assembleEventData(eventData: string[][]) {
     return eventData.slice(1).forEach((event: string[]) => {
-        const newEvent = new Event(event[0], parseInt(event[1], 10), event[2], event.slice(3).join(","));
+        const newEvent = new Event(event[0], parseInt(event[1], 10), event[2], event.slice(3).filter((cell) => cell.length > 0).join(","));
         finalEventsData[newEvent.id] = newEvent;
     });
 }
@@ -25,9 +25,9 @@ function assembleUserData(userData: string[][]) {
             parseInt(person[3], 10),
             person[4],
             person[5],
+            extractIntoNumberArray(person[6]),
             extractIntoNumberArray(person[7]),
-            extractIntoNumberArray(person[8]),
-            person.slice(9));
+            person.slice(8));
         finalUserData[newUser.id] = newUser;
         newUser.events.forEach((event: string) => {
             if (finalEventsData[event]) {
