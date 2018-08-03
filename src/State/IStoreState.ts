@@ -11,8 +11,10 @@ export interface IEventMap {
 
 export default interface IStoreState {
     GoogleReducer: {
+        currentUser?: any;
         eventData?: IEventMap;
         googleSheetDataError?: object;
+        isAdmin?: boolean;
         isFetching: boolean;
         isSignedIn: boolean;
         rawData?: any;

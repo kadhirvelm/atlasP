@@ -15,7 +15,7 @@ export class GoogleDispatcher {
         window["gapi"].auth2.getAuthInstance().signIn();
     }
 
-    public authorize = (callback: (isSignedIn: boolean) => void) => {
+    public authorize = (callback: (isSignedIn: boolean, currentUser: any, isAdmin: boolean | string) => void) => {
         window["gapi"].load("client:auth2", () => {
           window["gapi"].client
             .init({
@@ -30,7 +30,12 @@ export class GoogleDispatcher {
                 window["gapi"].auth2
                     .getAuthInstance()
                     .isSignedIn.listen(callback);
-                callback(window["gapi"].auth2.getAuthInstance().isSignedIn.get());
+                const currentUser = window["gapi"].auth2.getAuthInstance().currentUser.get().w3;
+                callback(
+                    window["gapi"].auth2.getAuthInstance().isSignedIn.get(),
+                    currentUser,
+                    currentUser !== undefined ? this.retrieveAdminUsers().includes(currentUser.U3) : false,
+                );
             });
         });
     }
@@ -65,6 +70,14 @@ export class GoogleDispatcher {
             this.fetchGoogleSheetData();
         }
         return success
+    }
+
+    private retrieveAdminUsers(): string[] {
+        const { REACT_APP_ADMIN_EMAILS } = process.env;
+        if (REACT_APP_ADMIN_EMAILS === undefined) {
+            return [];
+        }
+        return REACT_APP_ADMIN_EMAILS.split(",");
     }
 
     private writeEvent = async (event: Event): Promise<boolean> => {

@@ -42,11 +42,11 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Building
-        command: yarn build
+          name: Building
+          command: yarn build
       - run:
-        name: Deploying
-        command: aws s3 sync build/ s3://atlasp --delete --region us-west-1
+          name: Deploying
+          command: aws s3 sync build/ s3://atlasp --delete --region us-west-1
 workflows:
   version: 2
   build_and_test:

@@ -34,7 +34,9 @@ export const GoogleReducer = TypedReducer.builder<IStoreState["GoogleReducer"]>(
   })
   .withHandler(ChangeSignIn.TYPE, (state, payload) => {
     return setWith(state, {
-      isSignedIn: payload,
+      currentUser: payload.currentUser,
+      isAdmin: payload.isAdmin,
+      isSignedIn: payload.isSignedIn,
     });
   })
   .build();

@@ -2,12 +2,12 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Toaster } from "@blueprintjs/core";
+import { Spinner, Toaster } from "@blueprintjs/core";
 
 import { setToast } from "../Helpers/Toaster";
 import User from "../Helpers/User";
-import IStoreState from "../State/IStoreState";
-import { SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
+import IStoreState, { IUserMap } from "../State/IStoreState";
+import { SetMainPerson } from "../State/WebsiteActions";
 import { DisplayGraph } from "./DisplayGraph";
 import { InfoGraphic } from "./InfoGraphic";
 import { AtlaspNavbar } from "./Navbar";
@@ -16,10 +16,11 @@ import "./Main.css";
 
 
 interface IMainProps {
-  readonly fetching: boolean;
-  readonly googleSheetDataError?: any;
-  readonly infoPerson?: User;
-  readonly mainPerson?: User;
+  currentUser: any;
+  fetching: boolean;
+  isAdmin?: boolean;
+  mainPerson?: User;
+  userData: IUserMap | undefined;
 }
 
 interface IMainState {
@@ -27,7 +28,6 @@ interface IMainState {
 }
 
 export interface IMainDispatchProps {
-  setInfoPerson(user: User): void;
   setMainPerson(user: User): void;
 }
 
@@ -60,26 +60,41 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
   }
 
   private maybeRenderGraph() {
-    if (this.props.mainPerson === undefined) {
+    if (this.props.mainPerson === undefined && this.props.isAdmin) {
       return <div className="centered"> Click the “Change User” above to get started! </div>;
+    } else if (this.props.mainPerson === undefined) {
+      return this.fetchCurrentPersonGraph();
     }
     return <DisplayGraph />;
+  }
+
+  private fetchCurrentPersonGraph() {
+    const { currentUser, userData } = this.props;
+    if (currentUser === undefined || userData === undefined) {
+      return <div className="centered">Hum, something went wrong. We can't seem to find you.</div>
+    }
+    Object.values(userData).forEach((user) => {
+      if (user.fullName.toLowerCase() === currentUser.ig.toLowerCase()) {
+        this.props.setMainPerson(user);
+      }
+    })
+    return <Spinner />
   }
 }
 
 function mapStateToProps(state: IStoreState) {
   return {
+    currentUser: state.GoogleReducer.currentUser,
     fetching: state.GoogleReducer.isFetching,
-    googleSheetDataError: state.GoogleReducer.googleSheetDataError,
-    infoPerson: state.WebsiteReducer.infoPerson,
+    isAdmin: state.GoogleReducer.isAdmin,
     mainPerson: state.WebsiteReducer.mainPerson,
+    userData: state.GoogleReducer.userData,
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
     ...bindActionCreators({
-      setInfoPerson: SetInfoPerson.create,
       setMainPerson: SetMainPerson.create,
     }, dispatch),
   };
