@@ -22,14 +22,14 @@ export interface ISinglePersonDataDialogStoreProps {
 }
 
 export interface ISinglePersonDataDialogState {
-    openInformationPopover: boolean;
+    openInformationPopover: string | undefined;
 }
 
 export class PureSinglePersonDataDialog extends React.Component<
     ISinglePersonDataDialogProps & ISinglePersonDataDialogStoreProps,
     ISinglePersonDataDialogState> {
     public state = {
-        openInformationPopover: false,
+        openInformationPopover: undefined,
     };
 
     public render() {
@@ -61,8 +61,8 @@ export class PureSinglePersonDataDialog extends React.Component<
         });
     }
 
-    private openInformationHover = () => this.setState({ openInformationPopover: true });
-    private closeInformationHover = () => this.setState({ openInformationPopover: false });
+    private openInformationHover = (eventID: string) => () => this.setState({ openInformationPopover: eventID });
+    private closeInformationHover = () => this.setState({ openInformationPopover: undefined });
 
     private renderEventStuff(event: Event, index: number) {
         if (this.props.userData === undefined) {
@@ -90,9 +90,9 @@ export class PureSinglePersonDataDialog extends React.Component<
     private renderPeoplePopover(event: Event) {
         return (
             <div className="flex-basis-10" style={{ justifyContent: "center" }}>
-                    <Popover isOpen={this.state.openInformationPopover} position={Position.RIGHT}>
+                    <Popover isOpen={this.state.openInformationPopover === event.id} position={Position.RIGHT}>
                         <Icon
-                            onMouseEnter={this.openInformationHover}
+                            onMouseEnter={this.openInformationHover(event.id)}
                             onMouseLeave={this.closeInformationHover}
                             icon="people"
                         />
