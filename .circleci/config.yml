@@ -42,6 +42,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install
+          command: yarn install
+      - run:
           name: Building
           command: yarn build
       - run:
