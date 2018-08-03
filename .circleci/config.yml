@@ -36,6 +36,17 @@ jobs:
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+  deploy:
+    docker:
+      - image: circleci/node:7.10
+    steps:
+      - checkout
+      - run:
+        name: Building
+        command: yarn build
+      - run:
+        name: Deploying
+        command: aws s3 sync build/ s3://atlasp --delete --region us-west-1
 workflows:
   version: 2
   build_and_test:
@@ -44,8 +55,10 @@ workflows:
       - build_test:
           requires:
             - install
-deployment:
-  prod:
-    branch: master
-    commands:
-      - aws s3 sync build/ s3://atlasp --delete --region us-west-1
+      - deploy:
+          requires:
+            - build_test
+          filters:
+            branches:
+              only:
+                - master
