@@ -22,7 +22,6 @@ export class RenderPerson extends React.Component<IRenderPersonProps> {
     private YELLOW_DAYS = 28;
 
     public render() {
-        console.log(this.props.dimension + 1 + "vmin", this.props.dimension + 1 + "vmin");
         return (
             <div
                 className="person"
