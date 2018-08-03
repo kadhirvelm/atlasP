@@ -17,8 +17,8 @@ export interface IAppProps {
 }
 
 export interface IAppDispatchProps {
-  authorize(callback: (isSignedIn: boolean) => void): void;
-  changeSignInStatus(isSignedIn: boolean): void;
+  authorize(callback: (isSignedIn: boolean, currentUser: any, isAdmin: boolean | string) => void): void;
+  changeSignInStatus(signIn: { isSignedIn: boolean, currentUser: any, isAdmin: boolean }): void;
   signIn(): void;
 }
 
@@ -61,9 +61,9 @@ class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps> {
     );
   }
 
-  private updateSigninStatus = (isSignedIn: boolean) => {
+  private updateSigninStatus = (isSignedIn: boolean, currentUser: any, isAdmin: boolean) => {
     this.setState({ receivedUpdate: true }, () => {
-      this.props.changeSignInStatus(isSignedIn);
+      this.props.changeSignInStatus({ isSignedIn, currentUser,  isAdmin });
     });
   }
 }

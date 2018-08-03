@@ -12,4 +12,4 @@ export const SuccessfulDataFetch = TypedAction.define("GoogleSheetActions//SUCCE
 
 export const FailedDataFetch = TypedAction.define("GoogleSheetActions//FAILED_DATA_FETCH")<any>();
 
-export const ChangeSignIn = TypedAction.define("GoogleSheetsAction//CHANGE_SIGN_IN")<boolean>();
+export const ChangeSignIn = TypedAction.define("GoogleSheetsAction//CHANGE_SIGN_IN")<{ isSignedIn: boolean, currentUser: any, isAdmin: boolean }>();

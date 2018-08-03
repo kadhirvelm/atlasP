@@ -25,9 +25,9 @@ function assembleUserData(userData: string[][]) {
             parseInt(person[3], 10),
             person[4],
             person[5],
+            extractIntoNumberArray(person[6]),
             extractIntoNumberArray(person[7]),
-            extractIntoNumberArray(person[8]),
-            person.slice(9));
+            person.slice(8));
         finalUserData[newUser.id] = newUser;
         newUser.events.forEach((event: string) => {
             if (finalEventsData[event]) {
