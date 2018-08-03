@@ -63,22 +63,24 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
     if (this.props.mainPerson === undefined && this.props.isAdmin) {
       return <div className="centered"> Click the “Change User” above to get started! </div>;
     } else if (this.props.mainPerson === undefined) {
-      return this.fetchCurrentPersonGraph();
+      return this.maybeSetMainPerson();
     }
     return <DisplayGraph />;
   }
 
-  private fetchCurrentPersonGraph() {
+  private maybeSetMainPerson() {
     const { currentUser, userData } = this.props;
     if (currentUser === undefined || userData === undefined) {
-      return <div className="centered">Hum, something went wrong. We can't seem to find you.</div>
+      return <div className="centered">Hum, something went wrong. Try refreshing the data.</div>
     }
-    Object.values(userData).forEach((user) => {
-      if (user.fullName.toLowerCase() === currentUser.ig.toLowerCase()) {
-        this.props.setMainPerson(user);
-      }
-    })
-    return <Spinner />
+
+    const person = Object.values(userData).find((user) => user.fullName.toLowerCase() === currentUser.ig.toLowerCase());
+    if (person === undefined) {
+      return <div>Hum, something went wrong. We can't seem to find you. Contact an administrator.</div>
+    }
+
+    this.props.setMainPerson(person);
+    return;
   }
 }
 
