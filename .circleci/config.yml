@@ -37,6 +37,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install awscli
+          command: sudo pip install awscli
+      - run:
           name: Deploying
           command: aws s3 sync build/ s3://atlasp --delete --region us-west-1
 workflows:
