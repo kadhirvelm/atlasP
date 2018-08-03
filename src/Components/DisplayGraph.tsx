@@ -10,9 +10,10 @@ import { SetGraphRef, SetInfoPerson, SetMainPerson } from "../State/WebsiteActio
 import { RenderLine } from "./DisplayGraphHelpers/RenderLine";
 import { RenderPerson } from "./DisplayGraphHelpers/RenderPerson";
 
-export interface IDisplayGraphStateProps {
-    graphRef: HTMLElement | null;
+export interface IDisplayGraphStoreProps {
     eventData: IEventMap;
+    graphRef: HTMLElement | null;
+    isAdmin?: boolean;
     userData: IUserMap;
     peopleGraph: IPeopleGraph;
 }
@@ -23,7 +24,12 @@ export interface IDisplayGraphDispatchProps {
     setMainPerson(mainPerson: User): void;
 }
 
-class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplayGraphDispatchProps> {
+class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
+    public componentWillMount() {
+        this.changeInfoPerson = this.changeInfoPerson.bind(this);
+        this.changeMainPerson = this.changeMainPerson.bind(this);
+    }
+
     public setRef = (ref: HTMLElement | null ) => {
         if (this.props.graphRef == null) {
             this.props.setGraphRef(ref);
@@ -79,12 +85,12 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
         });
     }
 
-    private changeInfoPerson = (user: User) => {
+    private changeInfoPerson(user: User) {
         return () => this.props.setInfoPerson(user);
     }
 
-    private changeMainPerson = (user: User) => {
-        return () => this.props.setMainPerson(user);
+    private changeMainPerson(user: User) {
+        return () => this.props.isAdmin && this.props.setMainPerson(user);
     }
 
     private renderConnectionLines() {
@@ -122,10 +128,11 @@ class PureDispayGraph extends React.Component<IDisplayGraphStateProps & IDisplay
     }
 }
 
-function mapStateToProps(state: IStoreState): IDisplayGraphStateProps {
+function mapStateToProps(state: IStoreState): IDisplayGraphStoreProps {
     return {
         eventData: state.GoogleReducer.eventData || {},
         graphRef: state.WebsiteReducer.graphRef,
+        isAdmin: state.GoogleReducer.isAdmin,
         peopleGraph: selectMainPersonGraph(state),
         userData: state.GoogleReducer.userData || {},
     };
