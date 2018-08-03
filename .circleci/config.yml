@@ -1,28 +1,10 @@
 version: 2
 jobs:
-  build_test:
-    docker:
-      - image: circleci/node:7.10
-    steps:
-      - add_ssh_keys
-      - checkout
-      - run:
-          name: Install
-          command: yarn install
-      - run: 
-          name: Lint
-          command: yarn lint
-      # - run: 
-      #     name: Test
-      #     command: CI=true yarn test
-      - run: 
-          name: Build
-          command: yarn build
   install:
     docker:
       - image: circleci/node:7.10
+    working_directory: ~/atlasP
     steps:
-      - add_ssh_keys
       - checkout
       - restore_cache:
           name: Restore yarn package cache
@@ -36,17 +18,24 @@ jobs:
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
-  deploy:
+  build_test:
     docker:
       - image: circleci/node:7.10
+    working_directory: ~/atlasP
     steps:
       - checkout
-      - run:
-          name: Install
-          command: yarn install
-      - run:
-          name: Building
+      - run: 
+          name: Lint
+          command: yarn lint
+      - run: 
+          name: Build
           command: yarn build
+  deploy:
+    docker:
+      - image: circleci/python:2.7-jessie
+    working_directory: ~/atlasP
+    steps:
+      - checkout
       - run:
           name: Deploying
           command: aws s3 sync build/ s3://atlasp --delete --region us-west-1
@@ -63,5 +52,4 @@ workflows:
             - build_test
           filters:
             branches:
-              only:
-                - master
+              only: master
