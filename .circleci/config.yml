@@ -48,7 +48,10 @@ jobs:
           name: Building
           command: yarn build
       - run:
-          name: Deploying
+          name: Install awscli
+          command: sudo pip install awscli
+      - run:
+          name: Deploying to S3
           command: aws s3 sync build/ s3://atlasp --delete --region us-west-1
 workflows:
   version: 2
