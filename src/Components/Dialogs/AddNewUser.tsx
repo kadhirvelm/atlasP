@@ -55,7 +55,6 @@ export class PureAddNewPerson extends React.Component<
         return(
             <Dialog
                 canEscapeKeyClose={false}
-                canOutsideClickClose={false}
                 isOpen={this.props.isOpen}
                 onClose={this.resetStateAndClose}
                 title="Add New Event"
