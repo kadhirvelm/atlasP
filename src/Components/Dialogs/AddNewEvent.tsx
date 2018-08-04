@@ -73,14 +73,14 @@ export class PureAddNewEvent extends React.Component<
                         <Autocomplete
                             className="autocomplete-margin"
                             dataSource={this.props.users}
-                            displayKey="name"
+                            displayKey="fullName"
                             placeholderText="Search for host..."
                             values={this.finalEventValue("host")}
                             onSelection={this.handleHostSelection}
                         />
                         <Autocomplete
                             dataSource={this.props.users}
-                            displayKey="name"
+                            displayKey="fullName"
                             multiselection={true}
                             placeholderText="Search for users..."
                             values={this.finalEventValue("attendees")}

@@ -5,6 +5,7 @@ import { GoogleDispatcher } from "../../Dispatchers/GoogleDispatcher";
 import Event from "../../Helpers/Event";
 import { showToast } from "../../Helpers/Toaster";
 import { IFinalEventChecked, IFinalEventEmpty } from "./AddNewEvent";
+import { IFinalPerson } from "./AddNewUser";
 
 export class DialogUtils {
     private googleDispatch: GoogleDispatcher;
@@ -23,12 +24,41 @@ export class DialogUtils {
         this.rawData = rawData;
     }
 
+    public submitFinalPerson(finalPerson: IFinalPerson) {
+        if (this.isCompletePerson(finalPerson)) {
+            this.sendUserToAPI(finalPerson);
+        } else {
+            showToast(Intent.DANGER, "Cannot leave fields blank/some fields are incorrect.");
+        }
+    }
+
     public submitFinalEvent(finalEvent: IFinalEventEmpty) {
         if (this.isCompleteEvent(finalEvent)) {
             finalEvent.attendees.push(finalEvent.host);
             this.sendEventAndUsersToAPI(finalEvent);
         } else {
             showToast(Intent.DANGER, "Cannot leave fields blank.");
+        }
+    }
+
+    private isCompletePerson(finalPerson: IFinalPerson) {
+        if (
+            parseInt(finalPerson.age, 10) !== undefined &&
+            finalPerson.fullName.length > 0 &&
+            finalPerson.location.length > 0 &&
+            (finalPerson.gender === "F" || finalPerson.gender === "M" || finalPerson.gender === "X")) {
+            return true;
+        }
+        return false;
+    }
+
+    private sendUserToAPI = async (finalPerson: IFinalPerson) => {
+        const resolution = await this.googleDispatch.writeNewUserData(finalPerson, this.rawData);
+        if (resolution) {
+            showToast(Intent.SUCCESS, "Successfully created a new user.");
+            this.resetStateAndClose();
+        } else {
+            showToast(Intent.DANGER, "Error writing person to the database. Check console for more details.");
         }
     }
     
@@ -39,12 +69,12 @@ export class DialogUtils {
             finalEvent.date,
             finalEvent.description
         );
-        const resolution = await this.googleDispatch.writeData(newEvent, finalEvent.attendees, this.rawData);
+        const resolution = await this.googleDispatch.writeEventData(newEvent, finalEvent.attendees, this.rawData);
         if (resolution) {
             showToast(Intent.SUCCESS, "Successfully created event.");
-            this.resetStateAndClose()
+            this.resetStateAndClose();
         } else {
-            showToast(Intent.DANGER, "Error writing data to sheet. Check console for more details.");
+            showToast(Intent.DANGER, "Error writing data to the database. Check console for more details.");
         }
     }
     

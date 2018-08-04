@@ -17,6 +17,7 @@ import { GoogleDispatcher } from "../Dispatchers/GoogleDispatcher";
 import User from "../Helpers/User";
 import IStoreState from "../State/IStoreState";
 import { AddNewEvent } from "./Dialogs/AddNewEvent";
+import { AddNewPerson } from "./Dialogs/AddNewUser";
 import { FetchPerson } from "./Dialogs/FetchPerson";
 
 import "./Main.css";
@@ -25,6 +26,7 @@ import "./Navbar.css";
 interface INavbarState {
   eventEntryDialogOpen: boolean;
   mainPersonDialogOpen: boolean;
+  personEntryDialogOpen: boolean;
 }
 
 export interface INavbarStateProps {
@@ -43,6 +45,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
     public state = {
         eventEntryDialogOpen: false,
         mainPersonDialogOpen: false,
+        personEntryDialogOpen: false,
     };
 
     public render() {
@@ -51,6 +54,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                 {this.renderLeftButtonGroup()}
                 {this.renderRightButtonGroup()}
                 {this.renderNewEventDialog()}
+                {this.renderNewPersonDialog()}
             </Navbar>
         );
     }
@@ -69,6 +73,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                 />
                 {this.maybeRenderSpinner()}
                 <Button className="navbar-button" icon="add" onClick={this.handleOpenEventEntryDialog} text="Enter Event" />
+                <Button className="navbar-button" icon="new-person" onClick={this.handleOpenPersonEntryDialog} text="Add Person" />
                 {this.renderAdminOptions()}
             </NavbarGroup>
         );
@@ -94,7 +99,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                     text="Change User"
                 />
                 <Button className="navbar-button" icon="link" text="Google Sheet" onClick={this.openSheet} />
-                {this.maybeRenderNewPersonDialog()}
+                {this.maybeRenderFetchPersonDialog()}
             </div>
         )
     }
@@ -131,12 +136,20 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
         this.setState({ eventEntryDialogOpen: false });
     }
 
+    private handleOpenPersonEntryDialog = () => {
+        this.setState({ personEntryDialogOpen: true });
+    }
+
+    private handleClosePersonEntryDialog = () => {
+        this.setState({ personEntryDialogOpen: false });
+    }
+
     private openSheet() {
         // tslint:disable-next-line:max-line-length
         window.open(`https://docs.google.com/spreadsheets/d/${process.env.REACT_APP_SPREADSHEET}`, "_blank");
     }
 
-    private maybeRenderNewPersonDialog() {
+    private maybeRenderFetchPersonDialog() {
         if (this.props.userData === undefined) {
             return null;
         }
@@ -155,6 +168,15 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                 onClose={this.handleCloseEventEntryDialog}
             />
         );
+    }
+
+    private renderNewPersonDialog() {
+        return (
+            <AddNewPerson
+                isOpen={this.state.personEntryDialogOpen}
+                onClose={this.handleClosePersonEntryDialog}
+            />
+        )
     }
 
     private returnIntent(): Intent {
