@@ -37,6 +37,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     }
 
     public render() {
+        console.log(this.props.userData);
         return(
             <div
                 id="Graph Container"
@@ -68,6 +69,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     }
 
     private renderMainPersonConnections() {
+        const { mainPerson } = this.props.peopleGraph;
         return Object.keys(this.props.peopleGraph.mainPerson.connections).map((userID: string) => {
             const user = this.props.userData[userID];
             return (
@@ -75,7 +77,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                     changeInfoPerson={this.changeInfoPerson}
                     changeMainPerson={this.changeMainPerson}
                     dimension={this.props.peopleGraph.dimension}
-                    key={userID}
+                    key={`${mainPerson.id}_${userID}`}
                     lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.connections[userID])}
                     location={this.props.peopleGraph.locations[userID]}
                     scoreTally={calculateScore(user, this.props.peopleGraph.mainPerson)}
