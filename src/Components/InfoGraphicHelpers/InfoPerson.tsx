@@ -6,10 +6,12 @@ import { Button, Icon, Intent, Popover } from "@blueprintjs/core";
 
 import { calculateScore, IScore } from "../../Helpers/GraphHelpers";
 import User from "../../Helpers/User";
+import IStoreState from "../../State/IStoreState";
 import { SetMainPerson } from "../../State/WebsiteActions";
 import { ScoreDisplay } from "./ScoreDisplay";
 
 import "./GlobalInfoGraphicHelpers.css";
+
 
 export interface IPersonInformationProps {
     mainPerson: User;
@@ -20,12 +22,16 @@ export interface IPersonInformationProps {
     openPopoverHover(): void;
 }
 
+export interface IPersonInformationStoreProps {
+    isAdmin: boolean | undefined;
+}
+
 export interface IPersonInformationDispatchProps {
     setMainPerson(user: User): void;
 }
 
 export class PurePersonInformation extends React.Component<
-    IPersonInformationProps & IPersonInformationDispatchProps
+    IPersonInformationProps & IPersonInformationDispatchProps & IPersonInformationStoreProps
 > {
     public render() {
         if (this.props.person === undefined) {
@@ -38,17 +44,26 @@ export class PurePersonInformation extends React.Component<
                     <div className="justify-end"> {this.renderPopover(this.props.person)} </div>
                 </div>
                 {this.renderScore(this.props.person)}
-                <div style={{ position: "absolute", left: "50%", bottom: "1%", transform: "translate(-50%, -1%)" }}>
-                    <Button
-                        icon="exchange"
-                        text="Change"
-                        onClick={this.setMainPerson}
-                        intent={Intent.WARNING}
-                        className="grow"
-                    />
-                </div>
+                {this.maybeRenderChangeButton()}
             </div>
         );
+    }
+
+    private maybeRenderChangeButton() {
+        if (!this.props.isAdmin) {
+            return null;
+        }
+        return (
+            <div style={{ position: "absolute", left: "50%", bottom: "1%", transform: "translate(-50%, -1%)" }}>
+                <Button
+                    icon="exchange"
+                    text="Change"
+                    onClick={this.setMainPerson}
+                    intent={Intent.WARNING}
+                    className="grow"
+                />
+            </div>
+        )
     }
 
     private renderPopover(person: User) {
@@ -101,10 +116,16 @@ export class PurePersonInformation extends React.Component<
     }
 }
 
+function mapStoreToProps(state: IStoreState): IPersonInformationStoreProps {
+    return {
+        isAdmin: state.GoogleReducer.isAdmin,
+    }
+}
+
 function mapDispatchToProps(dispatch: Dispatch): IPersonInformationDispatchProps {
     return bindActionCreators({
         setMainPerson: SetMainPerson.create,
     }, dispatch);
 }
 
-export const InfoPerson = connect(undefined, mapDispatchToProps)(PurePersonInformation);
+export const InfoPerson = connect(mapStoreToProps, mapDispatchToProps)(PurePersonInformation);
