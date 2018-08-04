@@ -1,4 +1,4 @@
-import { Button, Classes, Intent, FormGroup } from "@blueprintjs/core";
+import { Button, Classes, Intent } from "@blueprintjs/core";
 import * as React from "react";
 import { Dispatch } from "redux";
 
