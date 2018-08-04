@@ -1,9 +1,9 @@
 import { Dispatch } from "redux";
 
+import { IFinalPerson } from "../Components/Dialogs/AddNewUser";
 import Event from "../Helpers/Event";
 import { IUser } from "../Helpers/User";
 import { FailedDataFetch, StartingDataFetch, SuccessfulDataFetch } from "../State/GoogleSheetActions";
-
 
 const EVENT_DATA_RANGE = "Events-Data!A1:L100";
 const USER_DATA_RANGE = "Users-Data!A1:AZ100";
@@ -60,8 +60,34 @@ export class GoogleDispatcher {
             });
         });
     }
+    
+    public writeNewUserData = async (user: IFinalPerson, rawData: any): Promise<boolean> => {
+        const users = this.extractUsersFromRaw(rawData);
+        return window["gapi"].client.sheets.spreadsheets.values
+            .append({
+                range: [USER_DATA_RANGE],
+                resource: {
+                    values: [
+                        [
+                            999 + users.length,
+                            user.fullName,
+                            user.gender,
+                            user.age,
+                            user.location
+                        ]
+                    ]
+                },
+                spreadsheetId: process.env.REACT_APP_SPREADSHEET,
+                valueInputOption: "USER_ENTERED",
+            }).then((response: object) => {
+                this.updateUserData(rawData, response);
+                return true;
+            }).catch(() => {
+                return false;
+            });
+    }
 
-    public writeData = async (event: Event, users: IUser[], rawData: any): Promise<boolean> => {
+    public writeEventData = async (event: Event, users: IUser[], rawData: any): Promise<boolean> => {
         const success = await this.writeEvent(event) && await this.writeUsers(event.id, users, rawData);
         if (success) {
             this.fetchGoogleSheetData();
@@ -123,27 +149,30 @@ export class GoogleDispatcher {
                 {
                     values: newUserData,
                 }
-            ).then((response: object) => {
-                const newRawData = response["result"].updatedData.values;
-                this.dispatch(
-                    SuccessfulDataFetch.create({
-                        eventData: this.extractEventsFromRaw(rawData),
-                        rawData: [newRawData, rawData[1]],
-                        userData: newRawData,
-                    }),
-                );
+            ).then(() => {
                 return true;
             }).catch((error: any) => {
-                console.log(error);
+                console.error(error);
                 return false;
             })
+    }
+
+    private updateUserData(rawData: any, response: object) {
+        const newRawData = response["result"].updatedData.values;
+        this.dispatch(
+            SuccessfulDataFetch.create({
+                eventData: this.extractEventsFromRaw(rawData),
+                rawData: [newRawData, rawData[1]],
+                userData: newRawData,
+            }),
+        );
     }
 
     private appendEventToUsers = (eventID: string, users: IUser[], rawData: any) => {
         const userData = this.extractUsersFromRaw(rawData);
         const allUsers = users.map((user) => user.id.toString());
         return userData.slice().map((user) => {
-            return allUsers.includes(user[0]) ? user.concat([eventID.toString()]) : user;
+            return allUsers.includes(user[0]) ? user.concat([...(",".repeat(Math.max(8 - user.length, 0)) + eventID.toString()).split(",")]) : user;
         });
     }
 
