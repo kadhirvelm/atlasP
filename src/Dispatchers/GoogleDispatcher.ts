@@ -29,13 +29,10 @@ export class GoogleDispatcher {
             .then(() => {
                 window["gapi"].auth2
                     .getAuthInstance()
-                    .isSignedIn.listen(callback);
-                const currentUser = window["gapi"].auth2.getAuthInstance().currentUser.get().w3;
-                callback(
-                    window["gapi"].auth2.getAuthInstance().isSignedIn.get(),
-                    currentUser,
-                    currentUser !== undefined ? this.retrieveAdminUsers().includes(currentUser.U3) : false,
-                );
+                    .isSignedIn.listen((isSignedIn: boolean) => {
+                        this.sendToCallback(isSignedIn, callback);
+                    });
+                this.sendToCallback(window["gapi"].auth2.getAuthInstance().isSignedIn.get(), callback);
             });
         });
     }
@@ -70,6 +67,15 @@ export class GoogleDispatcher {
             this.fetchGoogleSheetData();
         }
         return success
+    }
+
+    private sendToCallback(isSignedIn: boolean, callback: (isSignedIn: boolean, currentUser: any, isAdmin: boolean | string) => void) {
+        const currentUser = window["gapi"].auth2.getAuthInstance().currentUser.get().w3;
+        callback(
+            isSignedIn,
+            currentUser,
+            currentUser !== undefined ? this.retrieveAdminUsers().includes(currentUser.U3) : false,
+        );
     }
 
     private retrieveAdminUsers(): string[] {
