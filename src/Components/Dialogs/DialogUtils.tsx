@@ -1,4 +1,5 @@
-import { Intent } from "@blueprintjs/core";
+import { Button, Classes, Intent, FormGroup } from "@blueprintjs/core";
+import * as React from "react";
 import { Dispatch } from "redux";
 
 import { GoogleDispatcher } from "../../Dispatchers/GoogleDispatcher";
@@ -39,6 +40,17 @@ export class DialogUtils {
         } else {
             showToast(Intent.DANGER, "Cannot leave fields blank.");
         }
+    }
+
+    public returnFooterActions(onClose: () => void, handleSubmit: () => void) {
+        return (
+            <div className={Classes.DIALOG_FOOTER}>
+                <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+                    <Button onClick={onClose} text="Cancel" />
+                    <Button intent={Intent.PRIMARY} onClick={handleSubmit} text="Submit" />
+                </div>
+            </div>
+        )
     }
 
     private isCompletePerson(finalPerson: IFinalPerson) {

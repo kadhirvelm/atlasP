@@ -1,4 +1,4 @@
-import { Intent, Toaster } from "../../node_modules/@blueprintjs/core";
+import { Intent, Toaster } from "@blueprintjs/core";
 
 let toast: Toaster | undefined;
 
