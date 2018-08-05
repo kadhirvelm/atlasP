@@ -10,7 +10,7 @@ import IStoreState, { IEventMap, IUserMap } from "../../State/IStoreState";
 import "./GlobalInfoGraphicHelpers.css";
 
 export interface ISinglePersonDataDialogProps {
-    events: number[];
+    events: number[] | undefined;
     isOpen: boolean;
     onClose: () => void;
     person: User;
@@ -55,7 +55,11 @@ export class PureSinglePersonDataDialog extends React.Component<
     }
 
     private renderInfoPersonContent() {
-        return this.props.events.map((eventID: number, index: number) => {
+        const { events } = this.props;
+        if (events === undefined) {
+            return null;
+        }
+        return events.map((eventID: number, index: number) => {
             const event: Event = this.props.eventData && this.props.eventData[eventID];
             return this.renderEventStuff(event, index);
         });
