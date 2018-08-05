@@ -4,6 +4,7 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { Toaster } from "@blueprintjs/core";
 
+import { GoogleDispatcher } from "../Dispatchers/GoogleDispatcher";
 import { setToast } from "../Helpers/Toaster";
 import User from "../Helpers/User";
 import IStoreState, { IUserMap } from "../State/IStoreState";
@@ -13,7 +14,6 @@ import { InfoGraphic } from "./InfoGraphic";
 import { AtlaspNavbar } from "./Navbar";
 
 import "./Main.css";
-
 
 interface IMainProps {
   currentUser: any;
@@ -28,6 +28,7 @@ interface IMainState {
 }
 
 export interface IMainDispatchProps {
+  fetchGoogleSheetData(): void;
   setMainPerson(user: User): void;
 }
 
@@ -71,7 +72,8 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
   private maybeSetMainPerson() {
     const { currentUser, userData } = this.props;
     if (currentUser === undefined || userData === undefined) {
-      return <div className="centered">Hum, something went wrong. Try refreshing the data.</div>
+      this.props.fetchGoogleSheetData();
+      return <div className="centered">Hang tight, refreshing the data.</div>
     }
 
     const person = Object.values(userData).find((user) => user.fullName.toLowerCase() === currentUser.ig.toLowerCase());
@@ -95,7 +97,9 @@ function mapStateToProps(state: IStoreState) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch) {
+  const googleDispatcher = new GoogleDispatcher(dispatch);
   return {
+    fetchGoogleSheetData: googleDispatcher.fetchGoogleSheetData,
     ...bindActionCreators({
       setMainPerson: SetMainPerson.create,
     }, dispatch),
