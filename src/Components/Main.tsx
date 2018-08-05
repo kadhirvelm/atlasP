@@ -38,7 +38,7 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
 
   public render() {
     return (
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div className="fade-in" style={{ display: "flex", flexDirection: "column" }}>
         <AtlaspNavbar />
         {this.renderGraphAndInfo()}
         <Toaster ref={this.refHandler.toaster} />

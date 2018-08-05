@@ -69,13 +69,16 @@ class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps, IAppSta
       return <Main />;
     }
     return (
-      <Button
-        id="authorize-button"
-        onClick={this.props.signIn}
-        text="Sign In"
-        intent={Intent.PRIMARY}
-        className="centered fade-in"
-      />
+      <div className="centered fade-in">
+        <h2>Welcome to AtlasP</h2>
+        <Button
+          id="authorize-button"
+          onClick={this.props.signIn}
+          text="Sign In"
+          intent={Intent.PRIMARY}
+          className="center-button"
+        />
+      </div>
     );
   }
 

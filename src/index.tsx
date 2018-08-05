@@ -15,6 +15,8 @@ import registerServiceWorker from "./registerServiceWorker";
 import configureStore from "./State/Store";
 import { loadState, saveState } from "./State/StoreCache";
 
+import "./index.css";
+
 const store = configureStore(loadState());
 
 store.subscribe(
