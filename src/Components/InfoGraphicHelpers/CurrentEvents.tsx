@@ -28,21 +28,18 @@ export class PureCurrentEvents extends React.PureComponent<ICurrentEventsStorePr
     }
 
     private maybeRenderEvents() {
-        if (this.props.events === undefined) {
+        const { events, users } = this.props;
+        if (events === undefined || users === undefined) {
             return null;
         }
         return (
             <div className="flexbox-events overflow-y">
-                {Object.values(this.props.events).map(this.renderSingleEvent)}
+                {Object.values(this.props.events).map((event: Event) => this.renderSingleEvent(event, users))}
             </div>
         )
     }
 
-    private renderSingleEvent(event: Event) {
-        const { users } = this.props;
-        if (users === undefined) {
-            return null;
-        }
+    private renderSingleEvent(event: Event, users: IUserMap) {
         return (
             <div className="event" key={event.id}>
                 <div> {event.date} </div>

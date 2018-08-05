@@ -4,7 +4,6 @@
     background: #394b59;
     color: white;
     position: relative;
-    display: flex;
     flex-direction: column;
     width: 100%;
     padding: 10px;
