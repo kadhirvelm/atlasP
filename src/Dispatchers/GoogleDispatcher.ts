@@ -28,7 +28,7 @@ export class GoogleDispatcher {
               discoveryDocs: [
                 "https://sheets.googleapis.com/$discovery/rest?version=v4",
               ],
-              scope: "https://www.googleapis.com/auth/userinfo.profile",
+              scope: "https://www.googleapis.com/auth/spreadsheets",
             })
             .then(() => {
                 window["gapi"].auth2
