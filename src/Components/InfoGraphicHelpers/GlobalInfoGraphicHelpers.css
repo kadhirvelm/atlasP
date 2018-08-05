@@ -1,7 +1,6 @@
 .dark-background {
     background: #394b59;
     color: white;
-    animation: fade-in 1s ease-in;
     position: relative;
 }
 
