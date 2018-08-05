@@ -12,7 +12,6 @@ import { ScoreDisplay } from "./ScoreDisplay";
 
 import "./GlobalInfoGraphicHelpers.css";
 
-
 export interface IPersonInformationProps {
     mainPerson: User;
     person: User | undefined;
@@ -38,7 +37,7 @@ export class PurePersonInformation extends React.Component<
             return this.renderNoPerson();
         }
         return (
-            <div key={this.props.person.id} className="flexbox-column dark-background pt-dark info-person show-change">
+            <div key={this.props.person.id} className="info-person pt-dark show-change">
                 <div className="flexbox-row" style={{ alignItems: "center" }}>
                     <div className="info-person-name">{this.props.person.name}</div>
                     <div className="justify-end"> {this.renderPopover(this.props.person)} </div>
