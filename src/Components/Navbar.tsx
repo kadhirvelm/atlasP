@@ -63,7 +63,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
     private renderLeftButtonGroup() {
         return (
             <NavbarGroup align={Alignment.LEFT}>
-                <NavbarHeading> Dinner Table </NavbarHeading>
+                <NavbarHeading> AtlasP </NavbarHeading>
                 <NavbarDivider />
                 <Button
                     className="navbar-button"
@@ -72,12 +72,23 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                     text="Refresh Data"
                     intent={this.returnIntent()}
                 />
+                {this.maybeRenderOtherLeftOptions()}
+            </NavbarGroup>
+        );
+    }
+
+    private maybeRenderOtherLeftOptions() {
+        if (this.props.userData === undefined) {
+            return null;
+        }
+        return (
+            <div style={ { display: "flex" } }>
                 {this.maybeRenderSpinner()}
                 <Button className="navbar-button" icon="add" onClick={this.handleOpenEventEntryDialog} text="Enter Event" />
                 <Button className="navbar-button" icon="new-person" onClick={this.handleOpenPersonEntryDialog} text="Add Person" />
                 {this.renderAdminOptions()}
-            </NavbarGroup>
-        );
+            </div>
+        )
     }
 
     private maybeRenderSpinner() {
