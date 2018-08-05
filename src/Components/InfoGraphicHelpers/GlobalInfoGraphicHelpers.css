@@ -46,17 +46,12 @@
     margin-right: 10px;
 }
 
-.current-dinner-party {
-    flex-basis: 50%;
-}
-
 .info-person {
-    flex-basis: 50%;
+    display: flex;
+    flex: 1 0 auto;
 }
 
 .no-person {
-    display: flex;
-    flex: 1 0 auto;
     justify-content: center;
     align-items: center;
     word-wrap: break-word;
