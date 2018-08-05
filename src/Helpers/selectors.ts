@@ -7,6 +7,7 @@ import User from "./User";
 const MAX_RADIANS = 2 * Math.PI;
 const RADIUS = 42;
 export const ORIGIN = {x: 50, y: 50 };
+const ADJUST_CIRCLE = - (Math.PI * 2);
 
 export interface ISingleLine {
   fromHost?: boolean;
@@ -71,7 +72,12 @@ export const selectMainPersonConnectionLines = createSelector(
 
 export const selectConnectionLocations = createSelector(
   selectMainPerson,
-  (mainPerson: User): ILocation => {
+  (state: IStoreState) => state.GoogleReducer.userData,
+  (mainPerson: User, users: IUserMap | undefined): ILocation => {
+    if (users === undefined) {
+      return {}
+    }
+
     const locations = {};
     const totalConnections = Object.keys(mainPerson.connections).length;
 
@@ -80,15 +86,17 @@ export const selectConnectionLocations = createSelector(
       mathFunction: (position: number) => number,
       index: number,
     ) => {
-      return origin + mathFunction((MAX_RADIANS / totalConnections) * index) * RADIUS;
+      return origin + mathFunction((MAX_RADIANS / totalConnections) * index + ADJUST_CIRCLE) * RADIUS;
     };
 
-    Object.keys(mainPerson.connections).map((userID: string, index: number) => {
-      locations[userID] = {
-        x: returnPositionOnCircle(ORIGIN.x, Math.cos, index),
-        y: returnPositionOnCircle(ORIGIN.y, Math.sin, index),
-      };
-    });
+    Object.keys(mainPerson.connections)
+      .sort((a: string, b: string) => users[a].fullName.localeCompare(users[b].fullName))
+      .map((userID: string, index: number) => {
+        locations[userID] = {
+          x: returnPositionOnCircle(ORIGIN.x, Math.cos, index),
+          y: returnPositionOnCircle(ORIGIN.y, Math.sin, index),
+        };
+      });
     return locations;
   },
 );
