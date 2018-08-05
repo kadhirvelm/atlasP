@@ -6,6 +6,7 @@ import Event from "../Helpers/Event";
 import User from "../Helpers/User";
 import IStoreState from "../State/IStoreState";
 import { ChangeParty, SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
+import { CurrentEvents } from "./InfoGraphicHelpers/CurrentEvents";
 import { InfoPerson } from "./InfoGraphicHelpers/InfoPerson";
 import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
 
@@ -49,6 +50,7 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
                     openInformationDialog={this.openInformationDialog}
                     openPopoverHover={this.openPopoverHover}
                 />
+                <CurrentEvents />
                 {this.maybeRenderSinglePersonDataDialog()}
             </div>
         );

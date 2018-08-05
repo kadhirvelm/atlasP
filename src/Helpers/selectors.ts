@@ -1,5 +1,7 @@
 import { createSelector } from "reselect";
-import IStoreState, { IUserMap } from "../State/IStoreState";
+
+import IStoreState, { IEventMap, IUserMap } from "../State/IStoreState";
+import Event from "./Event";
 import User from "./User";
 
 const MAX_RADIANS = 2 * Math.PI;
@@ -100,3 +102,16 @@ export const selectMainPersonGraph = createSelector(
     return { mainPerson, connections, dimension, locations };
   },
 );
+
+export const selectSortedEvents = createSelector(
+  (state: IStoreState) => state.WebsiteReducer.mainPerson,
+  (state: IStoreState) => state.GoogleReducer.eventData,
+  (mainPerson: User | undefined, eventData: IEventMap | undefined) => {
+    if (mainPerson === undefined || eventData === undefined) {
+      return [];
+    }
+    return Object.values(eventData)
+      .filter((event: Event) => event.attendees.includes(mainPerson.id))
+      .sort((a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }
+)
