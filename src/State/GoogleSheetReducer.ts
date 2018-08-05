@@ -3,11 +3,13 @@ import { setWith, TypedReducer } from "redoodle";
 import { assembleObjects } from "../Helpers/Assembler";
 import {
   ChangeSignIn,
+  EmptyGoogleCache,
   FailedDataFetch,
   StartingDataFetch,
   SuccessfulDataFetch,
 } from "./GoogleSheetActions";
 import IStoreState from "./IStoreState";
+import { EMPTY_STATE, emptyCache } from "./StoreCache";
 
 export const GoogleReducer = TypedReducer.builder<IStoreState["GoogleReducer"]>()
   // tslint:disable-next-line:variable-name
@@ -38,5 +40,10 @@ export const GoogleReducer = TypedReducer.builder<IStoreState["GoogleReducer"]>(
       isAdmin: payload.isAdmin,
       isSignedIn: payload.isSignedIn,
     });
+  })
+  // tslint:disable-next-line:variable-name
+  .withHandler(EmptyGoogleCache.TYPE, (_state, _payload) => {
+    emptyCache();
+    return EMPTY_STATE.GoogleReducer;
   })
   .build();

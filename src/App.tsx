@@ -6,24 +6,32 @@ import { Button, Intent, Spinner } from "@blueprintjs/core";
 
 import { Main } from "./Components/Main";
 import { GoogleDispatcher } from "./Dispatchers/GoogleDispatcher";
-import { ChangeSignIn } from "./State/GoogleSheetActions";
+import { ChangeSignIn, EmptyGoogleCache } from "./State/GoogleSheetActions";
 import IStoreState from "./State/IStoreState";
 
 import "./App.css";
 
 export interface IAppProps {
-  readonly fetching: boolean;
-  readonly isSignedIn?: boolean;
+  fetching: boolean;
+  isSignedIn?: boolean;
 }
 
 export interface IAppDispatchProps {
   authorize(callback: (isSignedIn: boolean, currentUser: any, isAdmin: boolean | string) => void): void;
   changeSignInStatus(signIn: { isSignedIn: boolean, currentUser: any, isAdmin: boolean }): void;
+  emptyCache(): void;
   signIn(): void;
+  signOut(): void;
 }
 
-class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps> {
+export interface IAppState {
+  hasErrored: boolean;
+  receivedUpdate: boolean;
+}
+
+class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps, IAppState> {
   public state = {
+    hasErrored: false,
     receivedUpdate: false,
   };
 
@@ -31,7 +39,17 @@ class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps> {
     this.props.authorize(this.updateSigninStatus);
   }
 
+  public componentDidCatch(error: any, info: any) {
+    console.error(error, info);
+    this.setState({ hasErrored: true });
+  }
+
   public render() {
+    if (this.state.hasErrored) {
+      this.props.signOut();
+      this.props.emptyCache();
+      return <div className="centered">Rats, look like you found a bug. We've emptied the cache - try refreshing the page?</div>
+    }
     return (
       <div className="prevent-movement">
         {this.renderMainPage()}
@@ -79,8 +97,9 @@ function mapDispatchToProps(dispatch: Dispatch): IAppDispatchProps {
   const googleDispatcher = new GoogleDispatcher(dispatch);
   return {
     authorize: googleDispatcher.authorize,
-    ...bindActionCreators({ changeSignInStatus: ChangeSignIn.create }, dispatch),
+    ...bindActionCreators({ changeSignInStatus: ChangeSignIn.create, emptyCache: EmptyGoogleCache.create }, dispatch),
     signIn: googleDispatcher.signIn,
+    signOut: googleDispatcher.signOut,
   }
 }
 
