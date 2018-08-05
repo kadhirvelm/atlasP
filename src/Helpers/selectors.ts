@@ -71,7 +71,12 @@ export const selectMainPersonConnectionLines = createSelector(
 
 export const selectConnectionLocations = createSelector(
   selectMainPerson,
-  (mainPerson: User): ILocation => {
+  (state: IStoreState) => state.GoogleReducer.userData,
+  (mainPerson: User, users: IUserMap | undefined): ILocation => {
+    if (users === undefined) {
+      return {}
+    }
+
     const locations = {};
     const totalConnections = Object.keys(mainPerson.connections).length;
 
@@ -80,15 +85,17 @@ export const selectConnectionLocations = createSelector(
       mathFunction: (position: number) => number,
       index: number,
     ) => {
-      return origin + mathFunction((MAX_RADIANS / totalConnections) * index) * RADIUS;
+      return origin + mathFunction((MAX_RADIANS / totalConnections) * index - Math.PI / 2) * RADIUS;
     };
 
-    Object.keys(mainPerson.connections).map((userID: string, index: number) => {
-      locations[userID] = {
-        x: returnPositionOnCircle(ORIGIN.x, Math.cos, index),
-        y: returnPositionOnCircle(ORIGIN.y, Math.sin, index),
-      };
-    });
+    Object.keys(mainPerson.connections)
+      .sort((a: string, b: string) => users[a].fullName.localeCompare(users[b].fullName))
+      .map((userID: string, index: number) => {
+        locations[userID] = {
+          x: returnPositionOnCircle(ORIGIN.x, Math.cos, index),
+          y: returnPositionOnCircle(ORIGIN.y, Math.sin, index),
+        };
+      });
     return locations;
   },
 );
