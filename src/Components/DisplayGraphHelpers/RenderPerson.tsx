@@ -18,8 +18,8 @@ export interface IRenderPersonProps {
 
 export class RenderPerson extends React.Component<IRenderPersonProps> {
     private MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24;
-    private GREEN_DAYS = 14;
-    private YELLOW_DAYS = 28;
+    private GREEN_DAYS = 30;
+    private YELLOW_DAYS = 90;
 
     public render() {
         return (

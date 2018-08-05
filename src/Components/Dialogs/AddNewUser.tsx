@@ -57,7 +57,7 @@ export class PureAddNewPerson extends React.Component<
                 canEscapeKeyClose={false}
                 isOpen={this.props.isOpen}
                 onClose={this.resetStateAndClose}
-                title="Add New Event"
+                title="Add New Person"
             >
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup>

@@ -43,6 +43,9 @@ export default class User implements IUser {
 
     private firstNameAndLastInitial = (name: string) => {
         const tempSeparate = name.split(" ");
-        return tempSeparate[0] + " " + tempSeparate[1][0];
+        if (tempSeparate.length > 1) {
+            return tempSeparate[0] + " " + tempSeparate[1][0];
+        }
+        return tempSeparate[0];
     }
 }
