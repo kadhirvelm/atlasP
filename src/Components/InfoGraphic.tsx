@@ -6,7 +6,6 @@ import Event from "../Helpers/Event";
 import User from "../Helpers/User";
 import IStoreState from "../State/IStoreState";
 import { ChangeParty, SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
-import { CurrentDinnerParty } from "./InfoGraphicHelpers/CurrentDinnerParty";
 import { InfoPerson } from "./InfoGraphicHelpers/InfoPerson";
 import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
 
@@ -42,7 +41,6 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
     public render() {
         return(
             <div className="flexbox">
-                <CurrentDinnerParty />
                 <InfoPerson
                     mainPerson={this.props.mainPerson}
                     openPopover={this.state.openPopover}
