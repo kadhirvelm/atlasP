@@ -39,6 +39,7 @@ export interface INavbarStateProps {
 
 export interface INavbarDispatchProps {
     fetchGoogleSheetData(): void;
+    signOut(): void;
 }
 
 class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDispatchProps, INavbarState> {
@@ -184,7 +185,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
     }
 
     private handleSignOut = () => {
-        window["gapi"].auth2.getAuthInstance().signOut();
+        this.props.signOut();
     }
 }
 
@@ -202,6 +203,7 @@ function mapDispatchToProps(dispatch: Dispatch): INavbarDispatchProps {
     const googleDispatcher = new GoogleDispatcher(dispatch);
     return {
         fetchGoogleSheetData: googleDispatcher.fetchGoogleSheetData,
+        signOut: googleDispatcher.signOut,
     };
 }
 

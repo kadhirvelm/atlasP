@@ -15,6 +15,10 @@ export class GoogleDispatcher {
         window["gapi"].auth2.getAuthInstance().signIn();
     }
 
+    public signOut() {
+        window["gapi"].auth2.getAuthInstance().signOut();
+    }
+
     public authorize = (callback: (isSignedIn: boolean, currentUser: any, isAdmin: boolean | string) => void) => {
         window["gapi"].load("client:auth2", () => {
           window["gapi"].client

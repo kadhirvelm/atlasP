@@ -22,6 +22,15 @@ export const loadState = (): IStoreState => {
   }
 };
 
+export const emptyCache = () => {
+  try {
+    const emptyState = JSON.stringify(EMPTY_STATE.GoogleReducer);
+    localStorage.setItem("state", emptyState);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export const saveState = (state: IStoreState) => {
   try {
     const serializedState = JSON.stringify(state.GoogleReducer);
