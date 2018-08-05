@@ -5,13 +5,15 @@ const finalEventsData = {};
 const finalUserData = {};
 let hasFailed: boolean;
 
+const removeNull = (rawInput: string) => rawInput.trim().length > 0
+
 const extractIntoNumberArray = (rawNumbers: string): number[] => {
-    return rawNumbers ? rawNumbers.split(",").filter((rawNumber) => rawNumber.trim().length > 0).map((rawNumber) => parseInt(rawNumber, 10)) : [];
+    return rawNumbers ? rawNumbers.split(",").filter(removeNull).map((rawNumber) => parseInt(rawNumber, 10)) : [];
 };
 
 function assembleEventData(eventData: string[][]) {
     return eventData.slice(1).forEach((event: string[]) => {
-        const newEvent = new Event(event[0], parseInt(event[1], 10), event[2], event.slice(3).filter((cell) => cell != null).join(","));
+        const newEvent = new Event(event[0], parseInt(event[1], 10), event[2], event.slice(3).filter(removeNull).join(","));
         finalEventsData[newEvent.id] = newEvent;
     });
 }
@@ -27,7 +29,7 @@ function assembleUserData(userData: string[][]) {
             person[5],
             extractIntoNumberArray(person[6]),
             extractIntoNumberArray(person[7]),
-            person.slice(8));
+            person.slice(8).filter(removeNull));
         finalUserData[newUser.id] = newUser;
         newUser.events.forEach((event: string) => {
             if (finalEventsData[event]) {

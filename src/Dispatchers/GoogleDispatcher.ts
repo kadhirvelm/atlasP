@@ -83,10 +83,11 @@ export class GoogleDispatcher {
                 },
                 spreadsheetId: process.env.REACT_APP_SPREADSHEET,
                 valueInputOption: "USER_ENTERED",
-            }).then((response: object) => {
-                this.updateUserData(rawData, response);
+            }).then(() => {
+                this.fetchGoogleSheetData();
                 return true;
-            }).catch(() => {
+            }).catch((error: any) => {
+                console.error(error);
                 return false;
             });
     }
@@ -145,7 +146,6 @@ export class GoogleDispatcher {
         return window["gapi"].client.sheets.spreadsheets.values
             .update(
                 {
-                    includeValuesInResponse: true,
                     range: [USER_DATA_RANGE],
                     spreadsheetId: process.env.REACT_APP_SPREADSHEET,
                     valueInputOption: "USER_ENTERED",
@@ -159,17 +159,6 @@ export class GoogleDispatcher {
                 console.error(error);
                 return false;
             })
-    }
-
-    private updateUserData(rawData: any, response: object) {
-        const newRawData = response["result"].updatedData.values;
-        this.dispatch(
-            SuccessfulDataFetch.create({
-                eventData: this.extractEventsFromRaw(rawData),
-                rawData: [newRawData, rawData[1]],
-                userData: newRawData,
-            }),
-        );
     }
 
     private appendEventToUsers = (eventID: string, users: IUser[], rawData: any) => {

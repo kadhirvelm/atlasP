@@ -37,7 +37,6 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     }
 
     public render() {
-        console.log(this.props.userData);
         return(
             <div
                 id="Graph Container"
@@ -52,7 +51,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         );
     }
 
-    private returnEventDate = (events: string[]) => this.props.eventData[events.slice(-1)[0]];
+    private returnEventDate = (events: string[]): string => this.props.eventData[events.slice(-1)[0]].date;
 
     private renderMainPerson() {
         return (
