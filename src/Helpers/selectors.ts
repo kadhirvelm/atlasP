@@ -7,6 +7,7 @@ import User from "./User";
 const MAX_RADIANS = 2 * Math.PI;
 const RADIUS = 42;
 export const ORIGIN = {x: 50, y: 50 };
+const ADJUST_CIRCLE = - (Math.PI * 2);
 
 export interface ISingleLine {
   fromHost?: boolean;
@@ -85,7 +86,7 @@ export const selectConnectionLocations = createSelector(
       mathFunction: (position: number) => number,
       index: number,
     ) => {
-      return origin + mathFunction((MAX_RADIANS / totalConnections) * index - Math.PI / 2) * RADIUS;
+      return origin + mathFunction((MAX_RADIANS / totalConnections) * index + ADJUST_CIRCLE) * RADIUS;
     };
 
     Object.keys(mainPerson.connections)
