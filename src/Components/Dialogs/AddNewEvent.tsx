@@ -38,6 +38,7 @@ export interface IFinalEventChecked extends IFinalEventEmpty {
 
 export interface IAddNewEventState {
     finalEvent: IFinalEventEmpty | IFinalEventChecked;
+    isSubmitting: boolean;
 }
 
 const EMPTY_STATE: IAddNewEventState = {
@@ -47,6 +48,7 @@ const EMPTY_STATE: IAddNewEventState = {
         description: "",
         host: undefined,
     },
+    isSubmitting: false,
 }
 
 export class PureAddNewEvent extends React.Component<
@@ -88,7 +90,7 @@ export class PureAddNewEvent extends React.Component<
                         />
                     </FormGroup>
                 </div>
-                {this.props.dialogUtils.returnFooterActions(this.props.onClose, this.handleSubmit)}
+                {this.props.dialogUtils.returnFooterActions(this.props.onClose, this.handleSubmit, this.state.isSubmitting)}
             </Dialog>
         );
     }
@@ -100,9 +102,15 @@ export class PureAddNewEvent extends React.Component<
     }
 
     private handleSubmit = () => {
-        const { finalEvent } = this.state;
-        this.props.dialogUtils.setData(this.props.rawData);
-        this.props.dialogUtils.submitFinalEvent(finalEvent);
+        this.setState({ isSubmitting: true }, () => {
+            try {
+                const { finalEvent } = this.state;
+                this.props.dialogUtils.setData(this.props.rawData);
+                this.props.dialogUtils.submitFinalEvent(finalEvent);
+            } catch (error) {
+                this.setState({ isSubmitting: false });
+            }
+        })
     }
 
     private isUser = (object: IUser | undefined): object is IUser => {
