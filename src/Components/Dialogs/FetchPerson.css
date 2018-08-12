@@ -1,5 +1,11 @@
 .flexbox-baseline {
-    flex-grow: 1;
+    display: flex;
     justify-content: "center";
     align-items: "baseline";
+    width: 100%;
+}
+
+.autocomplete-margin {
+    width: 100%;
+    margin-bottom: 10px;
 }

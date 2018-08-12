@@ -7,7 +7,7 @@ import User from "./User";
 const MAX_RADIANS = 2 * Math.PI;
 const RADIUS = 42;
 export const ORIGIN = {x: 50, y: 50 };
-const ADJUST_CIRCLE = - (Math.PI * 2);
+const ADJUST_CIRCLE = -(Math.PI/2);
 
 export interface ISingleLine {
   fromHost?: boolean;

@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Button, Classes, Dialog, Intent } from "@blueprintjs/core";
+import { Button, Classes, Dialog } from "@blueprintjs/core";
 import User from "../../Helpers/User";
 import IStoreState from "../../State/IStoreState";
 import { SetMainPerson } from "../../State/WebsiteActions";
@@ -15,10 +15,6 @@ interface IFetchPersonProps {
     readonly mainPersonDialogOpen: boolean;
 }
 
-interface IFetchPersonState {
-    fetchPerson?: User;
-}
-
 export interface IFetchPersonStateProps {
     mainPerson?: User;
     userData?: { id?: User };
@@ -28,13 +24,7 @@ export interface IFetchPersonDispatchProps {
     setMainPerson(user: User): void;
 }
 
-class PureFetchPerson extends React.Component<
-    IFetchPersonProps & IFetchPersonStateProps & IFetchPersonDispatchProps,
-    IFetchPersonState> {
-    public state = {
-        fetchPerson: this.props.mainPerson,
-    };
-
+class PureFetchPerson extends React.Component<IFetchPersonProps & IFetchPersonStateProps & IFetchPersonDispatchProps> {
     public componentWillUpdate(nextProps: IFetchPersonProps & IFetchPersonStateProps & IFetchPersonDispatchProps) {
         if (nextProps.mainPerson !== this.props.mainPerson) {
             this.setState({ fetchPerson: nextProps.mainPerson });
@@ -56,43 +46,22 @@ class PureFetchPerson extends React.Component<
                             dataSource={this.props.userData}
                             displayKey="name"
                             placeholderText="Search for person..."
-                            values={this.returnPersonValue()}
                             onSelection={this.handleSelection}
                         />
                     </div>
                 </div>
                 <div className={Classes.DIALOG_FOOTER}>
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                    <Button text="Cancel" onClick={this.props.handleMainPersonDialogClose} />
-                    <Button
-                        onClick={this.changeMainPerson}
-                        intent={Intent.PRIMARY}
-                        text="Select"
-                        disabled={this.state.fetchPerson === undefined}
-                    />
+                        <Button text="Cancel" onClick={this.props.handleMainPersonDialogClose} />
                     </div>
                 </div>
             </Dialog>
         );
     }
 
-    private fetchPersonIsDefined(fetchPerson: User | undefined): fetchPerson is User {
-        return fetchPerson !== undefined;
-    }
-
-    private returnPersonValue() {
-        const { fetchPerson } = this.state;
-        return this.fetchPersonIsDefined(fetchPerson) ? {[fetchPerson.id]: fetchPerson.name} : undefined;
-    }
-
-    private handleSelection = (fetchPerson: User) => this.setState({ fetchPerson });
-    private changeMainPerson = () => {
-        const { fetchPerson } = this.state;
-        if (this.props.userData && this.fetchPersonIsDefined(fetchPerson)) {
-            this.props.setMainPerson(fetchPerson);
-            this.props.handleMainPersonDialogClose();
-            this.setState({ fetchPerson: undefined });
-        }
+    private handleSelection = (fetchPerson: User) => {
+        this.props.setMainPerson(fetchPerson);
+        this.props.handleMainPersonDialogClose();
     }
 }
 
