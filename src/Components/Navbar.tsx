@@ -29,6 +29,10 @@ interface INavbarState {
   personEntryDialogOpen: boolean;
 }
 
+export interface INavbarProps {
+    mobile?: boolean;
+}
+
 export interface INavbarStateProps {
     currentUser?: any;
     fetching: boolean;
@@ -42,7 +46,7 @@ export interface INavbarDispatchProps {
     signOut(): void;
 }
 
-class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDispatchProps, INavbarState> {
+class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStateProps & INavbarDispatchProps, INavbarState> {
     public state = {
         eventEntryDialogOpen: false,
         mainPersonDialogOpen: false,
@@ -69,26 +73,20 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                     className="navbar-button"
                     icon="refresh"
                     onClick={this.props.fetchGoogleSheetData}
-                    text="Refresh Data"
+                    text={this.maybeRenderText()}
                     intent={this.returnIntent()}
                 />
-                {this.maybeRenderOtherLeftOptions()}
+                {this.maybeRenderSpinner()}
+                {this.maybeRenderOtherLeftButtons()}
             </NavbarGroup>
         );
     }
 
-    private maybeRenderOtherLeftOptions() {
-        if (this.props.userData === undefined) {
-            return null;
+    private maybeRenderText() {
+        if (this.props.mobile) {
+            return undefined;
         }
-        return (
-            <div style={ { display: "flex" } }>
-                {this.maybeRenderSpinner()}
-                <Button className="navbar-button" icon="add" onClick={this.handleOpenEventEntryDialog} text="Enter Event" />
-                <Button className="navbar-button" icon="new-person" onClick={this.handleOpenPersonEntryDialog} text="Add Person" />
-                {this.renderAdminOptions()}
-            </div>
-        )
+        return "Refresh Data";
     }
 
     private maybeRenderSpinner() {
@@ -98,7 +96,20 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
         return <Spinner className="pt-small" intent={Intent.WARNING} />
     }
 
-    private renderAdminOptions() {
+    private maybeRenderOtherLeftButtons() {
+        if (this.props.mobile || this.props.userData === undefined) {
+            return undefined;
+        }
+        return (
+            <div style={ { display: "flex" } }>
+                <Button className="navbar-button" icon="add" onClick={this.handleOpenEventEntryDialog} text="Enter Event" />
+                <Button className="navbar-button" icon="new-person" onClick={this.handleOpenPersonEntryDialog} text="Add Person" />
+                {this.maybeRenderAdminOptions()}
+            </div>
+        )
+    }
+
+    private maybeRenderAdminOptions() {
         if (!this.props.isAdmin) {
             return null;
         }

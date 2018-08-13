@@ -70,7 +70,7 @@ class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps, IAppSta
     }
     return (
       <div className="centered fade-in">
-        <h2>Welcome to AtlasP</h2>
+        <h3 className="header">Welcome to AtlasP</h3>
         <Button
           id="authorize-button"
           onClick={this.props.signIn}
