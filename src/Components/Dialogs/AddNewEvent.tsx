@@ -10,6 +10,7 @@ import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
 
 import "./AddNewEvent.css";
+import { IDialogProps } from "./DialogWrapper";
 
 export interface IAddNewEventStateProps {
     rawData: any;
@@ -18,11 +19,6 @@ export interface IAddNewEventStateProps {
 
 export interface IAddNewEventDispatchProps {
     dialogUtils: DialogUtils;
-}
-
-interface IAddNewEventProps {
-    isOpen: boolean;
-    onClose(): void;
 }
 
 export interface IFinalEventEmpty {
@@ -52,7 +48,7 @@ const EMPTY_STATE: IAddNewEventState = {
 }
 
 export class PureAddNewEvent extends React.Component<
-    IAddNewEventProps & IAddNewEventStateProps & IAddNewEventDispatchProps, IAddNewEventState> {
+    IDialogProps & IAddNewEventStateProps & IAddNewEventDispatchProps, IAddNewEventState> {
     public state: IAddNewEventState = EMPTY_STATE;
 
     public componentDidMount() {

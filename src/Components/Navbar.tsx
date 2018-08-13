@@ -18,6 +18,7 @@ import User from "../Helpers/User";
 import IStoreState from "../State/IStoreState";
 import { AddNewEvent } from "./Dialogs/AddNewEvent";
 import { AddNewPerson } from "./Dialogs/AddNewUser";
+import { DialogWrapper } from "./Dialogs/DialogWrapper";
 import { FetchPerson } from "./Dialogs/FetchPerson";
 
 import "./Main.css";
@@ -58,8 +59,6 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
             <Navbar className="pt-dark" style={{ zIndex: 10 }}>
                 {this.renderLeftButtonGroup()}
                 {this.renderRightButtonGroup()}
-                {this.renderNewEventDialog()}
-                {this.renderNewPersonDialog()}
             </Navbar>
         );
     }
@@ -101,9 +100,9 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
             return undefined;
         }
         return (
-            <div style={ { display: "flex" } }>
-                <Button className="navbar-button" icon="add" onClick={this.handleOpenEventEntryDialog} text="Enter Event" />
-                <Button className="navbar-button" icon="new-person" onClick={this.handleOpenPersonEntryDialog} text="Add Person" />
+            <div className="flexrow">
+                <DialogWrapper className="navbar-button" dialog={AddNewEvent} icon="add" text="Enter Event" />
+                <DialogWrapper className="navbar-button" dialog={AddNewPerson} icon="new-person" text="Add Person" />
                 {this.maybeRenderAdminOptions()}
             </div>
         )
@@ -114,15 +113,9 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
             return null;
         }
         return (
-            <div>
-                <Button
-                    className="navbar-button"
-                    icon="exchange"
-                    onClick={this.handleChangeMainPersonDialog}
-                    text="Change User"
-                />
+            <div className="flexrow">
+                <DialogWrapper className="navbar-button" dialog={FetchPerson} icon="exchange" text="Change User" />
                 <Button className="navbar-button" icon="link" text="Google Sheet" onClick={this.openSheet} />
-                {this.maybeRenderFetchPersonDialog()}
             </div>
         )
     }
@@ -143,64 +136,11 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
         return <div style={ { marginRight: "10px" } }>{this.props.currentUser.ig}</div>;
     }
 
-    private handleChangeMainPersonDialog = () => {
-        this.setState({ mainPersonDialogOpen: true });
-    }
-
-    private handleMainPersonDialogClose = () => {
-        this.setState({ mainPersonDialogOpen: false });
-    }
-
-    private handleOpenEventEntryDialog = () => {
-        this.setState({ eventEntryDialogOpen: true });
-    }
-
-    private handleCloseEventEntryDialog = () => {
-        this.setState({ eventEntryDialogOpen: false });
-    }
-
-    private handleOpenPersonEntryDialog = () => {
-        this.setState({ personEntryDialogOpen: true });
-    }
-
-    private handleClosePersonEntryDialog = () => {
-        this.setState({ personEntryDialogOpen: false });
-    }
-
     private openSheet() {
         // tslint:disable-next-line:max-line-length
         window.open(`https://docs.google.com/spreadsheets/d/${process.env.REACT_APP_SPREADSHEET}`, "_blank");
     }
 
-    private maybeRenderFetchPersonDialog() {
-        if (this.props.userData === undefined) {
-            return null;
-        }
-        return (
-            <FetchPerson
-                handleMainPersonDialogClose={this.handleMainPersonDialogClose}
-                mainPersonDialogOpen={this.state.mainPersonDialogOpen}
-            />
-        );
-    }
-
-    private renderNewEventDialog() {
-        return (
-            <AddNewEvent
-                isOpen={this.state.eventEntryDialogOpen}
-                onClose={this.handleCloseEventEntryDialog}
-            />
-        );
-    }
-
-    private renderNewPersonDialog() {
-        return (
-            <AddNewPerson
-                isOpen={this.state.personEntryDialogOpen}
-                onClose={this.handleClosePersonEntryDialog}
-            />
-        )
-    }
 
     private returnIntent(): Intent {
         return (this.props.userData && Object.keys(this.props.userData).length) ? Intent.NONE : Intent.DANGER;

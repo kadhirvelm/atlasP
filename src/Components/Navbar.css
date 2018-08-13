@@ -1,3 +1,7 @@
 .navbar-button {
     margin: 0 5px
 }
+
+.flexrow {
+    display: flex;
+}

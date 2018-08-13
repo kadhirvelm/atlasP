@@ -1,9 +1,8 @@
 import * as React from "react";
 
-import { Button } from "@blueprintjs/core";
-
 import { AddNewEvent } from "./Dialogs/AddNewEvent";
 import { AddNewPerson } from "./Dialogs/AddNewUser";
+import { DialogWrapper } from "./Dialogs/DialogWrapper";
 import { CurrentEvents } from "./InfoGraphicHelpers/CurrentEvents";
 
 import "./MobileView.css";
@@ -14,7 +13,7 @@ export interface IMobileViewState {
 }
 
 export class MobileView extends React.PureComponent<{}, IMobileViewState> {
-    public state: IMobileViewState = { 
+    public state: IMobileViewState = {
         eventEntryDialogOpen: false,
         personEntryDialogOpen: false,
     };
@@ -22,46 +21,10 @@ export class MobileView extends React.PureComponent<{}, IMobileViewState> {
     public render() {
         return (
             <div className="main-mobile-view">
-                <Button className="main-mobile-button" icon="add" text="New Event" onClick={this.handleOpenEventEntryDialog} />
-                <Button className="main-mobile-button" icon="new-person" text="New Person" onClick={this.handleOpenPersonEntryDialog} />
+                <DialogWrapper className="main-mobile-button" containerClassName="display" dialog={AddNewEvent} icon="add" text="New Event" />
+                <DialogWrapper className="main-mobile-button" containerClassName="display" dialog={AddNewPerson} icon="new-person" text="Add Person" />
                 <CurrentEvents className="mobile-current-events" />
-                {this.renderNewEventDialog()}
-                {this.renderNewPersonDialog()}
             </div>
-        )
-    }
-
-    private handleOpenEventEntryDialog = () => {
-        this.setState({ eventEntryDialogOpen: true });
-    }
-
-    private handleCloseEventEntryDialog = () => {
-        this.setState({ eventEntryDialogOpen: false });
-    }
-
-    private handleOpenPersonEntryDialog = () => {
-        this.setState({ personEntryDialogOpen: true });
-    }
-
-    private handleClosePersonEntryDialog = () => {
-        this.setState({ personEntryDialogOpen: false });
-    }
-
-    private renderNewEventDialog() {
-        return (
-            <AddNewEvent
-                isOpen={this.state.eventEntryDialogOpen}
-                onClose={this.handleCloseEventEntryDialog}
-            />
-        );
-    }
-
-    private renderNewPersonDialog() {
-        return (
-            <AddNewPerson
-                isOpen={this.state.personEntryDialogOpen}
-                onClose={this.handleClosePersonEntryDialog}
-            />
         )
     }
 }

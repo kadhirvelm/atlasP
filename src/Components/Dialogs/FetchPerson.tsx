@@ -7,13 +7,9 @@ import User from "../../Helpers/User";
 import IStoreState from "../../State/IStoreState";
 import { SetMainPerson } from "../../State/WebsiteActions";
 import { Autocomplete } from "../Common/Autocomplete";
+import { IDialogProps } from "./DialogWrapper";
 
 import "./FetchPerson.css";
-
-interface IFetchPersonProps {
-    handleMainPersonDialogClose: () => void;
-    readonly mainPersonDialogOpen: boolean;
-}
 
 export interface IFetchPersonStateProps {
     mainPerson?: User;
@@ -24,8 +20,8 @@ export interface IFetchPersonDispatchProps {
     setMainPerson(user: User): void;
 }
 
-class PureFetchPerson extends React.Component<IFetchPersonProps & IFetchPersonStateProps & IFetchPersonDispatchProps> {
-    public componentWillUpdate(nextProps: IFetchPersonProps & IFetchPersonStateProps & IFetchPersonDispatchProps) {
+class PureFetchPerson extends React.Component<IDialogProps & IFetchPersonStateProps & IFetchPersonDispatchProps> {
+    public componentWillUpdate(nextProps: IDialogProps & IFetchPersonStateProps & IFetchPersonDispatchProps) {
         if (nextProps.mainPerson !== this.props.mainPerson) {
             this.setState({ fetchPerson: nextProps.mainPerson });
         }
@@ -35,8 +31,8 @@ class PureFetchPerson extends React.Component<IFetchPersonProps & IFetchPersonSt
         return(
             <Dialog
                 icon="inbox"
-                isOpen={this.props.mainPersonDialogOpen}
-                onClose={this.props.handleMainPersonDialogClose}
+                isOpen={this.props.isOpen}
+                onClose={this.props.onClose}
                 title="Fetch Specific Person"
             >
                 <div className={Classes.DIALOG_BODY}>
@@ -52,7 +48,7 @@ class PureFetchPerson extends React.Component<IFetchPersonProps & IFetchPersonSt
                 </div>
                 <div className={Classes.DIALOG_FOOTER}>
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                        <Button text="Cancel" onClick={this.props.handleMainPersonDialogClose} />
+                        <Button text="Cancel" onClick={this.props.onClose} />
                     </div>
                 </div>
             </Dialog>
@@ -61,7 +57,7 @@ class PureFetchPerson extends React.Component<IFetchPersonProps & IFetchPersonSt
 
     private handleSelection = (fetchPerson: User) => {
         this.props.setMainPerson(fetchPerson);
-        this.props.handleMainPersonDialogClose();
+        this.props.onClose();
     }
 }
 
