@@ -75,7 +75,7 @@ export class PureCurrentDinnerParty extends React.Component<
     }
 
     private removePerson(user: User) {
-        return () => this.props.setParty(_.filter(this.props.party, (id) => parseInt(id, 10) !== user.id));
+        return () => this.props.setParty(_.filter(this.props.party, (id) => id !== user.id));
     }
 }
 

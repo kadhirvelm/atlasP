@@ -111,7 +111,7 @@ export class PureSinglePersonDataDialog extends React.Component<
     }
 
     private renderEvents(event: Event) {
-        return event.attendees.map((id: number) => (
+        return event.attendees.map((id: string) => (
                 <div key={id}> {this.props.userData && this.props.userData[id].name} ({id}) </div>
             ),
         );

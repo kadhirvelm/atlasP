@@ -38,8 +38,8 @@ const Default = (props: any) => <Responsive {...props} minWidth={768} />;
 const Mobile = (props: any) => <Responsive {...props} maxWidth={767} />;
 
 class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainState> {
-  private refHandler = {
-      toaster: setToast,
+  private refHandler = {		
+    toaster: setToast,		
   };
 
   public render() {
@@ -95,7 +95,6 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
   private maybeSetMainPerson() {
     const { currentUser, userData } = this.props;
     if (currentUser === undefined || userData === undefined) {
-      this.props.fetchGoogleSheetData();
       return <div className="centered">Hang tight, refreshing the data.</div>
     }
 
@@ -110,8 +109,9 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
 }
 
 function mapStateToProps(state: IStoreState) {
+  console.log(state);
   return {
-    currentUser: state.GoogleReducer.currentUser,
+    currentUser: state.DatabaseReducer.currentUser,
     fetching: state.GoogleReducer.isFetching,
     isAdmin: state.GoogleReducer.isAdmin,
     mainPerson: state.WebsiteReducer.mainPerson,

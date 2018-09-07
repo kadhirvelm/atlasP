@@ -1,13 +1,13 @@
 export interface IUser {
-    id: number;
+    id: string;
     name: string;
     fullName: string;
     gender: string;
     age: number;
     location: string;
     contact: string;
-    redList: number[];
-    greenList: number[];
+    redList: string[];
+    greenList: string[];
     events: object;
 }
 
@@ -16,26 +16,26 @@ export default class User implements IUser {
     public connections: { id?: User };
 
     constructor(
-        public id: number,
+        public id: string,
         public fullName: string,
         public gender: string,
         public age: number,
         public location: string,
         public contact: string,
-        public redList: number[],
-        public greenList: number[],
+        public redList: string[],
+        public greenList: string[],
         public events: string[]) {
         this.name = this.firstNameAndLastInitial(fullName);
         this.connections = {};
     }
 
-    public addMultipleConnections(newConnections: number[], eventID: number) {
-        newConnections.forEach((singleNewConnection: number) => {
+    public addMultipleConnections(newConnections: string[], eventID: number) {
+        newConnections.forEach((singleNewConnection: string) => {
             this.addConnection(singleNewConnection, eventID);
         });
     }
 
-    public addConnection(newConnection: number, eventID: number) {
+    public addConnection(newConnection: string, eventID: number) {
         if (newConnection !== this.id) {
             this.connections[newConnection] = (this.connections[newConnection] || []).concat(eventID);
         }

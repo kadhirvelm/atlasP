@@ -11,36 +11,6 @@ const USER_DATA_RANGE = "Users-Data!A1:ZZ1000";
 export class GoogleDispatcher {
     public constructor(private dispatch: Dispatch) {}
 
-    public signIn() {
-        window["gapi"].auth2.getAuthInstance().signIn();
-    }
-
-    public signOut() {
-        window["gapi"].auth2.getAuthInstance().signOut();
-    }
-
-    public authorize = (callback: (isSignedIn: boolean, currentUser: any, isAdmin: boolean | string) => void) => {
-        window["gapi"].load("client:auth2", () => {
-          window["gapi"].client
-            .init({
-              apiKey: process.env.REACT_APP_API_KEY,
-              clientId: process.env.REACT_APP_CLIENT_ID,
-              discoveryDocs: [
-                "https://sheets.googleapis.com/$discovery/rest?version=v4",
-              ],
-              scope: "https://www.googleapis.com/auth/spreadsheets",
-            })
-            .then(() => {
-                window["gapi"].auth2
-                    .getAuthInstance()
-                    .isSignedIn.listen((isSignedIn: boolean) => {
-                        this.sendToCallback(isSignedIn, callback);
-                    });
-                this.sendToCallback(window["gapi"].auth2.getAuthInstance().isSignedIn.get(), callback);
-            });
-        });
-    }
-
     public fetchGoogleSheetData = () => {
         this.dispatch(StartingDataFetch.create());
         window["gapi"].client.load("sheets", "v4", () => {
@@ -98,23 +68,6 @@ export class GoogleDispatcher {
             this.fetchGoogleSheetData();
         }
         return success
-    }
-
-    private sendToCallback(isSignedIn: boolean, callback: (isSignedIn: boolean, currentUser: any, isAdmin: boolean | string) => void) {
-        const currentUser = window["gapi"].auth2.getAuthInstance().currentUser.get().w3;
-        callback(
-            isSignedIn,
-            currentUser,
-            currentUser !== undefined ? this.retrieveAdminUsers().includes(currentUser.U3) : false,
-        );
-    }
-
-    private retrieveAdminUsers(): string[] {
-        const { REACT_APP_ADMIN_EMAILS } = process.env;
-        if (REACT_APP_ADMIN_EMAILS === undefined) {
-            return [];
-        }
-        return REACT_APP_ADMIN_EMAILS.split(",");
     }
 
     private writeEvent = async (event: Event): Promise<boolean> => {

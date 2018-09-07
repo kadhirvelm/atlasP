@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Dispatch } from "redux";
+import { bindActionCreators, Dispatch } from "redux";
 
 import {
     Alignment,
@@ -21,6 +21,7 @@ import { AddNewPerson } from "./Dialogs/AddNewUser";
 import { DialogWrapper } from "./Dialogs/DialogWrapper";
 import { FetchPerson } from "./Dialogs/FetchPerson";
 
+import { EmptyDatabaseCache } from "../State/DatabaseActions";
 import "./Main.css";
 import "./Navbar.css";
 
@@ -165,7 +166,7 @@ function mapDispatchToProps(dispatch: Dispatch): INavbarDispatchProps {
     const googleDispatcher = new GoogleDispatcher(dispatch);
     return {
         fetchGoogleSheetData: googleDispatcher.fetchGoogleSheetData,
-        signOut: googleDispatcher.signOut,
+        ...bindActionCreators({ signOut: EmptyDatabaseCache.create }, dispatch),
     };
 }
 

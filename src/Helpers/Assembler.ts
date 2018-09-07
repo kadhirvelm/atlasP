@@ -7,8 +7,8 @@ let hasFailed: boolean;
 
 const removeNull = (rawInput: string) => rawInput.trim().length > 0
 
-const extractIntoNumberArray = (rawNumbers: string): number[] => {
-    return rawNumbers ? rawNumbers.split(",").filter(removeNull).map((rawNumber) => parseInt(rawNumber, 10)) : [];
+const extractIntoStringArray = (rawNumbers: string): string[] => {
+    return rawNumbers ? rawNumbers.split(",").filter(removeNull).map((rawNumber) => rawNumber) : [];
 };
 
 function assembleEventData(eventData: string[][]) {
@@ -21,14 +21,14 @@ function assembleEventData(eventData: string[][]) {
 function assembleUserData(userData: string[][]) {
     return userData.slice(1).map((person: string[]) => {
         const newUser = new User(
-            parseInt(person[0], 10),
+            person[0],
             person[1],
             person[2],
             parseInt(person[3], 10),
             person[4],
             person[5],
-            extractIntoNumberArray(person[6]),
-            extractIntoNumberArray(person[7]),
+            extractIntoStringArray(person[6]),
+            extractIntoStringArray(person[7]),
             person.slice(8).filter(removeNull));
         finalUserData[newUser.id] = newUser;
         newUser.events.forEach((event: string) => {
@@ -46,7 +46,7 @@ function assembleUserConnections() {
     (Object as any).values(finalEventsData).forEach((singleEvent: Event) => {
         const allAttendees = singleEvent.attendees;
         const eventID = singleEvent.id;
-        allAttendees.forEach((userID: number) => {
+        allAttendees.forEach((userID: string) => {
             finalUserData[userID].addMultipleConnections(allAttendees, eventID);
         });
     });
