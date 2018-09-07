@@ -1,6 +1,10 @@
 import IStoreState from "./IStoreState";
 
 export const EMPTY_STATE: IStoreState = {
+  DatabaseReducer: {
+    isFetching: false,
+    isLoggedIn: false,
+  },
   GoogleReducer: {
     isFetching: false,
     isSignedIn: false,
@@ -16,7 +20,7 @@ export const loadState = (): IStoreState => {
     if (serializedState === null) {
       return EMPTY_STATE;
     }
-    return { ...EMPTY_STATE, GoogleReducer: JSON.parse(serializedState) }
+    return { ...EMPTY_STATE, DatabaseReducer: JSON.parse(serializedState) }
   } catch (err) {
     return EMPTY_STATE;
   }
@@ -24,7 +28,7 @@ export const loadState = (): IStoreState => {
 
 export const emptyCache = () => {
   try {
-    const emptyState = JSON.stringify(EMPTY_STATE.GoogleReducer);
+    const emptyState = JSON.stringify(EMPTY_STATE.DatabaseReducer);
     localStorage.setItem("state", emptyState);
   } catch (error) {
     console.error(error);
@@ -33,7 +37,7 @@ export const emptyCache = () => {
 
 export const saveState = (state: IStoreState) => {
   try {
-    const serializedState = JSON.stringify(state.GoogleReducer);
+    const serializedState = JSON.stringify(state.DatabaseReducer);
     localStorage.setItem("state", serializedState);
   } catch (error) {
     console.error(error);

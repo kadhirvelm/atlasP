@@ -78,7 +78,7 @@ export class DialogUtils {
     private sendEventAndUsersToAPI = async (finalEvent: IFinalEventChecked) => {
         const newEvent = new Event(
             this.assembleEventID(finalEvent),
-            finalEvent.host.id,
+            parseInt(finalEvent.host.id, 10),
             finalEvent.date,
             finalEvent.description
         );

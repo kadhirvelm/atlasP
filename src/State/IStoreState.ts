@@ -1,5 +1,5 @@
 import Event from "../Helpers/Event";
-import User from "../Helpers/User";
+import User, { IUser } from "../Helpers/User";
 
 export interface IUserMap {
     id?: User;
@@ -10,6 +10,11 @@ export interface IEventMap {
 }
 
 export default interface IStoreState {
+    DatabaseReducer: {
+        currentUser?: IUser;
+        isFetching: boolean;
+        isLoggedIn: boolean;
+    };
     GoogleReducer: {
         currentUser?: any;
         eventData?: IEventMap;

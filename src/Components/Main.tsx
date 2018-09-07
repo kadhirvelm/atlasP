@@ -2,10 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Toaster } from "@blueprintjs/core";
-
 import { GoogleDispatcher } from "../Dispatchers/GoogleDispatcher";
-import { setToast } from "../Helpers/Toaster";
 import User from "../Helpers/User";
 import IStoreState, { IUserMap } from "../State/IStoreState";
 import { SetMainPerson } from "../State/WebsiteActions";
@@ -33,16 +30,11 @@ export interface IMainDispatchProps {
 }
 
 class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainState> {
-  private refHandler = {
-      toaster: setToast,
-  };
-
   public render() {
     return (
       <div className="fade-in" style={{ display: "flex", flexDirection: "column" }}>
         <AtlaspNavbar />
         {this.renderGraphAndInfo()}
-        <Toaster ref={this.refHandler.toaster} />
       </div>
     );
   }
@@ -72,7 +64,6 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
   private maybeSetMainPerson() {
     const { currentUser, userData } = this.props;
     if (currentUser === undefined || userData === undefined) {
-      this.props.fetchGoogleSheetData();
       return <div className="centered">Hang tight, refreshing the data.</div>
     }
 
@@ -87,8 +78,9 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
 }
 
 function mapStateToProps(state: IStoreState) {
+  console.log(state);
   return {
-    currentUser: state.GoogleReducer.currentUser,
+    currentUser: state.DatabaseReducer.currentUser,
     fetching: state.GoogleReducer.isFetching,
     isAdmin: state.GoogleReducer.isAdmin,
     mainPerson: state.WebsiteReducer.mainPerson,
