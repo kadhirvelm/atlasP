@@ -1,13 +1,18 @@
 import * as React from "react";
 import { connect } from "react-redux";
+import Responsive from "react-responsive";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { Toaster } from "@blueprintjs/core";
+
 import { GoogleDispatcher } from "../Dispatchers/GoogleDispatcher";
+import { setToast } from "../Helpers/Toaster";
 import User from "../Helpers/User";
 import IStoreState, { IUserMap } from "../State/IStoreState";
 import { SetMainPerson } from "../State/WebsiteActions";
 import { DisplayGraph } from "./DisplayGraph";
 import { InfoGraphic } from "./InfoGraphic";
+import { MobileView } from "./MobileView";
 import { AtlaspNavbar } from "./Navbar";
 
 import "./Main.css";
@@ -29,14 +34,40 @@ export interface IMainDispatchProps {
   setMainPerson(user: User): void;
 }
 
+const Default = (props: any) => <Responsive {...props} minWidth={768} />;
+const Mobile = (props: any) => <Responsive {...props} maxWidth={767} />;
+
 class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainState> {
+  private refHandler = {		
+    toaster: setToast,		
+  };
+
   public render() {
     return (
       <div className="fade-in" style={{ display: "flex", flexDirection: "column" }}>
-        <AtlaspNavbar />
-        {this.renderGraphAndInfo()}
+        {this.renderMobile()}
+        {this.renderDesktop()}
+        <Toaster ref={this.refHandler.toaster} />
       </div>
     );
+  }
+
+  private renderMobile() {
+    return (
+      <Mobile>
+        <AtlaspNavbar mobile={true} />
+        <MobileView />
+      </Mobile>
+    )
+  }
+
+  private renderDesktop() {
+    return (
+      <Default>
+        <AtlaspNavbar />
+        {this.renderGraphAndInfo()}
+      </Default>
+    )
   }
 
   private renderGraphAndInfo = () => {

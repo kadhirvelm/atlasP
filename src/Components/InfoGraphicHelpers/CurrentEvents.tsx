@@ -1,3 +1,4 @@
+import * as classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 
@@ -8,19 +9,23 @@ import IStoreState, { IUserMap } from "../../State/IStoreState";
 
 import "./GlobalInfoGraphicHelpers.css";
 
+export interface ICurrentEventsProps {
+    className?: string;
+}
+
 export interface ICurrentEventsStoreProps {
     events: Event[];
     users: IUserMap | undefined;
 }
 
-export class PureCurrentEvents extends React.PureComponent<ICurrentEventsStoreProps> {
+export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps & ICurrentEventsStoreProps> {
     public componentWillMount() {
         this.renderSingleEvent = this.renderSingleEvent.bind(this);
     }
 
     public render() {
         return (
-            <div className="info-person pt-dark">
+            <div className={classNames("info-person pt-dark", this.props.className)}>
                 <h4> Events </h4>
                 {this.maybeRenderEvents()}
             </div>
