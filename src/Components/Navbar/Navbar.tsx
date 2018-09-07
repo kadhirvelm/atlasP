@@ -13,16 +13,16 @@ import {
     Spinner,
 } from "@blueprintjs/core";
 
-import { GoogleDispatcher } from "../Dispatchers/GoogleDispatcher";
-import User from "../Helpers/User";
-import IStoreState from "../State/IStoreState";
-import { AddNewEvent } from "./Dialogs/AddNewEvent";
-import { AddNewPerson } from "./Dialogs/AddNewUser";
-import { DialogWrapper } from "./Dialogs/DialogWrapper";
-import { FetchPerson } from "./Dialogs/FetchPerson";
+import { GoogleDispatcher } from "../../Dispatchers/GoogleDispatcher";
+import { EmptyDatabaseCache } from "../../State/DatabaseActions";
+import IStoreState from "../../State/IStoreState";
+import { IUserMap } from "../../Types/Users";
+import { AddNewEvent } from "../Dialogs/AddNewEvent";
+import { AddNewPerson } from "../Dialogs/AddNewUser";
+import { DialogWrapper } from "../Dialogs/DialogWrapper";
+import { FetchPerson } from "../Dialogs/FetchPerson";
 
-import { EmptyDatabaseCache } from "../State/DatabaseActions";
-import "./Main.css";
+import "../Main.css";
 import "./Navbar.css";
 
 interface INavbarState {
@@ -40,7 +40,7 @@ export interface INavbarStateProps {
     fetching: boolean;
     googleSheetDataError?: any;
     isAdmin: boolean;
-    userData?: { id?: User };
+    userData?: IUserMap;
 }
 
 export interface INavbarDispatchProps {

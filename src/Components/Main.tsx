@@ -6,14 +6,15 @@ import { bindActionCreators, Dispatch } from "redux";
 import { Toaster } from "@blueprintjs/core";
 
 import { GoogleDispatcher } from "../Dispatchers/GoogleDispatcher";
-import { setToast } from "../Helpers/Toaster";
-import User from "../Helpers/User";
-import IStoreState, { IUserMap } from "../State/IStoreState";
+import IStoreState from "../State/IStoreState";
 import { SetMainPerson } from "../State/WebsiteActions";
-import { DisplayGraph } from "./DisplayGraph";
-import { InfoGraphic } from "./InfoGraphic";
-import { MobileView } from "./MobileView";
-import { AtlaspNavbar } from "./Navbar";
+import { IUser, IUserMap } from "../Types/Users";
+import { setToast } from "../Utils/Toaster";
+import User from "../Utils/User";
+import { DisplayGraph } from "./DisplayGraph/DisplayGraph";
+import { InfoGraphic } from "./InfoGraphic/InfoGraphic";
+import { MobileView } from "./Mobile/MobileView";
+import { AtlaspNavbar } from "./Navbar/Navbar";
 
 import "./Main.css";
 
@@ -21,7 +22,7 @@ interface IMainProps {
   currentUser: any;
   fetching: boolean;
   isAdmin?: boolean;
-  mainPerson?: User;
+  mainPerson?: IUser;
   userData: IUserMap | undefined;
 }
 
@@ -109,7 +110,6 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
 }
 
 function mapStateToProps(state: IStoreState) {
-  console.log(state);
   return {
     currentUser: state.DatabaseReducer.currentUser,
     fetching: state.GoogleReducer.isFetching,

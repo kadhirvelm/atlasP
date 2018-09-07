@@ -3,8 +3,9 @@ import { Dispatch } from "redux";
 
 import { Intent } from "@blueprintjs/core";
 
-import { showToast } from "../Helpers/Toaster";
-import { IRawUser, Login } from "../State/DatabaseActions";
+import { ForceUpdate, Login } from "../State/DatabaseActions";
+import { IRawUser } from "../Types/Users";
+import { showToast } from "../Utils/Toaster";
 
 export class DatabaseDispatcher {
     public constructor(private dispatch: Dispatch) {}
@@ -18,6 +19,7 @@ export class DatabaseDispatcher {
     public claim = async (phoneNumber: string) => {
         try {
             const claimResponse = await axios.post(this.retrieveURL("users/claim"), { phoneNumber });
+            this.dispatch(ForceUpdate.create({ _id: claimResponse.data.payload._id, fields: "password" }));
             this.login(phoneNumber, "", claimResponse.data.payload.temporaryPassword);
         } catch (e) {
             showToast(Intent.DANGER, "Hum, looks like this user either doesn't exist or has already been claimed. Contact an admin if you think this is a mistake.");

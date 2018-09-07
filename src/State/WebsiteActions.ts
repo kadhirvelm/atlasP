@@ -1,6 +1,6 @@
 import { TypedAction } from "redoodle";
 
-import User from "../Helpers/User";
+import User from "../Utils/User";
 
 export const SetMainPerson = TypedAction.define("WebsiteReducer//SET_MAIN_PERSON")<User>();
 

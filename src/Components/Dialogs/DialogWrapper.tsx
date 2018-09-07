@@ -39,7 +39,6 @@ export class DialogWrapper extends React.PureComponent<IDialogWrapperProps, IDia
                     isOpen={this.state.dialogOpen}
                     onClose={this.handleCloseDialog}
                 />
-                
             </div>
         )
     }

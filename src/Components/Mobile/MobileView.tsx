@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import { AddNewEvent } from "./Dialogs/AddNewEvent";
-import { AddNewPerson } from "./Dialogs/AddNewUser";
-import { DialogWrapper } from "./Dialogs/DialogWrapper";
-import { CurrentEvents } from "./InfoGraphicHelpers/CurrentEvents";
+import { AddNewEvent } from "../Dialogs/AddNewEvent";
+import { AddNewPerson } from "../Dialogs/AddNewUser";
+import { DialogWrapper } from "../Dialogs/DialogWrapper";
+import { CurrentEvents } from "../InfoGraphic/InfoGraphicHelpers/CurrentEvents";
 
 import "./MobileView.css";
 

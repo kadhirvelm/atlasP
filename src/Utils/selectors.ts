@@ -1,6 +1,7 @@
 import { createSelector } from "reselect";
 
-import IStoreState, { IEventMap, IUserMap } from "../State/IStoreState";
+import IStoreState, { IEventMap } from "../State/IStoreState";
+import { IUserMap } from "../Types/Users";
 import Event from "./Event";
 import User from "./User";
 

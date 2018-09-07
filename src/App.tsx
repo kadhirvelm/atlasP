@@ -4,9 +4,9 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { Spinner, Toaster } from "@blueprintjs/core";
 
-import { setToast } from "./Helpers/Toaster";
 import { EmptyDatabaseCache } from "./State/DatabaseActions";
 import IStoreState from "./State/IStoreState";
+import { setToast } from "./Utils/Toaster";
 
 import "./App.css";
 
@@ -65,7 +65,7 @@ class PureApp extends React.PureComponent<IAppStoreProps & IAppDispatchProps, IA
 
   private async checkWhichComponent(isLoggedIn: boolean) {
     if (!isLoggedIn) {
-      const loginElement = await import("./Components/Login");
+      const loginElement = await import("./Components/Login/Login");
       this.setState({ Element: loginElement.LoginComponent });
       return;
     }

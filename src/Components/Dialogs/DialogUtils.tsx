@@ -3,8 +3,8 @@ import * as React from "react";
 import { Dispatch } from "redux";
 
 import { GoogleDispatcher } from "../../Dispatchers/GoogleDispatcher";
-import Event from "../../Helpers/Event";
-import { showToast } from "../../Helpers/Toaster";
+import Event from "../../Utils/Event";
+import { showToast } from "../../Utils/Toaster";
 import { IFinalEventChecked, IFinalEventEmpty } from "./AddNewEvent";
 import { IFinalPerson } from "./AddNewUser";
 

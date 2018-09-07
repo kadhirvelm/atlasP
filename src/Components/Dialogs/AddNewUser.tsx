@@ -4,7 +4,8 @@ import { connect, Dispatch } from "react-redux";
 import { Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
-import IStoreState, { IUserMap } from "../../State/IStoreState";
+import IStoreState from "../../State/IStoreState";
+import { IUserMap } from "../../Types/Users";
 import { DialogUtils } from "./DialogUtils";
 
 import "./AddNewEvent.css";

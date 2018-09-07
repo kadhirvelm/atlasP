@@ -1,9 +1,9 @@
 import { Dispatch } from "redux";
 
 import { IFinalPerson } from "../Components/Dialogs/AddNewUser";
-import Event from "../Helpers/Event";
-import { IUser } from "../Helpers/User";
 import { FailedDataFetch, StartingDataFetch, SuccessfulDataFetch } from "../State/GoogleSheetActions";
+import { IUser } from "../Types/Users";
+import Event from "../Utils/Event";
 
 const EVENT_DATA_RANGE = "Events-Data!A1:L1000";
 const USER_DATA_RANGE = "Users-Data!A1:ZZ1000";

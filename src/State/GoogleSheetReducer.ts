@@ -1,6 +1,6 @@
 import { setWith, TypedReducer } from "redoodle";
 
-import { assembleObjects } from "../Helpers/Assembler";
+import { assembleObjects } from "../Utils/Assembler";
 import {
   ChangeSignIn,
   EmptyGoogleCache,

@@ -1,9 +1,5 @@
-import Event from "../Helpers/Event";
-import User, { IUser } from "../Helpers/User";
-
-export interface IUserMap {
-    id?: User;
-}
+import { IForceUpdate, IUser, IUserMap } from "../Types/Users";
+import Event from "../Utils/Event";
 
 export interface IEventMap {
     id?: Event;
@@ -12,6 +8,7 @@ export interface IEventMap {
 export default interface IStoreState {
     DatabaseReducer: {
         currentUser?: IUser;
+        forceUpdate?: IForceUpdate;
         isFetching: boolean;
         isLoggedIn: boolean;
     };
@@ -26,9 +23,9 @@ export default interface IStoreState {
         userData?: IUserMap;
     };
     WebsiteReducer: {
-        infoPerson?: User;
+        infoPerson?: IUser;
         graphRef: HTMLElement | null;
-        mainPerson?: User;
+        mainPerson?: IUser;
         party?: string[];
     };
 }

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 
 import { Button, EditableText, Intent } from "@blueprintjs/core";
-import { DatabaseDispatcher } from "../Dispatchers/DatabaseDispatcher";
+import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 
 import "./Login.css";
 

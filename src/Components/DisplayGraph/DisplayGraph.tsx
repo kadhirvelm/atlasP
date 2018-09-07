@@ -2,11 +2,12 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { calculateScore } from "../Helpers/GraphHelpers";
-import { IPeopleGraph, ISingleLocation, ORIGIN, selectMainPersonGraph } from "../Helpers/selectors";
-import User from "../Helpers/User";
-import IStoreState, { IEventMap, IUserMap } from "../State/IStoreState";
-import { SetGraphRef, SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
+import IStoreState, { IEventMap } from "../../State/IStoreState";
+import { SetGraphRef, SetInfoPerson, SetMainPerson } from "../../State/WebsiteActions";
+import { IUserMap } from "../../Types/Users";
+import { calculateScore } from "../../Utils/GraphHelpers";
+import { IPeopleGraph, ISingleLocation, ORIGIN, selectMainPersonGraph } from "../../Utils/selectors";
+import User from "../../Utils/User";
 import { RenderLine } from "./DisplayGraphHelpers/RenderLine";
 import { RenderPerson } from "./DisplayGraphHelpers/RenderPerson";
 

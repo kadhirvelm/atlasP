@@ -2,10 +2,10 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import Event from "../Helpers/Event";
-import User from "../Helpers/User";
-import IStoreState from "../State/IStoreState";
-import { ChangeParty, SetInfoPerson, SetMainPerson } from "../State/WebsiteActions";
+import IStoreState from "../../State/IStoreState";
+import { ChangeParty, SetInfoPerson, SetMainPerson } from "../../State/WebsiteActions";
+import Event from "../../Utils/Event";
+import User from "../../Utils/User";
 import { CurrentEvents } from "./InfoGraphicHelpers/CurrentEvents";
 import { InfoPerson } from "./InfoGraphicHelpers/InfoPerson";
 import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
