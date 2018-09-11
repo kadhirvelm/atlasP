@@ -3,16 +3,16 @@ import IStoreState from "./IStoreState";
 export const EMPTY_STATE: IStoreState = {
   DatabaseReducer: {
     isFetching: false,
-    isLoggedIn: false,
+    isLoggedIn: false
   },
   GoogleReducer: {
     isFetching: false,
-    isSignedIn: false,
+    isSignedIn: false
   },
   WebsiteReducer: {
-    graphRef: null,
+    graphRef: null
   }
-}
+};
 
 export const loadState = (): IStoreState => {
   try {
@@ -20,7 +20,7 @@ export const loadState = (): IStoreState => {
     if (serializedState === null) {
       return EMPTY_STATE;
     }
-    return { ...EMPTY_STATE, DatabaseReducer: JSON.parse(serializedState) }
+    return { ...EMPTY_STATE, DatabaseReducer: JSON.parse(serializedState) };
   } catch (err) {
     return EMPTY_STATE;
   }
@@ -33,7 +33,7 @@ export const emptyCache = () => {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 export const saveState = (state: IStoreState) => {
   try {
@@ -41,5 +41,21 @@ export const saveState = (state: IStoreState) => {
     localStorage.setItem("state", serializedState);
   } catch (error) {
     console.error(error);
+  }
+};
+
+export const saveToken = (token: string) => {
+  try {
+    localStorage.setItem("token", token);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const retrieveToken = () => {
+  try {
+    return localStorage.getItem("token");
+  } catch (error) {
+    return "";
   }
 };

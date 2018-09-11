@@ -3,9 +3,10 @@ import { connect } from "react-redux";
 
 import { Dialog, Icon, Popover, Position } from "@blueprintjs/core";
 
-import Event from "../../Helpers/Event";
-import User from "../../Helpers/User";
-import IStoreState, { IEventMap, IUserMap } from "../../State/IStoreState";
+import IStoreState, { IEventMap } from "../../../State/IStoreState";
+import { IUserMap } from "../../../Types/Users";
+import Event from "../../../Utils/Event";
+import User from "../../../Utils/User";
 
 import "./GlobalInfoGraphicHelpers.css";
 

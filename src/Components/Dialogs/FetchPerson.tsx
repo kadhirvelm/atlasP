@@ -3,17 +3,19 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Button, Classes, Dialog } from "@blueprintjs/core";
-import User from "../../Helpers/User";
+
 import IStoreState from "../../State/IStoreState";
 import { SetMainPerson } from "../../State/WebsiteActions";
+import { IUser, IUserMap } from "../../Types/Users";
+import User from "../../Utils/User";
 import { Autocomplete } from "../Common/Autocomplete";
 import { IDialogProps } from "./DialogWrapper";
 
 import "./FetchPerson.css";
 
 export interface IFetchPersonStateProps {
-    mainPerson?: User;
-    userData?: { id?: User };
+    mainPerson?: IUser;
+    userData?: IUserMap;
 }
 
 export interface IFetchPersonDispatchProps {

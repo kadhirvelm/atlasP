@@ -1,15 +1,4 @@
-export interface IUser {
-    id: string;
-    name: string;
-    fullName: string;
-    gender: string;
-    age: number;
-    location: string;
-    contact: string;
-    redList: string[];
-    greenList: string[];
-    events: object;
-}
+import { IUser } from "../Types/Users";
 
 export default class User implements IUser {
     public name: string;

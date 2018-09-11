@@ -1,13 +1,14 @@
 import { createSelector } from "reselect";
 
-import IStoreState, { IEventMap, IUserMap } from "../State/IStoreState";
+import IStoreState, { IEventMap } from "../State/IStoreState";
+import { IUserMap } from "../Types/Users";
 import Event from "./Event";
 import User from "./User";
 
 const MAX_RADIANS = 2 * Math.PI;
 const RADIUS = 42;
-export const ORIGIN = {x: 50, y: 50 };
-const ADJUST_CIRCLE = -(Math.PI/2);
+export const ORIGIN = { x: 50, y: 50 };
+const ADJUST_CIRCLE = -(Math.PI / 2);
 
 export interface ISingleLine {
   fromHost?: boolean;
@@ -43,13 +44,13 @@ export const selectMainPersonLines = createSelector(
   (mainPerson: User): ILines => {
     const connections = {};
     mainPerson.redList.map(
-      (singlePerson) => (connections[singlePerson] = { fromHost: true, red: true }),
+      singlePerson => (connections[singlePerson] = { fromHost: true, red: true })
     );
     mainPerson.greenList.map(
-      (singlePerson) => (connections[singlePerson] = { fromHost: true, green: true }),
+      singlePerson => (connections[singlePerson] = { fromHost: true, green: true })
     );
     return connections;
-  },
+  }
 );
 
 export const selectMainPersonConnectionLines = createSelector(
@@ -67,7 +68,7 @@ export const selectMainPersonConnectionLines = createSelector(
       }
     });
     return connections;
-  },
+  }
 );
 
 export const selectConnectionLocations = createSelector(
@@ -75,7 +76,7 @@ export const selectConnectionLocations = createSelector(
   (state: IStoreState) => state.GoogleReducer.userData,
   (mainPerson: User, users: IUserMap | undefined): ILocation => {
     if (users === undefined) {
-      return {}
+      return {};
     }
 
     const locations = {};
@@ -84,9 +85,11 @@ export const selectConnectionLocations = createSelector(
     const returnPositionOnCircle = (
       origin: number,
       mathFunction: (position: number) => number,
-      index: number,
+      index: number
     ) => {
-      return origin + mathFunction((MAX_RADIANS / totalConnections) * index + ADJUST_CIRCLE) * RADIUS;
+      return (
+        origin + mathFunction((MAX_RADIANS / totalConnections) * index + ADJUST_CIRCLE) * RADIUS
+      );
     };
 
     Object.keys(mainPerson.connections)
@@ -94,11 +97,11 @@ export const selectConnectionLocations = createSelector(
       .map((userID: string, index: number) => {
         locations[userID] = {
           x: returnPositionOnCircle(ORIGIN.x, Math.cos, index),
-          y: returnPositionOnCircle(ORIGIN.y, Math.sin, index),
+          y: returnPositionOnCircle(ORIGIN.y, Math.sin, index)
         };
       });
     return locations;
-  },
+  }
 );
 
 export const selectMainPersonGraph = createSelector(
@@ -108,7 +111,7 @@ export const selectMainPersonGraph = createSelector(
   (mainPerson: User, connections: ILines, locations: ILocation): IPeopleGraph => {
     const dimension = -Object.keys(mainPerson.connections).length / 2.25 + 19;
     return { mainPerson, connections, dimension, locations };
-  },
+  }
 );
 
 export const selectSortedEvents = createSelector(
@@ -122,4 +125,4 @@ export const selectSortedEvents = createSelector(
       .filter((event: Event) => event.attendees.includes(mainPerson.id))
       .sort((a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
-)
+);

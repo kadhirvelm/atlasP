@@ -4,13 +4,13 @@ import { connect, Dispatch } from "react-redux";
 import { Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
-import { IUser } from '../../Helpers/User';
-import IStoreState, { IUserMap } from "../../State/IStoreState";
+import IStoreState from "../../State/IStoreState";
+import { IUser, IUserMap } from "../../Types/Users";
 import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
+import { IDialogProps } from "./DialogWrapper";
 
 import "./AddNewEvent.css";
-import { IDialogProps } from "./DialogWrapper";
 
 export interface IAddNewEventStateProps {
     rawData: any;

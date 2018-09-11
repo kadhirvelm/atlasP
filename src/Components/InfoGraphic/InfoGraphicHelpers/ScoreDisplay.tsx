@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { IScore } from "../../Helpers/GraphHelpers";
+import { IScore } from "../../../Types/Graph";
 
 import "./GlobalInfoGraphicHelpers.css";
 

@@ -5,9 +5,10 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { Button } from "@blueprintjs/core";
 
-import User from "../../Helpers/User";
-import IStoreState, { IUserMap } from "../../State/IStoreState";
-import { ChangeParty, SetInfoPerson, SetMainPerson } from "../../State/WebsiteActions";
+import IStoreState from "../../../State/IStoreState";
+import { ChangeParty, SetInfoPerson, SetMainPerson } from "../../../State/WebsiteActions";
+import { IUserMap } from "../../../Types/Users";
+import User from "../../../Utils/User";
 
 import "./GlobalInfoGraphicHelpers.css";
 

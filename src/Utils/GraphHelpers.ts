@@ -1,18 +1,5 @@
+import { IScore } from "../Types/Graph";
 import User from "./User";
-
-export interface IScoreMainPerson {
-  isMain: boolean;
-}
-
-export interface IScore {
-  isMain: boolean;
-  eventScore: number;
-  genderScore: number;
-  ageScore: number;
-  likeScore: number;
-  dislikeScore: number;
-  finalScore: number;
-}
 
 export function calculateScore(user: User, mainPerson: User): IScore {
   const returnEventScore = () =>
@@ -32,11 +19,13 @@ export function calculateScore(user: User, mainPerson: User): IScore {
     // tslint:disable-next-line:trailing-comma
     likeScore: returnLikeScore(user, mainPerson) * returnLikeScore(mainPerson, user)
   };
-  return {...finalTally,
+  return {
+    ...finalTally,
     finalScore:
       (finalTally.eventScore + finalTally.genderScore + finalTally.ageScore) *
       returnLikeScore(user, mainPerson) *
       finalTally.likeScore *
       // tslint:disable-next-line:trailing-comma
-      finalTally.dislikeScore};
+      finalTally.dislikeScore
+  };
 }

@@ -4,10 +4,11 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { Button, Icon, Intent, Popover } from "@blueprintjs/core";
 
-import { calculateScore, IScore } from "../../Helpers/GraphHelpers";
-import User from "../../Helpers/User";
-import IStoreState from "../../State/IStoreState";
-import { SetMainPerson } from "../../State/WebsiteActions";
+import IStoreState from "../../../State/IStoreState";
+import { SetMainPerson } from "../../../State/WebsiteActions";
+import { IScore } from "../../../Types/Graph";
+import { calculateScore } from "../../../Utils/GraphHelpers";
+import User from "../../../Utils/User";
 import { ScoreDisplay } from "./ScoreDisplay";
 
 import "./GlobalInfoGraphicHelpers.css";

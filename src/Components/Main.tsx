@@ -3,17 +3,15 @@ import { connect } from "react-redux";
 import Responsive from "react-responsive";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Toaster } from "@blueprintjs/core";
-
-import { GoogleDispatcher } from "../Dispatchers/GoogleDispatcher";
-import { setToast } from "../Helpers/Toaster";
-import User from "../Helpers/User";
-import IStoreState, { IUserMap } from "../State/IStoreState";
+import IStoreState from "../State/IStoreState";
 import { SetMainPerson } from "../State/WebsiteActions";
-import { DisplayGraph } from "./DisplayGraph";
-import { InfoGraphic } from "./InfoGraphic";
-import { MobileView } from "./MobileView";
-import { AtlaspNavbar } from "./Navbar";
+import { IUser, IUserMap } from "../Types/Users";
+import { getAuthenticationToken } from "../Utils/Security";
+import User from "../Utils/User";
+import { DisplayGraph } from "./DisplayGraph/DisplayGraph";
+import { InfoGraphic } from "./InfoGraphic/InfoGraphic";
+import { MobileView } from "./Mobile/MobileView";
+import { AtlaspNavbar } from "./Navbar/Navbar";
 
 import "./Main.css";
 
@@ -21,7 +19,7 @@ interface IMainProps {
   currentUser: any;
   fetching: boolean;
   isAdmin?: boolean;
-  mainPerson?: User;
+  mainPerson?: IUser;
   userData: IUserMap | undefined;
 }
 
@@ -30,7 +28,6 @@ interface IMainState {
 }
 
 export interface IMainDispatchProps {
-  fetchGoogleSheetData(): void;
   setMainPerson(user: User): void;
 }
 
@@ -38,16 +35,16 @@ const Default = (props: any) => <Responsive {...props} minWidth={768} />;
 const Mobile = (props: any) => <Responsive {...props} maxWidth={767} />;
 
 class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainState> {
-  private refHandler = {		
-    toaster: setToast,		
-  };
+
+  public componentDidMount() {
+    getAuthenticationToken();
+  }
 
   public render() {
     return (
       <div className="fade-in" style={{ display: "flex", flexDirection: "column" }}>
         {this.renderMobile()}
         {this.renderDesktop()}
-        <Toaster ref={this.refHandler.toaster} />
       </div>
     );
   }
@@ -109,7 +106,6 @@ class PureMain extends React.Component<IMainProps & IMainDispatchProps, IMainSta
 }
 
 function mapStateToProps(state: IStoreState) {
-  console.log(state);
   return {
     currentUser: state.DatabaseReducer.currentUser,
     fetching: state.GoogleReducer.isFetching,
@@ -120,9 +116,7 @@ function mapStateToProps(state: IStoreState) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch) {
-  const googleDispatcher = new GoogleDispatcher(dispatch);
   return {
-    fetchGoogleSheetData: googleDispatcher.fetchGoogleSheetData,
     ...bindActionCreators({
       setMainPerson: SetMainPerson.create,
     }, dispatch),

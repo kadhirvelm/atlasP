@@ -1,8 +1,8 @@
 import * as React from "react";
 
-import { IScore, IScoreMainPerson } from "../../Helpers/GraphHelpers";
-import { ISingleLocation } from "../../Helpers/selectors";
-import User from "../../Helpers/User";
+import { IScore, IScoreMainPerson } from "../../../Types/Graph";
+import { ISingleLocation } from "../../../Utils/selectors";
+import User from "../../../Utils/User";
 
 import "./RenderPerson.css";
 

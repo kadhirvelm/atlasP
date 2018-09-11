@@ -2,10 +2,11 @@ import * as classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 
-import Event from "../../Helpers/Event";
-import { selectSortedEvents } from "../../Helpers/selectors";
-import User from "../../Helpers/User";
-import IStoreState, { IUserMap } from "../../State/IStoreState";
+import IStoreState from "../../../State/IStoreState";
+import { IUserMap } from "../../../Types/Users";
+import Event from "../../../Utils/Event";
+import { selectSortedEvents } from "../../../Utils/selectors";
+import User from "../../../Utils/User";
 
 import "./GlobalInfoGraphicHelpers.css";
 
