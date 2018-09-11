@@ -4,6 +4,7 @@ import { Dispatch } from "redux";
 
 import { Button, EditableText, Intent } from "@blueprintjs/core";
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
+import { PasswordField } from "../Common/PasswordField";
 
 import "./Login.css";
 
@@ -34,10 +35,10 @@ class PureLoginComponent extends React.Component<ILoginComponentDispatchProps, I
                             onConfirm={this.storePhoneNumber}
                             placeholder="Phone number"
                         />
-                        <EditableText
+                        <PasswordField
                             className="textfield"
-                            onConfirm={this.storePassword}
-                            placeholder="Password"
+                            onChange={this.storePassword}
+                            placeHolder="Password"
                         />
                     </div>
                     <div className="action-buttons">
@@ -49,6 +50,7 @@ class PureLoginComponent extends React.Component<ILoginComponentDispatchProps, I
                             onClick={this.handleClaim}
                             text="Claim Account"
                         />
+                        <div className="divider" />
                         <Button
                             className="action-button"
                             disabled={this.checkSignIn()}

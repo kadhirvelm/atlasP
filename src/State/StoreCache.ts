@@ -43,3 +43,19 @@ export const saveState = (state: IStoreState) => {
     console.error(error);
   }
 };
+
+export const saveToken = (token: string) => {
+  try {
+    localStorage.setItem("token", token);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const retrieveToken = () => {
+  try {
+    return localStorage.getItem("token");
+  } catch (error) {
+    return "";
+  }
+}

@@ -6,7 +6,8 @@ import { Button, Icon, Intent, Popover } from "@blueprintjs/core";
 
 import IStoreState from "../../../State/IStoreState";
 import { SetMainPerson } from "../../../State/WebsiteActions";
-import { calculateScore, IScore } from "../../../Utils/GraphHelpers";
+import { IScore } from "../../../Types/Graph";
+import { calculateScore } from "../../../Utils/GraphHelpers";
 import User from "../../../Utils/User";
 import { ScoreDisplay } from "./ScoreDisplay";
 

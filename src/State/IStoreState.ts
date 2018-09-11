@@ -1,4 +1,5 @@
-import { IForceUpdate, IUser, IUserMap } from "../Types/Users";
+import { IForceUpdate } from "../Types/Other";
+import { IUser, IUserMap } from "../Types/Users";
 import Event from "../Utils/Event";
 
 export interface IEventMap {

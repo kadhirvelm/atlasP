@@ -1,8 +1,3 @@
-export interface IForceUpdate {
-    _id: string;
-    fields: Pick<IRawUser, "age" | "gender" | "location" | "name" | "phoneNumber"> | "password";
-}
-
 export interface IRawUser {
     _id: string;
     age: number;
@@ -14,16 +9,17 @@ export interface IRawUser {
 }
 
 export interface IUser {
-    id: string;
-    name: string;
+    age: number;
+    contact: string;
+    events: object;
     fullName: string;
     gender: string;
-    age: number;
-    location: string;
-    contact: string;
-    redList: string[];
     greenList: string[];
-    events: object;
+    id: string;
+    location: string;
+    name: string;
+    password?: string;
+    redList: string[];
 }
 
 export interface IUserMap {

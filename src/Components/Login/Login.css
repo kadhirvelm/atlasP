@@ -18,5 +18,9 @@
 
 .action-buttons .action-button {
     display: flex;
-    flex: 1;
+    flex: 2;
+}
+
+.action-buttons .divider {
+    width: 10px;
 }

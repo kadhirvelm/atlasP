@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { IScore, IScoreMainPerson } from "../../../Utils/GraphHelpers";
+import { IScore, IScoreMainPerson } from "../../../Types/Graph";
 import { ISingleLocation } from "../../../Utils/selectors";
 import User from "../../../Utils/User";
 

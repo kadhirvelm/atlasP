@@ -6,29 +6,32 @@ import {
     Alignment,
     Button,
     Intent,
+    Menu,
+    MenuItem,
     Navbar,
     NavbarDivider,
     NavbarGroup,
     NavbarHeading,
+    Popover,
     Spinner,
 } from "@blueprintjs/core";
 
 import { GoogleDispatcher } from "../../Dispatchers/GoogleDispatcher";
 import { EmptyDatabaseCache } from "../../State/DatabaseActions";
 import IStoreState from "../../State/IStoreState";
-import { IUserMap } from "../../Types/Users";
+import { IForceUpdate } from "../../Types/Other";
+import { IUser } from "../../Types/Users";
 import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
 import { FetchPerson } from "../Dialogs/FetchPerson";
+import { UpdateUser } from "../Dialogs/UpdateUser";
 
 import "../Main.css";
 import "./Navbar.css";
 
 interface INavbarState {
-  eventEntryDialogOpen: boolean;
-  mainPersonDialogOpen: boolean;
-  personEntryDialogOpen: boolean;
+  accountDetailsDialogOpen: boolean;
 }
 
 export interface INavbarProps {
@@ -36,11 +39,11 @@ export interface INavbarProps {
 }
 
 export interface INavbarStateProps {
-    currentUser?: any;
+    currentUser?: IUser;
     fetching: boolean;
+    forceUpdate: IForceUpdate | undefined,
     googleSheetDataError?: any;
     isAdmin: boolean;
-    userData?: IUserMap;
 }
 
 export interface INavbarDispatchProps {
@@ -50,9 +53,7 @@ export interface INavbarDispatchProps {
 
 class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStateProps & INavbarDispatchProps, INavbarState> {
     public state = {
-        eventEntryDialogOpen: false,
-        mainPersonDialogOpen: false,
-        personEntryDialogOpen: false,
+        accountDetailsDialogOpen: this.props.forceUpdate !== undefined,
     };
 
     public render() {
@@ -69,24 +70,10 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
             <NavbarGroup align={Alignment.LEFT}>
                 <NavbarHeading> AtlasP </NavbarHeading>
                 <NavbarDivider />
-                <Button
-                    className="navbar-button"
-                    icon="refresh"
-                    onClick={this.props.fetchGoogleSheetData}
-                    text={this.maybeRenderText()}
-                    intent={this.returnIntent()}
-                />
                 {this.maybeRenderSpinner()}
                 {this.maybeRenderOtherLeftButtons()}
             </NavbarGroup>
         );
-    }
-
-    private maybeRenderText() {
-        if (this.props.mobile) {
-            return undefined;
-        }
-        return "Refresh Data";
     }
 
     private maybeRenderSpinner() {
@@ -97,7 +84,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
     }
 
     private maybeRenderOtherLeftButtons() {
-        if (this.props.mobile || this.props.userData === undefined) {
+        if (this.props.mobile) {
             return undefined;
         }
         return (
@@ -122,19 +109,21 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
     }
 
     private renderRightButtonGroup() {
-        return (
-            <NavbarGroup align={Alignment.RIGHT}>
-                {this.maybeRenderUsername()}
-                <Button icon="log-out" onClick={this.handleSignOut} />
-            </NavbarGroup>
-        );
-    }
-
-    private maybeRenderUsername() {
         if (this.props.currentUser === undefined) {
             return null;
         }
-        return <div style={ { marginRight: "10px" } }>{this.props.currentUser.ig}</div>;
+        return (
+            <NavbarGroup align={Alignment.RIGHT}>
+                <Popover>
+                    <Button icon="user" text={this.props.currentUser.fullName} rightIcon="caret-down" />
+                    <Menu>
+                        <MenuItem icon="edit" text="Account details"  onClick={this.handleOpenAccountDetails} />
+                        <MenuItem icon="log-out" text="Sign out" onClick={this.handleSignOut} />
+                    </Menu>
+                </Popover>
+                <UpdateUser isOpen={this.state.accountDetailsDialogOpen} onClose={this.handleCloseAccountDetails} />
+            </NavbarGroup>
+        );
     }
 
     private openSheet() {
@@ -142,23 +131,19 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
         window.open(`https://docs.google.com/spreadsheets/d/${process.env.REACT_APP_SPREADSHEET}`, "_blank");
     }
 
+    private handleOpenAccountDetails = () => this.setState({ accountDetailsDialogOpen: true });
+    private handleCloseAccountDetails = () => this.setState({ accountDetailsDialogOpen: false });
 
-    private returnIntent(): Intent {
-        return (this.props.userData && Object.keys(this.props.userData).length) ? Intent.NONE : Intent.DANGER;
-    }
-
-    private handleSignOut = () => {
-        this.props.signOut();
-    }
+    private handleSignOut = () => this.props.signOut();
 }
 
 function mapStateToProps(state: IStoreState): INavbarStateProps {
   return {
-    currentUser: state.GoogleReducer.currentUser,
+    currentUser: state.DatabaseReducer.currentUser,
     fetching: state.GoogleReducer.isFetching,
+    forceUpdate: state.DatabaseReducer.forceUpdate,
     googleSheetDataError: state.GoogleReducer.googleSheetDataError,
     isAdmin: state.GoogleReducer.isAdmin || false,
-    userData: state.GoogleReducer.userData,
   };
 }
 

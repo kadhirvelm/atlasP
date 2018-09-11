@@ -1,9 +1,4 @@
-interface IEvent {
-    id: string;
-    host: number;
-    date: string;
-    description: string;
-}
+import { IEvent } from "../Types/Events";
 
 export default class Event implements IEvent {
     public id: string;
