@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import Responsive from "react-responsive";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { GoogleDispatcher } from "../Dispatchers/GoogleDispatcher";
 import IStoreState from "../State/IStoreState";
 import { SetMainPerson } from "../State/WebsiteActions";
 import { IUser, IUserMap } from "../Types/Users";
@@ -29,7 +28,6 @@ interface IMainState {
 }
 
 export interface IMainDispatchProps {
-  fetchGoogleSheetData(): void;
   setMainPerson(user: User): void;
 }
 
@@ -118,9 +116,7 @@ function mapStateToProps(state: IStoreState) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch) {
-  const googleDispatcher = new GoogleDispatcher(dispatch);
   return {
-    fetchGoogleSheetData: googleDispatcher.fetchGoogleSheetData,
     ...bindActionCreators({
       setMainPerson: SetMainPerson.create,
     }, dispatch),

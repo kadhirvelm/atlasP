@@ -14,7 +14,6 @@ export class DatabaseDispatcher {
     public login = async (phoneNumber: string, password: string | undefined, temporaryPassword?: string) => {
         try {
             const loginResponse = await axios.post(this.retrieveURL("users/login"), { phoneNumber, password: securePassword(password), temporaryPassword });
-            console.log(loginResponse);
             saveAuthenticationToken(loginResponse.data.payload.token);
             this.dispatch(Login.create(loginResponse.data.payload.userDetails as IRawUser));
         } catch (error) {

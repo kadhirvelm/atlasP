@@ -16,7 +16,6 @@ import {
     Spinner,
 } from "@blueprintjs/core";
 
-import { GoogleDispatcher } from "../../Dispatchers/GoogleDispatcher";
 import { EmptyDatabaseCache } from "../../State/DatabaseActions";
 import IStoreState from "../../State/IStoreState";
 import { IForceUpdate } from "../../Types/Other";
@@ -42,12 +41,10 @@ export interface INavbarStateProps {
     currentUser?: IUser;
     fetching: boolean;
     forceUpdate: IForceUpdate | undefined,
-    googleSheetDataError?: any;
     isAdmin: boolean;
 }
 
 export interface INavbarDispatchProps {
-    fetchGoogleSheetData(): void;
     signOut(): void;
 }
 
@@ -140,19 +137,14 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
 function mapStateToProps(state: IStoreState): INavbarStateProps {
   return {
     currentUser: state.DatabaseReducer.currentUser,
-    fetching: state.GoogleReducer.isFetching,
+    fetching: state.DatabaseReducer.isFetching,
     forceUpdate: state.DatabaseReducer.forceUpdate,
-    googleSheetDataError: state.GoogleReducer.googleSheetDataError,
-    isAdmin: state.GoogleReducer.isAdmin || false,
+    isAdmin: false,
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): INavbarDispatchProps {
-    const googleDispatcher = new GoogleDispatcher(dispatch);
-    return {
-        fetchGoogleSheetData: googleDispatcher.fetchGoogleSheetData,
-        ...bindActionCreators({ signOut: EmptyDatabaseCache.create }, dispatch),
-    };
+    return bindActionCreators({ signOut: EmptyDatabaseCache.create }, dispatch);
 }
 
 export const AtlaspNavbar = connect(mapStateToProps, mapDispatchToProps)(PureAtlaspNavbar);

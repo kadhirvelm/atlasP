@@ -34,11 +34,23 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
         isLoading: false,
     };
 
+    private fields: { [key: number]: [IconName, keyof IUser] } = {
+        1: ["person", "fullName"],
+        2: ["phone", "contact"],
+        3: ["key-escape", "gender"],
+        4: ["map-marker", "location"],
+        5: ["history", "age"],
+    }
+
     public componentDidMount() {
         this.maybeShowErrorToast();
     }
 
     public render() {
+        const { currentUser } = this.state;
+        if (currentUser === undefined) {
+            return null;
+        }
         return (
             <Dialog
                 canEscapeKeyClose={!this.isForcedAction()}
@@ -51,14 +63,11 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
             >
                 <div className={classNames(Classes.DIALOG_BODY, "all-fields-container")}>
                     <div className="user-fields-container">
-                        {this.renderField("person", "fullName")}
-                        {this.renderField("phone", "contact")}
-                        {this.renderField("key-escape", "gender")}
-                        {this.renderField("map-marker", "location")}
-                        {this.renderField("history", "age")}
+                        {Object.values(this.fields).map((value) => this.renderField(currentUser, value[0], value[1])
+                        )}
                     </div>
                     <div className="change-password">
-                        {this.renderField("lock", "password")}
+                        {this.renderField(currentUser, "lock", "password")}
                     </div>
                 </div>
                 <div className={classNames(Classes.DIALOG_FOOTER, Classes.DIALOG_FOOTER_ACTIONS)}>
@@ -73,11 +82,7 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
         return this.props.forceUpdate !== undefined;
     }
 
-    private renderField(icon: IconName, key: string) {
-        const { currentUser } = this.state;
-        if (currentUser === undefined) {
-            return null;
-        }
+    private renderField(currentUser: IUser, icon: IconName, key: string) {
         return (
             <div className="render-field-container">
                 <Icon className="render-field-icon" icon={icon} title={key} />
@@ -89,12 +94,12 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
 
     private renderTextfield(currentUser: IUser, key: string) {
         if (key === "password") {
-            return <PasswordField className={classNames("render-field-text", { error: this.checkForce(key) })} placeHolder="Change password..." onChange={this.editUser(key)} />
+            return <PasswordField className={classNames("render-field-text", { error: this.checkIfInForceUpdate(key) })} placeHolder="Change password..." onChange={this.editUser(key)} />
         }
-        return <EditableText className={classNames("render-field-text", { error: this.checkForce(key) })} onChange={this.editUser(key)} value={currentUser[key]} />
+        return <EditableText className={classNames("render-field-text", { error: this.checkIfInForceUpdate(key) })} onChange={this.editUser(key)} value={currentUser[key]} />
     }
 
-    private checkForce(key: string) {
+    private checkIfInForceUpdate(key: string) {
         const { forceUpdate } = this.props;
         if (forceUpdate === undefined) {
             return false;
