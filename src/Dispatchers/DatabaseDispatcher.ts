@@ -15,6 +15,7 @@ export class DatabaseDispatcher {
         try {
             const loginResponse = await axios.post(this.retrieveURL("users/login"), { phoneNumber, password: securePassword(password), temporaryPassword });
             saveAuthenticationToken(loginResponse.data.payload.token);
+            console.log(loginResponse);
             this.dispatch(Login.create(loginResponse.data.payload.userDetails as IRawUser));
         } catch (error) {
             showToast(Intent.DANGER, "It doesn't seem like these are valid login credentials.")
@@ -48,6 +49,16 @@ export class DatabaseDispatcher {
         } catch (error) {
             showToast(Intent.DANGER, `Hum, something went wrong. ${error.response.data.message.join(", ")}.`)
             throw error
+        }
+    }
+
+    public getGraph = async (user: IUser) => {
+        try {
+            const [ users, events ] = await Promise.all([ axios.post(this.retrieveURL("users/getMany"), { ids: Object.keys(user.connections) }), axios.post(this.retrieveURL("events/getMany"), { eventIds: Object.values(user.connections).reduce((previous, next) => previous.concat(next)) }) ]);
+            console.log(users, events);
+        } catch (error) {
+            showToast(Intent.DANGER, "We were unable to retrieve the requested user.");
+            throw error;
         }
     }
     

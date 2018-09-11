@@ -1,8 +1,7 @@
-import { IUser } from "../Types/Users";
+import { IConnections, IUser } from "../Types/Users";
 
 export default class User implements IUser {
     public name: string;
-    public connections: { id?: User };
 
     constructor(
         public id: string,
@@ -13,21 +12,9 @@ export default class User implements IUser {
         public contact: string,
         public redList: string[],
         public greenList: string[],
-        public events: string[]) {
+        public events: string[],
+        public connections: IConnections) {
         this.name = this.firstNameAndLastInitial(fullName);
-        this.connections = {};
-    }
-
-    public addMultipleConnections(newConnections: string[], eventID: number) {
-        newConnections.forEach((singleNewConnection: string) => {
-            this.addConnection(singleNewConnection, eventID);
-        });
-    }
-
-    public addConnection(newConnection: string, eventID: number) {
-        if (newConnection !== this.id) {
-            this.connections[newConnection] = (this.connections[newConnection] || []).concat(eventID);
-        }
     }
 
     private firstNameAndLastInitial = (name: string) => {

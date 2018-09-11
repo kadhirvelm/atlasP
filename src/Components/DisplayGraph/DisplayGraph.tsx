@@ -2,24 +2,27 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import IStoreState, { IEventMap } from "../../State/IStoreState";
 import { SetGraphRef, SetInfoPerson, SetMainPerson } from "../../State/WebsiteActions";
-import { IUserMap } from "../../Types/Users";
+import { IUser, IUserMap } from "../../Types/Users";
 import { calculateScore } from "../../Utils/GraphHelpers";
-import { IPeopleGraph, ISingleLocation, ORIGIN, selectMainPersonGraph } from "../../Utils/selectors";
+import { IPeopleGraph, ISingleLocation, ORIGIN } from "../../Utils/selectors";
 import User from "../../Utils/User";
 import { RenderLine } from "./DisplayGraphHelpers/RenderLine";
 import { RenderPerson } from "./DisplayGraphHelpers/RenderPerson";
 
 export interface IDisplayGraphStoreProps {
-    eventData: IEventMap;
+    currentUser: IUser | undefined;
+    eventData: IEventMap | undefined;
     graphRef: HTMLElement | null;
     isAdmin?: boolean;
-    userData: IUserMap;
-    peopleGraph: IPeopleGraph;
+    userData: IUserMap | undefined;
+    peopleGraph: IPeopleGraph | undefined;
 }
 
 export interface IDisplayGraphDispatchProps {
+    getGraph(user: IUser): void;
     setGraphRef(ref: HTMLElement | null): void;
     setInfoPerson(infoPerson: User): void;
     setMainPerson(mainPerson: User): void;
@@ -31,6 +34,12 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         this.changeMainPerson = this.changeMainPerson.bind(this);
     }
 
+    public componentDidMount() {
+        if (this.props.currentUser !== undefined) {
+            this.props.getGraph(this.props.currentUser);
+        }
+    }
+
     public setRef = (ref: HTMLElement | null ) => {
         if (this.props.graphRef == null) {
             this.props.setGraphRef(ref);
@@ -38,6 +47,10 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     }
 
     public render() {
+        const { peopleGraph } = this.props;
+        if (this.props.userData === undefined || this.props.eventData === undefined || peopleGraph === undefined) {
+            return null;
+        }
         return(
             <div
                 id="Graph Container"
@@ -45,43 +58,56 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                 className="flexbox-row"
                 style={{ position: "relative", width: "100%", height: "100%" }}
             >
-                {this.renderMainPerson()}
-                {this.renderMainPersonConnections()}
-                {this.renderConnectionLines()}
+                {this.renderMainPerson(peopleGraph)}
+                {this.renderMainPersonConnections(peopleGraph)}
+                {this.renderConnectionLines(peopleGraph)}
             </div>
         );
     }
 
-    private returnEventDate = (events: string[]): string => this.props.eventData[events.slice(-1)[0]].date;
+    private returnEventDate = (events: string[]): string | undefined => {
+        if (this.props.eventData === undefined) {
+            return undefined;
+        }
+        return this.props.eventData[events.slice(-1)[0]].date;
+    }
 
-    private renderMainPerson() {
+    private renderMainPerson(peopleGraph: IPeopleGraph) {
+        const eventDate = this.returnEventDate(peopleGraph.mainPerson.events);
+        if (eventDate === undefined) {
+            return null;
+        }
         return (
             <RenderPerson
                 changeInfoPerson={this.changeInfoPerson}
                 changeMainPerson={this.changeMainPerson}
-                dimension={this.props.peopleGraph.dimension}
-                lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.events)}
+                dimension={peopleGraph.dimension}
+                lastEventDate={eventDate}
                 location={ORIGIN}
                 scoreTally={{ isMain: true }}
-                user={this.props.peopleGraph.mainPerson}
+                user={peopleGraph.mainPerson}
             />
         );
     }
 
-    private renderMainPersonConnections() {
-        const { mainPerson } = this.props.peopleGraph;
-        return Object.keys(this.props.peopleGraph.mainPerson.connections).map((userID: string) => {
-            const user = this.props.userData[userID];
+    private renderMainPersonConnections(peopleGraph: IPeopleGraph) {
+        const { mainPerson } = peopleGraph;
+        return Object.keys(peopleGraph.mainPerson.connections).map((userID: string) => {
+            const user = this.props.userData;
+            const eventDate = this.returnEventDate(peopleGraph.mainPerson.connections[userID]);
+            if (user === undefined || eventDate === undefined) {
+                return null;
+            }
             return (
                 <RenderPerson
                     changeInfoPerson={this.changeInfoPerson}
                     changeMainPerson={this.changeMainPerson}
-                    dimension={this.props.peopleGraph.dimension}
+                    dimension={peopleGraph.dimension}
                     key={`${mainPerson.id}_${userID}`}
-                    lastEventDate={this.returnEventDate(this.props.peopleGraph.mainPerson.connections[userID])}
-                    location={this.props.peopleGraph.locations[userID]}
-                    scoreTally={calculateScore(user, this.props.peopleGraph.mainPerson)}
-                    user={user}
+                    lastEventDate={eventDate}
+                    location={peopleGraph.locations[userID]}
+                    scoreTally={calculateScore(user[userID], peopleGraph.mainPerson)}
+                    user={user[userID]}
                 />
             );
         });
@@ -95,25 +121,25 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         return () => this.props.isAdmin && this.props.setMainPerson(user);
     }
 
-    private renderConnectionLines() {
+    private renderConnectionLines(peopleGraph: IPeopleGraph) {
         if (this.props.graphRef == null) {
             return null;
         }
         const origin = this.convertToAbsolutePoint(ORIGIN);
         return (
             <svg height={this.props.graphRef.clientHeight} width={this.props.graphRef.clientWidth}>
-                {this.renderPeopleGraphConnections(origin)}
+                {this.renderPeopleGraphConnections(origin, peopleGraph)}
             </svg>
         );
     }
 
-    private renderPeopleGraphConnections(origin: ISingleLocation) {
-        return Object.entries(this.props.peopleGraph.connections).map((line) => (
+    private renderPeopleGraphConnections(origin: ISingleLocation, peopleGraph: IPeopleGraph) {
+        return Object.entries(peopleGraph.connections).map((line) => (
             <RenderLine
                 key={line[0]}
                 index={line[0]}
                 lineSettings={line[1]}
-                location={this.convertToAbsolutePoint(this.props.peopleGraph.locations[line[0]])}
+                location={this.convertToAbsolutePoint(peopleGraph.locations[line[0]])}
                 origin={origin}
             />
         ));
@@ -132,20 +158,24 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 
 function mapStateToProps(state: IStoreState): IDisplayGraphStoreProps {
     return {
-        eventData: state.GoogleReducer.eventData || {},
+        currentUser: state.DatabaseReducer.currentUser,
+        eventData: state.GoogleReducer.eventData,
         graphRef: state.WebsiteReducer.graphRef,
         isAdmin: state.GoogleReducer.isAdmin,
-        peopleGraph: selectMainPersonGraph(state),
-        userData: state.GoogleReducer.userData || {},
+        peopleGraph: undefined, // selectMainPersonGraph(state),
+        userData: state.GoogleReducer.userData,
     };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {
-    return bindActionCreators({
-        setGraphRef: SetGraphRef.create,
-        setInfoPerson: SetInfoPerson.create,
-        setMainPerson: SetMainPerson.create,
-    }, dispatch);
+    return {
+        ...bindActionCreators({
+            setGraphRef: SetGraphRef.create,
+            setInfoPerson: SetInfoPerson.create,
+            setMainPerson: SetMainPerson.create,
+        }, dispatch),
+        getGraph: new DatabaseDispatcher(dispatch).getGraph,
+    }
 }
 
 export const DisplayGraph = connect(mapStateToProps, mapDispatchToProps)(PureDispayGraph);

@@ -1,6 +1,7 @@
 export interface IRawUser {
   _id: string;
   age: number;
+  connections: IConnections;
   claimed: boolean;
   gender: string;
   location: string;
@@ -10,6 +11,7 @@ export interface IRawUser {
 
 export interface IUser {
   age: number;
+  connections: IConnections;
   contact: string;
   events: object;
   fullName: string;
@@ -21,6 +23,8 @@ export interface IUser {
   password?: string;
   redList: string[];
 }
+
+export interface IConnections { [key: string]: string[] };
 
 export interface IUserMap {
   id?: IUser;

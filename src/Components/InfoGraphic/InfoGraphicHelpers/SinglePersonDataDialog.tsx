@@ -11,7 +11,7 @@ import User from "../../../Utils/User";
 import "./GlobalInfoGraphicHelpers.css";
 
 export interface ISinglePersonDataDialogProps {
-    events: number[] | undefined;
+    events: string[] | undefined;
     isOpen: boolean;
     onClose: () => void;
     person: User;
@@ -60,7 +60,7 @@ export class PureSinglePersonDataDialog extends React.Component<
         if (events === undefined) {
             return null;
         }
-        return events.map((eventID: number, index: number) => {
+        return events.map((eventID: string, index: number) => {
             const event: Event = this.props.eventData && this.props.eventData[eventID];
             return this.renderEventStuff(event, index);
         });

@@ -1,6 +1,5 @@
 import { setWith, TypedReducer } from "redoodle";
 
-import { assembleObjects } from "../Utils/Assembler";
 import {
   ChangeSignIn,
   EmptyGoogleCache,
@@ -19,13 +18,12 @@ export const GoogleReducer = TypedReducer.builder<IStoreState["GoogleReducer"]>(
     });
   })
   .withHandler(SuccessfulDataFetch.TYPE, (state, payload) => {
-    const assembledObject = assembleObjects(payload.userData, payload.eventData);
     return setWith(state, {
-      eventData: assembledObject.eventData,
+      eventData: undefined,
       isFetching: false,
       isSignedIn: state.isSignedIn,
       rawData: payload.rawData,
-      userData: assembledObject.userData,
+      userData: undefined,
     });
   })
   .withHandler(FailedDataFetch.TYPE, (state, payload) => {

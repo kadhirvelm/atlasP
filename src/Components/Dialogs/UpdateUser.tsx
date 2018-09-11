@@ -84,7 +84,7 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
 
     private renderField(currentUser: IUser, icon: IconName, key: string) {
         return (
-            <div className="render-field-container">
+            <div className="render-field-container" key={key}>
                 <Icon className="render-field-icon" icon={icon} title={key} />
                 <div className="render-field-divider" />
                 {this.renderTextfield(currentUser, key)}

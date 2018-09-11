@@ -8,7 +8,7 @@ import { EMPTY_STATE } from "./StoreCache";
 export const DatabaseReducer = TypedReducer.builder<IStoreState["DatabaseReducer"]>()
     .withHandler(Login.TYPE, (state, payload) => {
         return setWith(state, {
-            currentUser: new User(payload._id, payload.name, payload.gender, payload.age, payload.location, payload.phoneNumber, [], [], []),
+            currentUser: new User(payload._id, payload.name, payload.gender, payload.age, payload.location, payload.phoneNumber, [], [], [], payload.connections),
             isLoggedIn: true,
         })
     })
