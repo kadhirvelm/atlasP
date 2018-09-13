@@ -81,7 +81,7 @@ export class PureSinglePersonDataDialog extends React.Component<
                     {event.id}
                 </div>
                 <div className="flex-basis-15">
-                    {this.props.userData && this.props.userData[event.host].name}
+                    {this.props.userData && this.props.userData[event.host.id].name}
                 </div>
                 {this.renderPeoplePopover(event)}
                 <div className="flex-basis-15 flexbox-centered">

@@ -3,7 +3,7 @@ import { IUser } from "./Users";
 export interface IEvent {
   attendees: IUser[];
   id: string;
-  host: number;
+  host: IUser;
   date: string;
   description: string;
 }
