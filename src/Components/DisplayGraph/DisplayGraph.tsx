@@ -30,7 +30,6 @@ export interface IDisplayGraphDispatchProps {
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     public componentWillMount() {
         this.changeInfoPerson = this.changeInfoPerson.bind(this);
-        this.changeMainPerson = this.changeMainPerson.bind(this);
     }
 
     public componentDidMount() {
@@ -47,7 +46,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 
     public render() {
         const { peopleGraph } = this.props;
-        if (this.props.userData === undefined || this.props.eventData === undefined || peopleGraph === undefined) {
+        if (peopleGraph === undefined) {
             return null;
         }
         return(
@@ -75,7 +74,6 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         return (
             <RenderPerson
                 changeInfoPerson={this.changeInfoPerson}
-                changeMainPerson={this.changeMainPerson}
                 dimension={peopleGraph.dimension}
                 location={ORIGIN}
                 scoreTally={{ isMain: true }}
@@ -99,7 +97,6 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             return (
                 <RenderPerson
                     changeInfoPerson={this.changeInfoPerson}
-                    changeMainPerson={this.changeMainPerson}
                     dimension={peopleGraph.dimension}
                     key={`${mainPerson.id}_${userID}`}
                     lastEventDate={eventDate}
@@ -113,11 +110,6 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 
     private changeInfoPerson(user: User) {
         return () => this.props.setInfoPerson(user);
-    }
-
-    private changeMainPerson(user: User) {
-        // CHECK FOR ADMIN PRIVILEGES HERE
-        return () => console.log(user); // this.props.setMainPerson(user);
     }
 
     private renderConnectionLines(peopleGraph: IPeopleGraph) {

@@ -13,7 +13,6 @@ export interface IRenderPersonProps {
     scoreTally: IScore | IScoreMainPerson;
     user: IUser;
     changeInfoPerson(user: IUser): () => void;
-    changeMainPerson(user: IUser): () => void;
 }
 
 export class RenderPerson extends React.Component<IRenderPersonProps> {
@@ -37,7 +36,6 @@ export class RenderPerson extends React.Component<IRenderPersonProps> {
                     className={"user-node" + " " + this.props.user.gender}
                     draggable={true}
                     onDragStart={this.handleDragStart}
-                    onDoubleClick={this.props.changeMainPerson(this.props.user)}
                     onClick={this.props.changeInfoPerson(this.props.user)}
                     style={{ width: this.props.dimension + "vmin", height: this.props.dimension + "vmin" }}
                 >

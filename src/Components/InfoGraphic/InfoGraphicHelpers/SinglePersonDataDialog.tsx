@@ -38,7 +38,7 @@ export class PureSinglePersonDataDialog extends React.Component<
                 icon="person"
                 isOpen={this.props.isOpen}
                 onClose={this.props.onClose}
-                title="Person Info"
+                title={this.props.person.name}
             >
                 <div className="flexbox-column">
                     <div className="flexbox-row">

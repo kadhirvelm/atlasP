@@ -14,11 +14,11 @@ import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDia
 import "./InfoGraphic.css";
 
 interface IInfoGraphicProps {
+    currentUser: IUser | undefined;
+    eventData: IEventMap | undefined;
     infoPerson: IUser | undefined;
-    mainPerson: IUser | undefined;
     party: string[] | undefined;
     userData: IUserMap | undefined;
-    eventData: IEventMap | undefined;
 }
 
 export interface IInfoGraphDispatchProps {
@@ -40,14 +40,14 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
     };
 
     public render() {
-        const { mainPerson } = this.props;
-        if (mainPerson === undefined) {
+        const { currentUser } = this.props;
+        if (currentUser === undefined) {
             return null;
         }
         return(
             <div className="flexbox">
                 <InfoPerson
-                    mainPerson={mainPerson}
+                    currentUser={currentUser}
                     openPopover={this.state.openPopover}
                     person={this.props.infoPerson}
                     closePopoverHover={this.closePopoverHover}
@@ -61,18 +61,16 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
     }
 
     private maybeRenderSinglePersonDataDialog() {
-        if (this.props.infoPerson === undefined
-                || this.props.mainPerson === undefined
-                || this.props.mainPerson.id === this.props.infoPerson.id
-                || this.props.infoPerson.connections === undefined) {
+        const { infoPerson, currentUser } = this.props;
+        if (infoPerson === undefined || currentUser === undefined || currentUser.connections === undefined) {
             return null;
         }
         return (
             <SinglePersonDataDialog
-                events={this.props.infoPerson.connections[this.props.mainPerson.id]}
+                events={currentUser.connections[infoPerson.id]}
                 isOpen={this.state.openDialog}
                 onClose={this.closeInformationDialog}
-                person={this.props.infoPerson}
+                person={infoPerson}
             />
         );
     }
@@ -86,9 +84,9 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
 
 function mapStateToProps(state: IStoreState): IInfoGraphicProps {
   return {
+    currentUser: state.DatabaseReducer.currentUser,
     eventData: state.DatabaseReducer.eventData,
     infoPerson: state.WebsiteReducer.infoPerson,
-    mainPerson: state.DatabaseReducer.currentUser,
     party: state.WebsiteReducer.party,
     userData: state.DatabaseReducer.userData,
   };
