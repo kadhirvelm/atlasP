@@ -1,19 +1,19 @@
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 
-import { Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
-import { IUser } from '../../Helpers/User';
-import IStoreState, { IUserMap } from "../../State/IStoreState";
+import IStoreState from "../../State/IStoreState";
+import { IUser, IUserMap } from "../../Types/Users";
 import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
-
-import "./AddNewEvent.css";
 import { IDialogProps } from "./DialogWrapper";
 
+import { showToast } from "../../Utils/Toaster";
+import "./AddNewEvent.css";
+
 export interface IAddNewEventStateProps {
-    rawData: any;
     users: IUserMap | undefined;
 }
 
@@ -51,10 +51,6 @@ export class PureAddNewEvent extends React.Component<
     IDialogProps & IAddNewEventStateProps & IAddNewEventDispatchProps, IAddNewEventState> {
     public state: IAddNewEventState = EMPTY_STATE;
 
-    public componentDidMount() {
-        this.props.dialogUtils.setReset(this.resetStateAndClose);
-    }
-
     public render() {
         return(
             <Dialog
@@ -71,14 +67,14 @@ export class PureAddNewEvent extends React.Component<
                         <Autocomplete
                             className="autocomplete-margin"
                             dataSource={this.props.users}
-                            displayKey="fullName"
+                            displayKey="name"
                             placeholderText="Search for host..."
                             values={this.finalEventValue("host")}
                             onSelection={this.handleHostSelection}
                         />
                         <Autocomplete
                             dataSource={this.props.users}
-                            displayKey="fullName"
+                            displayKey="name"
                             multiselection={true}
                             placeholderText="Search for users..."
                             values={this.finalEventValue("attendees")}
@@ -98,11 +94,12 @@ export class PureAddNewEvent extends React.Component<
     }
 
     private handleSubmit = () => {
-        this.setState({ isSubmitting: true }, () => {
+        this.setState({ isSubmitting: true }, async () => {
             try {
                 const { finalEvent } = this.state;
-                this.props.dialogUtils.setData(this.props.rawData);
-                this.props.dialogUtils.submitFinalEvent(finalEvent);
+                await this.props.dialogUtils.submitFinalEvent(finalEvent);
+                showToast(Intent.SUCCESS, "Successfully added a new event.");
+                this.props.onClose();
             } catch (error) {
                 this.setState({ isSubmitting: false });
             }
@@ -157,8 +154,7 @@ export class PureAddNewEvent extends React.Component<
 
 function mapStateToProps(state: IStoreState): IAddNewEventStateProps {
     return {
-        rawData: state.GoogleReducer.rawData,
-        users: state.GoogleReducer.userData,
+        users: state.DatabaseReducer.userData,
     };
 }
 

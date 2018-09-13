@@ -1,10 +1,10 @@
 import { combineReducers } from "redoodle";
 
-import { GoogleReducer } from "./GoogleSheetReducer";
+import { DatabaseReducer } from "./DatabaseReducer";
 import IStoreState from "./IStoreState";
 import { WebsiteReducer } from "./WebsiteReducer";
 
 export const RootReducer = combineReducers<IStoreState>({
-  GoogleReducer,
-  WebsiteReducer,
+  DatabaseReducer,
+  WebsiteReducer
 });

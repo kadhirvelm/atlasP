@@ -11,6 +11,7 @@ export interface IDialogProps {
 export interface IDialogWrapperProps {
     className?: string;
     containerClassName?: string;
+    containerElement?: React.ComponentClass<any & { classNames?: string, icon: IconName, text: string, onClick(): void }>;
     dialog: React.ComponentClass<IDialogProps>;
     icon: IconName;
     text: string;
@@ -27,9 +28,10 @@ export class DialogWrapper extends React.PureComponent<IDialogWrapperProps, IDia
 
     public render() {
         const Dialog = this.props.dialog;
+        const Element = this.props.containerElement || Button;
         return (
             <div className={this.props.containerClassName}>
-                <Button
+                <Element
                     className={classNames(this.props.className)}
                     icon={this.props.icon}
                     text={this.props.text}
@@ -39,7 +41,6 @@ export class DialogWrapper extends React.PureComponent<IDialogWrapperProps, IDia
                     isOpen={this.state.dialogOpen}
                     onClose={this.handleCloseDialog}
                 />
-                
             </div>
         )
     }

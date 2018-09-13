@@ -2,41 +2,46 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Button, Intent, Spinner } from "@blueprintjs/core";
+import { Spinner, Toaster } from "@blueprintjs/core";
 
-import { Main } from "./Components/Main";
-import { GoogleDispatcher } from "./Dispatchers/GoogleDispatcher";
-import { ChangeSignIn, EmptyGoogleCache } from "./State/GoogleSheetActions";
+import { EmptyDatabaseCache } from "./State/DatabaseActions";
 import IStoreState from "./State/IStoreState";
+import { setToast } from "./Utils/Toaster";
 
 import "./App.css";
 
-export interface IAppProps {
+export interface IAppStoreProps {
   fetching: boolean;
-  isSignedIn?: boolean;
+  isLoggedIn: boolean;
 }
 
 export interface IAppDispatchProps {
-  authorize(callback: (isSignedIn: boolean, currentUser: any, isAdmin: boolean | string) => void): void;
-  changeSignInStatus(signIn: { isSignedIn: boolean, currentUser: any, isAdmin: boolean }): void;
   emptyCache(): void;
-  signIn(): void;
-  signOut(): void;
 }
 
 export interface IAppState {
+  Element: React.ComponentClass;
   hasErrored: boolean;
-  receivedUpdate: boolean;
 }
 
-class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps, IAppState> {
+class PureApp extends React.PureComponent<IAppStoreProps & IAppDispatchProps, IAppState> {
   public state = {
+    Element: Spinner,
     hasErrored: false,
-    receivedUpdate: false,
   };
 
-  public componentDidMount() {
-    this.props.authorize(this.updateSigninStatus);
+  private refHandler = {
+      toaster: setToast,
+  };
+
+  public componentWillMount() {
+    this.checkWhichComponent(this.props.isLoggedIn);
+  }
+
+  public componentWillReceiveProps(nextProps: IAppStoreProps & IAppDispatchProps) {
+    if (this.props.isLoggedIn !== nextProps.isLoggedIn) {
+      this.checkWhichComponent(nextProps.isLoggedIn);
+    }
   }
 
   public componentDidCatch(error: any, info: any) {
@@ -46,64 +51,43 @@ class PureApp extends React.PureComponent<IAppProps & IAppDispatchProps, IAppSta
 
   public render() {
     if (this.state.hasErrored) {
-      this.props.signOut();
-      this.props.emptyCache();
-      return <div className="centered">Rats, look like you found a bug. We've emptied the cache - try refreshing the page?</div>
+      this.handleErroredOut();
     }
+
+    const { Element } = this.state;
     return (
       <div className="prevent-movement">
-        {this.renderMainPage()}
+        <Element />
+        <Toaster ref={this.refHandler.toaster} />
       </div>
     );
   }
 
-  private renderMainPage() {
-    if (!this.state.receivedUpdate) {
-      return <Spinner className="centered" />;
+  private async checkWhichComponent(isLoggedIn: boolean) {
+    if (!isLoggedIn) {
+      const loginElement = await import("./Components/Login/Login");
+      this.setState({ Element: loginElement.LoginComponent });
+      return;
     }
-    return this.renderSignedInPage();
+    const mainElement = await import("./Components/Main");
+    this.setState({ Element: mainElement.Main });
   }
 
-  private renderSignedInPage() {
-    if (this.props.isSignedIn) {
-      return <Main />;
-    }
-    return (
-      <div className="centered fade-in">
-        <h3 className="header">Welcome to AtlasP</h3>
-        <Button
-          id="authorize-button"
-          onClick={this.props.signIn}
-          text="Sign In"
-          intent={Intent.PRIMARY}
-          className="center-button"
-        />
-      </div>
-    );
-  }
-
-  private updateSigninStatus = (isSignedIn: boolean, currentUser: any, isAdmin: boolean) => {
-    this.setState({ receivedUpdate: true }, () => {
-      this.props.changeSignInStatus({ isSignedIn, currentUser,  isAdmin });
-    });
+  private handleErroredOut() {
+    this.props.emptyCache();
+    return <div className="centered">Rats, look like you found a bug. We've emptied the cache - try refreshing the page?</div>
   }
 }
 
-function mapStateToProps(state: IStoreState) {
+function mapStateToProps(state: IStoreState): IAppStoreProps {
   return {
-    fetching: state.GoogleReducer.isFetching,
-    isSignedIn: state.GoogleReducer.isSignedIn,
+    fetching: state.DatabaseReducer.isFetching,
+    isLoggedIn: state.DatabaseReducer.isLoggedIn,
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IAppDispatchProps {
-  const googleDispatcher = new GoogleDispatcher(dispatch);
-  return {
-    authorize: googleDispatcher.authorize,
-    ...bindActionCreators({ changeSignInStatus: ChangeSignIn.create, emptyCache: EmptyGoogleCache.create }, dispatch),
-    signIn: googleDispatcher.signIn,
-    signOut: googleDispatcher.signOut,
-  }
+  return bindActionCreators({ emptyCache: EmptyDatabaseCache.create }, dispatch)
 }
 
 export const App = connect(mapStateToProps, mapDispatchToProps)(PureApp);

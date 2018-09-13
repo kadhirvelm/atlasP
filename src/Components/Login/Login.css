@@ -1,0 +1,26 @@
+.centered .center-login {
+    display: flex;
+    flex-direction: column;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+}
+
+.details .textfield {
+    margin: 10px;
+}
+
+.action-buttons {
+    display: flex;
+}
+
+.action-buttons .action-button {
+    display: flex;
+    flex: 1;
+}
+
+.action-buttons .divider {
+    width: 10px;
+}

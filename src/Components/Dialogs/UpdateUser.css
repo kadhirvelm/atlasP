@@ -1,0 +1,52 @@
+.all-fields-container {
+    display: flex;
+}
+
+.user-fields-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0;
+}
+
+.render-field-container {
+    display: flex;
+    margin: 10px;
+}
+
+.render-field-icon {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.render-field-divider {
+    display: flex;
+    margin: 0 5px;
+    width: 1px;
+    background:#1A5276;
+    border-radius: 0.5px;
+}
+
+.render-field-text {
+    background: white;
+    padding: 5px;
+    border-radius: 5px;
+    flex: 1 0;
+}
+
+.render-field-text.error {
+    animation: flash ease-in-out 1.5s 3;
+    animation-delay: 2s;
+}
+
+@keyframes flash {
+    50% {
+        background: #F1C40F
+    }
+}
+
+.change-password {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0;
+}

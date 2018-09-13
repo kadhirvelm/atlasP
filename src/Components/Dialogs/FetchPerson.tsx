@@ -1,19 +1,19 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
 
 import { Button, Classes, Dialog } from "@blueprintjs/core";
-import User from "../../Helpers/User";
+
 import IStoreState from "../../State/IStoreState";
-import { SetMainPerson } from "../../State/WebsiteActions";
+import { IUser, IUserMap } from "../../Types/Users";
+import User from "../../Utils/User";
 import { Autocomplete } from "../Common/Autocomplete";
 import { IDialogProps } from "./DialogWrapper";
 
 import "./FetchPerson.css";
 
 export interface IFetchPersonStateProps {
-    mainPerson?: User;
-    userData?: { id?: User };
+    currentUser?: IUser;
+    userData?: IUserMap;
 }
 
 export interface IFetchPersonDispatchProps {
@@ -21,12 +21,6 @@ export interface IFetchPersonDispatchProps {
 }
 
 class PureFetchPerson extends React.Component<IDialogProps & IFetchPersonStateProps & IFetchPersonDispatchProps> {
-    public componentWillUpdate(nextProps: IDialogProps & IFetchPersonStateProps & IFetchPersonDispatchProps) {
-        if (nextProps.mainPerson !== this.props.mainPerson) {
-            this.setState({ fetchPerson: nextProps.mainPerson });
-        }
-    }
-
     public render() {
         return(
             <Dialog
@@ -63,13 +57,9 @@ class PureFetchPerson extends React.Component<IDialogProps & IFetchPersonStatePr
 
 function mapStateToProps(state: IStoreState): IFetchPersonStateProps {
     return {
-        mainPerson: state.WebsiteReducer.mainPerson,
-        userData: state.GoogleReducer.userData,
+        currentUser: state.DatabaseReducer.currentUser,
+        userData: state.DatabaseReducer.userData,
     };
 }
 
-function mapDispatchToProps(dispatch: Dispatch): IFetchPersonDispatchProps {
-    return bindActionCreators({ setMainPerson: SetMainPerson.create }, dispatch);
-}
-
-export const FetchPerson = connect(mapStateToProps, mapDispatchToProps)(PureFetchPerson);
+export const FetchPerson = connect(mapStateToProps)(PureFetchPerson);

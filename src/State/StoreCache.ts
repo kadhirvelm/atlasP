@@ -1,14 +1,14 @@
 import IStoreState from "./IStoreState";
 
 export const EMPTY_STATE: IStoreState = {
-  GoogleReducer: {
+  DatabaseReducer: {
     isFetching: false,
-    isSignedIn: false,
+    isLoggedIn: false
   },
   WebsiteReducer: {
-    graphRef: null,
+    graphRef: null
   }
-}
+};
 
 export const loadState = (): IStoreState => {
   try {
@@ -16,7 +16,7 @@ export const loadState = (): IStoreState => {
     if (serializedState === null) {
       return EMPTY_STATE;
     }
-    return { ...EMPTY_STATE, GoogleReducer: JSON.parse(serializedState) }
+    return { ...EMPTY_STATE, DatabaseReducer: JSON.parse(serializedState) };
   } catch (err) {
     return EMPTY_STATE;
   }
@@ -24,18 +24,34 @@ export const loadState = (): IStoreState => {
 
 export const emptyCache = () => {
   try {
-    const emptyState = JSON.stringify(EMPTY_STATE.GoogleReducer);
+    const emptyState = JSON.stringify(EMPTY_STATE.DatabaseReducer);
     localStorage.setItem("state", emptyState);
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 export const saveState = (state: IStoreState) => {
   try {
-    const serializedState = JSON.stringify(state.GoogleReducer);
+    const serializedState = JSON.stringify(state.DatabaseReducer);
     localStorage.setItem("state", serializedState);
   } catch (error) {
     console.error(error);
+  }
+};
+
+export const saveToken = (token: string) => {
+  try {
+    localStorage.setItem("token", token);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const retrieveToken = () => {
+  try {
+    return localStorage.getItem("token");
+  } catch (error) {
+    return "";
   }
 };

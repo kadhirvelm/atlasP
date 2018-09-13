@@ -1,16 +1,17 @@
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 
-import { Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
-import IStoreState, { IUserMap } from "../../State/IStoreState";
+import IStoreState from "../../State/IStoreState";
+import { IUserMap } from "../../Types/Users";
 import { DialogUtils } from "./DialogUtils";
 
+import { showToast } from "../../Utils/Toaster";
 import "./AddNewEvent.css";
 
 export interface IAddNewPersonStateProps {
-    rawData: any;
     users: IUserMap | undefined;
 }
 
@@ -24,7 +25,7 @@ interface IAddNewPersonProps {
 }
 
 export interface IFinalPerson {
-    fullName: string,
+    name: string,
     gender: string,
     age: string,
     location: string,
@@ -32,24 +33,22 @@ export interface IFinalPerson {
 
 export interface IAddNewPersonState {
     finalPerson: IFinalPerson;
+    isLoading: boolean;
 }
 
 const EMPTY_STATE: IAddNewPersonState = {
     finalPerson: {
         age: "",
-        fullName: "",
         gender: "X",
         location: "",
+        name: "",
     },
+    isLoading: false,
 }
 
 export class PureAddNewPerson extends React.Component<
     IAddNewPersonProps & IAddNewPersonStateProps & IAddNewPersonDispatchProps, IAddNewPersonState> {
     public state: IAddNewPersonState = EMPTY_STATE;
-
-    public componentDidMount() {
-        this.props.dialogUtils.setReset(this.resetStateAndClose);
-    }
 
     public render() {
         return(
@@ -61,7 +60,7 @@ export class PureAddNewPerson extends React.Component<
             >
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup>
-                        <InputGroup className="input-group" onChange={this.handleChange("fullName")} placeholder="Full name" />
+                        <InputGroup className="input-group" onChange={this.handleChange("name")} placeholder="Full name" />
                         <InputGroup className="input-group" onChange={this.handleChange("gender")} placeholder="Gender (M, F or X)" />
                         <InputGroup className="input-group" onChange={this.handleChange("age")} placeholder="Age" />
                         <InputGroup className="input-group" onChange={this.handleChange("location")} placeholder="Location" />
@@ -79,9 +78,16 @@ export class PureAddNewPerson extends React.Component<
     }
 
     private handleSubmit = () => {
-        const { finalPerson } = this.state;
-        this.props.dialogUtils.setData(this.props.rawData);
-        this.props.dialogUtils.submitFinalPerson(finalPerson);
+        this.setState({ isLoading: true }, async () => {
+            try {
+                const { finalPerson } = this.state;
+                await this.props.dialogUtils.submitFinalPerson(finalPerson);
+                showToast(Intent.SUCCESS, "Successfully created new user. Refresh the page to see them in your graph.");
+                this.props.onClose();
+            } catch (error) {
+                this.setState({ isLoading: false });
+            }
+        });
     }
 
     private handleChange = (key: string) => {
@@ -98,8 +104,7 @@ export class PureAddNewPerson extends React.Component<
 
 function mapStateToProps(state: IStoreState): IAddNewPersonStateProps {
     return {
-        rawData: state.GoogleReducer.rawData,
-        users: state.GoogleReducer.userData,
+        users: state.DatabaseReducer.userData,
     };
 }
 

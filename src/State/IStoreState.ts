@@ -1,29 +1,19 @@
-import Event from "../Helpers/Event";
-import User from "../Helpers/User";
-
-export interface IUserMap {
-    id?: User;
-}
-
-export interface IEventMap {
-    id?: Event;
-}
+import { IEventMap } from "../Types/Events";
+import { IForceUpdate } from "../Types/Other";
+import { IUser, IUserMap } from "../Types/Users";
 
 export default interface IStoreState {
-    GoogleReducer: {
-        currentUser?: any;
+    DatabaseReducer: {
+        currentUser?: IUser;
         eventData?: IEventMap;
-        googleSheetDataError?: object;
-        isAdmin?: boolean;
+        forceUpdate?: IForceUpdate;
         isFetching: boolean;
-        isSignedIn: boolean;
-        rawData?: any;
+        isLoggedIn: boolean;
         userData?: IUserMap;
     };
     WebsiteReducer: {
-        infoPerson?: User;
+        infoPerson?: IUser;
         graphRef: HTMLElement | null;
-        mainPerson?: User;
         party?: string[];
     };
 }
