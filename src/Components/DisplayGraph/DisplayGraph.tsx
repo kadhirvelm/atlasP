@@ -67,7 +67,6 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         if (this.props.eventData === undefined || events === undefined || events.length === 0) {
             return undefined;
         }
-        console.log(this.props.eventData);
         return this.props.eventData[events.slice(-1)[0]].date;
     }
 
