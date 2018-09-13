@@ -34,6 +34,7 @@
     "test": "react-scripts-ts test --env=jsdom",
     "lint": "tslint src/**/*.ts && tslint src/**/*.tsx",
     "lint:fix": "tslint src/**/*.ts --fix && tslint src/**/*.tsx --fix",
+    "prettier": "prettier src/**/*.ts --write && prettier src/**/*.tsx --write",
     "tslint-check": "tslint-config-prettier-check ./tslint.json",
     "eject": "react-scripts-ts eject"
   },

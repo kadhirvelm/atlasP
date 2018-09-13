@@ -22,7 +22,7 @@ export interface IUser {
   redList?: string[];
 }
 
-export interface IConnections { [key: string]: string[] };
+export interface IConnections { [key: string]: string[] }
 
 export interface IUserMap {
   [id: string]: IUser;

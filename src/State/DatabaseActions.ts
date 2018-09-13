@@ -11,8 +11,8 @@ export const ForceUpdate = TypedAction.define("DatabaseActions//FORCE_UPDATE")<I
 export const UpdateUser = TypedAction.define("DatabaseAction//UPDATE_USER")<IUser>();
 
 export const UpdateGraph = TypedAction.define("DatabaseAction//UPDATE_GRAPH")<{
-  users: IUser[];
-  events: IEvent[];
+  users: IUser[],
+  events: IEvent[]
 }>();
 
 export const EmptyDatabaseCache = TypedAction.defineWithoutPayload(

@@ -65,7 +65,11 @@ export const selectMainPersonConnectionLines = createSelector(
   selectMainPersonLines,
   (state: IStoreState) => state.DatabaseReducer.userData,
   (mainPerson: IUser | undefined, connections: ILines, userData: IUserMap | undefined) => {
-    if (mainPerson === undefined || mainPerson.connections === undefined || userData === undefined) {
+    if (
+      mainPerson === undefined ||
+      mainPerson.connections === undefined ||
+      userData === undefined
+    ) {
       return connections;
     }
 
@@ -119,7 +123,11 @@ export const selectMainPersonGraph = createSelector(
   selectMainPerson,
   selectMainPersonConnectionLines,
   selectConnectionLocations,
-  (mainPerson: IUser | undefined, connections: ILines, locations: ILocation): IPeopleGraph | undefined => {
+  (
+    mainPerson: IUser | undefined,
+    connections: ILines,
+    locations: ILocation
+  ): IPeopleGraph | undefined => {
     if (mainPerson === undefined || mainPerson.connections === undefined) {
       return undefined;
     }
@@ -134,6 +142,8 @@ export const selectSortedEvents = createSelector(
     if (eventData === undefined) {
       return [];
     }
-    return Object.values(eventData).sort((a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return Object.values(eventData).sort(
+      (a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
   }
 );
