@@ -71,7 +71,7 @@ export class RenderPerson extends React.Component<IRenderPersonProps> {
     private calcuateTimeDifferenceInDays() {
         const { lastEventDate } = this.props;
         if (lastEventDate === undefined) {
-            return "";
+            return "B";
         }
 
         const currentTime = (new Date().getTime() - new Date(lastEventDate).getTime());

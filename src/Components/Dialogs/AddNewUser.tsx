@@ -1,13 +1,14 @@
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect, Dispatch } from "react-redux";
 
-import { Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
 import IStoreState from "../../State/IStoreState";
 import { IUserMap } from "../../Types/Users";
 import { DialogUtils } from "./DialogUtils";
 
+import { showToast } from "../../Utils/Toaster";
 import "./AddNewEvent.css";
 
 export interface IAddNewPersonStateProps {
@@ -32,6 +33,7 @@ export interface IFinalPerson {
 
 export interface IAddNewPersonState {
     finalPerson: IFinalPerson;
+    isLoading: boolean;
 }
 
 const EMPTY_STATE: IAddNewPersonState = {
@@ -41,6 +43,7 @@ const EMPTY_STATE: IAddNewPersonState = {
         location: "",
         name: "",
     },
+    isLoading: false,
 }
 
 export class PureAddNewPerson extends React.Component<
@@ -75,10 +78,16 @@ export class PureAddNewPerson extends React.Component<
     }
 
     private handleSubmit = () => {
-        const { finalPerson } = this.state;
-        console.log("SUBMIT NEW USER", finalPerson);
-        // this.props.dialogUtils.setData(this.props.rawData);
-        // this.props.dialogUtils.submitFinalPerson(finalPerson);
+        this.setState({ isLoading: true }, async () => {
+            try {
+                const { finalPerson } = this.state;
+                await this.props.dialogUtils.submitFinalPerson(finalPerson);
+                showToast(Intent.SUCCESS, "Successfully created new user.");
+                this.props.onClose();
+            } catch (error) {
+                this.setState({ isLoading: false });
+            }
+        });
     }
 
     private handleChange = (key: string) => {
@@ -99,9 +108,9 @@ function mapStateToProps(state: IStoreState): IAddNewPersonStateProps {
     };
 }
 
-function mapDispatchToProps(): IAddNewPersonDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch): IAddNewPersonDispatchProps {
     return {
-        dialogUtils: new DialogUtils(),
+        dialogUtils: new DialogUtils(dispatch),
     };
 }
 

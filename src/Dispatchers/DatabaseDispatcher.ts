@@ -3,12 +3,14 @@ import { Dispatch } from "redux";
 
 import { Intent } from "@blueprintjs/core";
 
-import { ForceUpdate, Login, UpdateGraph, UpdateUser } from "../State/DatabaseActions";
+import { IFinalPerson } from "../Components/Dialogs/AddNewUser";
+import { ForceUpdate, Login, UpdateGraph, UpdateUser, UpdateUserData } from "../State/DatabaseActions";
 import { IRawUser, IUser } from "../Types/Users";
 import Event from "../Utils/Event";
 import { saveAuthenticationToken, securePassword } from "../Utils/Security";
 import { showToast } from "../Utils/Toaster";
 import User from "../Utils/User";
+import { convertPayloadToUser } from "../Utils/Util";
 
 export class DatabaseDispatcher {
     public constructor(private dispatch: Dispatch) {}
@@ -17,11 +19,9 @@ export class DatabaseDispatcher {
         try {
             const loginResponse = await axios.post(this.retrieveURL("users/login"), { phoneNumber, password: securePassword(password), temporaryPassword });
             saveAuthenticationToken(loginResponse.data.payload.token);
-            console.log(loginResponse);
             this.dispatch(Login.create(loginResponse.data.payload.userDetails as IRawUser));
         } catch (error) {
             showToast(Intent.DANGER, "It doesn't seem like these are valid login credentials.")
-            console.error(error);
         }
     }
 
@@ -32,7 +32,6 @@ export class DatabaseDispatcher {
             this.login(phoneNumber, undefined, claimResponse.data.payload.temporaryPassword);
         } catch (error) {
             showToast(Intent.DANGER, "Hum, looks like this user either doesn't exist or has already been claimed. Contact an admin if you think this is a mistake.");
-            console.error(error);
         }
     }
 
@@ -49,14 +48,29 @@ export class DatabaseDispatcher {
             await axios.post(this.retrieveURL("users/update"), finalUser);
             this.dispatch(UpdateUser.create({ ...newUserDetails, password: "" }));
         } catch (error) {
-            showToast(Intent.DANGER, `Hum, something went wrong. ${error.response.data.message.join(", ")}.`)
-            console.error(error);
+            showToast(Intent.DANGER, `Hum, something went wrong. ${error.response.data.message.join(", ")}.`);
+            throw error;
         }
     }
 
-    public getGraph = async (user: IUser) => {
+    public getUpdatedUser = async (user: IUser) => {
         try {
-            if (user.connections === undefined || Object.values(user.connections).length === 0) {
+            const rawUpdate = await axios.post(this.retrieveURL("users/getOne"), { id: user.id });
+            const updatedUser = convertPayloadToUser(rawUpdate.data.payload[0]);
+            if (updatedUser === undefined) {
+                throw new Error("Latest fetched user is undefined.");
+            }
+            this.dispatch(UpdateUser.create(updatedUser));
+            return updatedUser
+        } catch (error) {
+            showToast(Intent.DANGER, "Something went wrong, try logging out and refreshing the page.");
+            return undefined;
+        }
+    }
+
+    public getGraph = async (user: IUser | undefined) => {
+        try {
+            if (user === undefined || user.connections === undefined || Object.values(user.connections).length === 0) {
                 throw new Error(`Cannot fetch for user: ${user}`);
             }
             const [ rawUsers, rawEvents ] = await Promise.all([ axios.post(this.retrieveURL("users/getMany"), { ids: Object.keys(user.connections) }), axios.post(this.retrieveURL("events/getMany"), { eventIds: Object.values(user.connections).reduce((previous, next) => previous.concat(next)) }) ]);
@@ -64,8 +78,25 @@ export class DatabaseDispatcher {
             const events = rawEvents.data.payload.map((rawEvent: any) => new Event(rawEvent._id, rawEvent.host, rawEvent.date, rawEvent.description, this.mapToUsers(rawEvent.attendees, users)));
             this.dispatch(UpdateGraph.create({ users, events }))
         } catch (error) {
-            showToast(Intent.DANGER, "We were unable to retrieve the requested user.");
-            console.error(error);
+            showToast(Intent.DANGER, "We were unable to retrieve your graph. Try logging out or refreshing the page?");
+        }
+    }
+
+    public getLatestGraph = async (user: IUser) => {
+        const latestUser = await this.getUpdatedUser(user);
+        if (latestUser === undefined) {
+            return;
+        }
+        await this.getGraph(convertPayloadToUser(latestUser));
+    }
+
+    public createNewUser = async (user: IFinalPerson) => {
+        try {
+            const response = await axios.post(this.retrieveURL("users/new-user"), { phoneNumber: "", ...user });
+            this.dispatch(UpdateUserData.create(new User(response.data.payload.newUserId, user.name, user.gender, parseInt(user.age, 10), user.location, "")))
+        } catch (error) {
+            showToast(Intent.DANGER, `There was a problem creating this user. ${error.response.data.message.join(", ")}`);
+            throw error;
         }
     }
 

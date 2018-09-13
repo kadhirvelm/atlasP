@@ -1,5 +1,5 @@
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect, Dispatch } from "react-redux";
 
 import { Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
@@ -155,9 +155,9 @@ function mapStateToProps(state: IStoreState): IAddNewEventStateProps {
     };
 }
 
-function mapDispatchToProps(): IAddNewEventDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch): IAddNewEventDispatchProps {
     return {
-        dialogUtils: new DialogUtils(),
+        dialogUtils: new DialogUtils(dispatch),
     };
 }
 

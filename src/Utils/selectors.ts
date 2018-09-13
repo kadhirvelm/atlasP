@@ -2,7 +2,7 @@ import { createSelector } from "reselect";
 
 import IStoreState from "../State/IStoreState";
 import { IEventMap } from "../Types/Events";
-import { IUser, IUserMap } from "../Types/Users";
+import { IConnections, IUser, IUserMap } from "../Types/Users";
 import Event from "./Event";
 
 const MAX_RADIANS = 2 * Math.PI;
@@ -75,6 +75,9 @@ export const selectMainPersonConnectionLines = createSelector(
 
     Object.keys(mainPerson.connections).map((userID: string) => {
       const user = userData[userID];
+      if (user === undefined) {
+        return;
+      }
       if (user.redList && user.redList.includes(mainPerson.id)) {
         connections[user.id] = { ...connections[user.id], toHost: true, red: true };
       }
@@ -86,16 +89,26 @@ export const selectMainPersonConnectionLines = createSelector(
   }
 );
 
-export const selectConnectionLocations = createSelector(
+export const selectMainPersonConnections = createSelector(
   selectMainPerson,
+  (mainPerson: IUser | undefined) => {
+    if (mainPerson === undefined) {
+      return undefined;
+    }
+    return mainPerson.connections;
+  }
+)
+
+export const selectConnectionLocations = createSelector(
+  selectMainPersonConnections,
   (state: IStoreState) => state.DatabaseReducer.userData,
-  (mainPerson: IUser | undefined, users: IUserMap | undefined): ILocation => {
-    if (mainPerson === undefined || users === undefined || mainPerson.connections === undefined) {
+  (connections: IConnections, users: IUserMap | undefined): ILocation => {
+    if (connections === undefined || users === undefined) {
       return {};
     }
 
     const locations = {};
-    const totalConnections = Object.keys(mainPerson.connections).length;
+    const totalConnections = Object.keys(connections).length;
 
     const returnPositionOnCircle = (
       origin: number,
@@ -107,7 +120,7 @@ export const selectConnectionLocations = createSelector(
       );
     };
 
-    Object.keys(mainPerson.connections)
+    Object.keys(connections)
       .sort((a: string, b: string) => users[a].name.localeCompare(users[b].name))
       .map((userID: string, index: number) => {
         locations[userID] = {
