@@ -23,7 +23,6 @@ import { IUser } from "../../Types/Users";
 import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
-import { FetchPerson } from "../Dialogs/FetchPerson";
 import { UpdateUser } from "../Dialogs/UpdateUser";
 
 import "../Main.css";
@@ -41,7 +40,6 @@ export interface INavbarStateProps {
     currentUser?: IUser;
     fetching: boolean;
     forceUpdate: IForceUpdate | undefined,
-    isAdmin: boolean;
 }
 
 export interface INavbarDispatchProps {
@@ -88,19 +86,6 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
             <div className="flexrow">
                 <DialogWrapper className="navbar-button" dialog={AddNewEvent} icon="add" text="Enter Event" />
                 <DialogWrapper className="navbar-button" dialog={AddNewPerson} icon="new-person" text="Add Person" />
-                {this.maybeRenderAdminOptions()}
-            </div>
-        )
-    }
-
-    private maybeRenderAdminOptions() {
-        if (!this.props.isAdmin) {
-            return null;
-        }
-        return (
-            <div className="flexrow">
-                <DialogWrapper className="navbar-button" dialog={FetchPerson} icon="exchange" text="Change User" />
-                <Button className="navbar-button" icon="link" text="Google Sheet" onClick={this.openSheet} />
             </div>
         )
     }
@@ -123,11 +108,6 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
         );
     }
 
-    private openSheet() {
-        // tslint:disable-next-line:max-line-length
-        window.open(`https://docs.google.com/spreadsheets/d/${process.env.REACT_APP_SPREADSHEET}`, "_blank");
-    }
-
     private handleOpenAccountDetails = () => this.setState({ accountDetailsDialogOpen: true });
     private handleCloseAccountDetails = () => this.setState({ accountDetailsDialogOpen: false });
 
@@ -139,7 +119,6 @@ function mapStateToProps(state: IStoreState): INavbarStateProps {
     currentUser: state.DatabaseReducer.currentUser,
     fetching: state.DatabaseReducer.isFetching,
     forceUpdate: state.DatabaseReducer.forceUpdate,
-    isAdmin: false,
   };
 }
 
