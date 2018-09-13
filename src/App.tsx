@@ -51,7 +51,7 @@ class PureApp extends React.PureComponent<IAppStoreProps & IAppDispatchProps, IA
 
   public render() {
     if (this.state.hasErrored) {
-      this.handleErroredOut(); 
+      this.handleErroredOut();
     }
 
     const { Element } = this.state;
