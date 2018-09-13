@@ -11,21 +11,19 @@ export interface IRawUser {
 
 export interface IUser {
   age: number;
-  connections: IConnections;
+  connections?: IConnections;
   contact: string;
-  events: object;
-  fullName: string;
   gender: string;
-  greenList: string[];
+  greenList?: string[];
   id: string;
   location: string;
   name: string;
   password?: string;
-  redList: string[];
+  redList?: string[];
 }
 
 export interface IConnections { [key: string]: string[] };
 
 export interface IUserMap {
-  id?: IUser;
+  [id: string]: IUser;
 }

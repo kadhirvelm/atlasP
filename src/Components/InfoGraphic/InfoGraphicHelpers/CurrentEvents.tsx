@@ -59,7 +59,7 @@ export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps &
 function mapStateToProps(state: IStoreState): ICurrentEventsStoreProps {
     return {
         events: selectSortedEvents(state),
-        users: state.GoogleReducer.userData,
+        users: state.DatabaseReducer.userData,
     }
 }
 

@@ -1,7 +1,4 @@
-import { Dispatch } from "redux";
-
 import { IFinalPerson } from "../Components/Dialogs/AddNewUser";
-import { FailedDataFetch, StartingDataFetch, SuccessfulDataFetch } from "../State/GoogleSheetActions";
 import { IUser } from "../Types/Users";
 import Event from "../Utils/Event";
 
@@ -9,10 +6,8 @@ const EVENT_DATA_RANGE = "Events-Data!A1:L1000";
 const USER_DATA_RANGE = "Users-Data!A1:ZZ1000";
 
 export class GoogleDispatcher {
-    public constructor(private dispatch: Dispatch) {}
 
     public fetchGoogleSheetData = () => {
-        this.dispatch(StartingDataFetch.create());
         window["gapi"].client.load("sheets", "v4", () => {
             window["gapi"].client.sheets.spreadsheets.values
             .batchGet({
@@ -21,16 +16,10 @@ export class GoogleDispatcher {
             })
             .then((response: object) => {
                 const rawData = response["result"].valueRanges;
-                this.dispatch(
-                    SuccessfulDataFetch.create({
-                        eventData: this.extractEventsFromRaw(rawData),
-                        rawData,
-                        userData: this.extractUsersFromRaw(rawData),
-                    }),
-                );
+                console.log(rawData);
             })
             .catch((error: any) => {
-                this.dispatch(FailedDataFetch.create(error));
+                console.error(error);
             });
         });
     }
@@ -122,6 +111,5 @@ export class GoogleDispatcher {
         });
     }
 
-    private extractEventsFromRaw = (rawData: any) => rawData[1].values as string[][];
     private extractUsersFromRaw = (rawData: any) => rawData[0].values as string[][];
 }

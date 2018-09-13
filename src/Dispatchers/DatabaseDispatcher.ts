@@ -3,10 +3,12 @@ import { Dispatch } from "redux";
 
 import { Intent } from "@blueprintjs/core";
 
-import { ForceUpdate, Login, UpdateUser } from "../State/DatabaseActions";
+import { ForceUpdate, Login, UpdateGraph, UpdateUser } from "../State/DatabaseActions";
 import { IRawUser, IUser } from "../Types/Users";
+import Event from "../Utils/Event";
 import { saveAuthenticationToken, securePassword } from "../Utils/Security";
 import { showToast } from "../Utils/Toaster";
+import User from "../Utils/User";
 
 export class DatabaseDispatcher {
     public constructor(private dispatch: Dispatch) {}
@@ -19,7 +21,7 @@ export class DatabaseDispatcher {
             this.dispatch(Login.create(loginResponse.data.payload.userDetails as IRawUser));
         } catch (error) {
             showToast(Intent.DANGER, "It doesn't seem like these are valid login credentials.")
-            throw error;
+            console.error(error);
         }
     }
 
@@ -30,7 +32,7 @@ export class DatabaseDispatcher {
             this.login(phoneNumber, undefined, claimResponse.data.payload.temporaryPassword);
         } catch (error) {
             showToast(Intent.DANGER, "Hum, looks like this user either doesn't exist or has already been claimed. Contact an admin if you think this is a mistake.");
-            throw error;
+            console.error(error);
         }
     }
 
@@ -40,7 +42,7 @@ export class DatabaseDispatcher {
                 age: newUserDetails.age,
                 gender: newUserDetails.gender,
                 location: newUserDetails.location,
-                name: newUserDetails.fullName,
+                name: newUserDetails.name,
                 password: securePassword(newUserDetails.password),
                 phoneNumber: newUserDetails.contact,
             };
@@ -48,18 +50,27 @@ export class DatabaseDispatcher {
             this.dispatch(UpdateUser.create({ ...newUserDetails, password: "" }));
         } catch (error) {
             showToast(Intent.DANGER, `Hum, something went wrong. ${error.response.data.message.join(", ")}.`)
-            throw error
+            console.error(error);
         }
     }
 
     public getGraph = async (user: IUser) => {
         try {
-            const [ users, events ] = await Promise.all([ axios.post(this.retrieveURL("users/getMany"), { ids: Object.keys(user.connections) }), axios.post(this.retrieveURL("events/getMany"), { eventIds: Object.values(user.connections).reduce((previous, next) => previous.concat(next)) }) ]);
-            console.log(users, events);
+            if (user.connections === undefined || Object.values(user.connections).length === 0) {
+                throw new Error(`Cannot fetch for user: ${user}`);
+            }
+            const [ rawUsers, rawEvents ] = await Promise.all([ axios.post(this.retrieveURL("users/getMany"), { ids: Object.keys(user.connections) }), axios.post(this.retrieveURL("events/getMany"), { eventIds: Object.values(user.connections).reduce((previous, next) => previous.concat(next)) }) ]);
+            const users = rawUsers.data.payload.map((rawUser: any) => new User(rawUser._id, rawUser.name, rawUser.gender, rawUser.age, rawUser.location, rawUser.phoneNumber))
+            const events = rawEvents.data.payload.map((rawEvent: any) => new Event(rawEvent._id, rawEvent.host, rawEvent.date, rawEvent.description, this.mapToUsers(rawEvent.attendees, users)));
+            this.dispatch(UpdateGraph.create({ users, events }))
         } catch (error) {
             showToast(Intent.DANGER, "We were unable to retrieve the requested user.");
-            throw error;
+            console.error(error);
         }
+    }
+
+    private mapToUsers(ids: string[], users: IUser[]) {
+        return ids.map(id => users.find(user => user.id === id) as IUser);
     }
     
     private retrieveURL = (endpoint: string) => {

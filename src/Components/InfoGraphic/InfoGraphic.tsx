@@ -3,8 +3,9 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import IStoreState from "../../State/IStoreState";
-import { ChangeParty, SetInfoPerson, SetMainPerson } from "../../State/WebsiteActions";
-import Event from "../../Utils/Event";
+import { ChangeParty, SetInfoPerson } from "../../State/WebsiteActions";
+import { IEventMap } from "../../Types/Events";
+import { IUser, IUserMap } from "../../Types/Users";
 import User from "../../Utils/User";
 import { CurrentEvents } from "./InfoGraphicHelpers/CurrentEvents";
 import { InfoPerson } from "./InfoGraphicHelpers/InfoPerson";
@@ -13,23 +14,22 @@ import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDia
 import "./InfoGraphic.css";
 
 interface IInfoGraphicProps {
-    infoPerson: User;
-    mainPerson: User;
-    party: string[];
-    userData: { id: User };
-    eventData: { id: Event };
+    infoPerson: IUser | undefined;
+    mainPerson: IUser | undefined;
+    party: string[] | undefined;
+    userData: IUserMap | undefined;
+    eventData: IEventMap | undefined;
+}
+
+export interface IInfoGraphDispatchProps {
+    setParty(party: string[]): void;
+    setInfoPerson(user: User): void;
 }
 
 interface IStateProps {
     openDialog: boolean;
     openInformationPopover: boolean;
     openPopover: boolean;
-}
-
-export interface IInfoGraphDispatchProps {
-    setParty(party: string[]): void;
-    setInfoPerson(user: User): void;
-    setMainPerson(user: User): void;
 }
 
 class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDispatchProps, IStateProps> {
@@ -40,10 +40,14 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
     };
 
     public render() {
+        const { mainPerson } = this.props;
+        if (mainPerson === undefined) {
+            return null;
+        }
         return(
             <div className="flexbox">
                 <InfoPerson
-                    mainPerson={this.props.mainPerson}
+                    mainPerson={mainPerson}
                     openPopover={this.state.openPopover}
                     person={this.props.infoPerson}
                     closePopoverHover={this.closePopoverHover}
@@ -59,7 +63,8 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
     private maybeRenderSinglePersonDataDialog() {
         if (this.props.infoPerson === undefined
                 || this.props.mainPerson === undefined
-                || this.props.mainPerson.id === this.props.infoPerson.id) {
+                || this.props.mainPerson.id === this.props.infoPerson.id
+                || this.props.infoPerson.connections === undefined) {
             return null;
         }
         return (
@@ -79,20 +84,19 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
     private closeInformationDialog = () => this.setState({ openDialog: false });
 }
 
-function mapStateToProps(state: IStoreState) {
+function mapStateToProps(state: IStoreState): IInfoGraphicProps {
   return {
-    eventData: state.GoogleReducer.eventData,
+    eventData: state.DatabaseReducer.eventData,
     infoPerson: state.WebsiteReducer.infoPerson,
-    mainPerson: state.WebsiteReducer.mainPerson,
+    mainPerson: state.DatabaseReducer.currentUser,
     party: state.WebsiteReducer.party,
-    userData: state.GoogleReducer.userData,
+    userData: state.DatabaseReducer.userData,
   };
 }
 
-function mapDispatchToProps(dispatch: Dispatch) {
+function mapDispatchToProps(dispatch: Dispatch): IInfoGraphDispatchProps {
     return bindActionCreators({
         setInfoPerson: SetInfoPerson.create,
-        setMainPerson: SetMainPerson.create,
         setParty: ChangeParty.create,
     }, dispatch);
 }

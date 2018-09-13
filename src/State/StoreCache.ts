@@ -5,10 +5,6 @@ export const EMPTY_STATE: IStoreState = {
     isFetching: false,
     isLoggedIn: false
   },
-  GoogleReducer: {
-    isFetching: false,
-    isSignedIn: false
-  },
   WebsiteReducer: {
     graphRef: null
   }

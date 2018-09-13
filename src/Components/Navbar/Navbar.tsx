@@ -112,7 +112,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStatePr
         return (
             <NavbarGroup align={Alignment.RIGHT}>
                 <Popover>
-                    <Button icon="user" text={this.props.currentUser.fullName} rightIcon="caret-down" />
+                    <Button icon="user" text={this.props.currentUser.name} rightIcon="caret-down" />
                     <Menu>
                         <MenuItem icon="edit" text="Account details"  onClick={this.handleOpenAccountDetails} />
                         <MenuItem icon="log-out" text="Sign out" onClick={this.handleSignOut} />

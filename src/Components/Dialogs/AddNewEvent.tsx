@@ -1,5 +1,5 @@
 import * as React from "react";
-import { connect, Dispatch } from "react-redux";
+import { connect } from "react-redux";
 
 import { Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
@@ -13,7 +13,6 @@ import { IDialogProps } from "./DialogWrapper";
 import "./AddNewEvent.css";
 
 export interface IAddNewEventStateProps {
-    rawData: any;
     users: IUserMap | undefined;
 }
 
@@ -50,10 +49,6 @@ const EMPTY_STATE: IAddNewEventState = {
 export class PureAddNewEvent extends React.Component<
     IDialogProps & IAddNewEventStateProps & IAddNewEventDispatchProps, IAddNewEventState> {
     public state: IAddNewEventState = EMPTY_STATE;
-
-    public componentDidMount() {
-        this.props.dialogUtils.setReset(this.resetStateAndClose);
-    }
 
     public render() {
         return(
@@ -101,8 +96,7 @@ export class PureAddNewEvent extends React.Component<
         this.setState({ isSubmitting: true }, () => {
             try {
                 const { finalEvent } = this.state;
-                this.props.dialogUtils.setData(this.props.rawData);
-                this.props.dialogUtils.submitFinalEvent(finalEvent);
+                console.log("SUBMIT HERE", finalEvent);
             } catch (error) {
                 this.setState({ isSubmitting: false });
             }
@@ -157,14 +151,13 @@ export class PureAddNewEvent extends React.Component<
 
 function mapStateToProps(state: IStoreState): IAddNewEventStateProps {
     return {
-        rawData: state.GoogleReducer.rawData,
-        users: state.GoogleReducer.userData,
+        users: state.DatabaseReducer.userData,
     };
 }
 
-function mapDispatchToProps(dispatch: Dispatch): IAddNewEventDispatchProps {
+function mapDispatchToProps(): IAddNewEventDispatchProps {
     return {
-        dialogUtils: new DialogUtils(dispatch),
+        dialogUtils: new DialogUtils(),
     };
 }
 

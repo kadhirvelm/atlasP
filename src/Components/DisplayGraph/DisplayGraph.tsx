@@ -3,11 +3,12 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
-import IStoreState, { IEventMap } from "../../State/IStoreState";
-import { SetGraphRef, SetInfoPerson, SetMainPerson } from "../../State/WebsiteActions";
+import IStoreState from "../../State/IStoreState";
+import { SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
+import { IEventMap } from "../../Types/Events";
 import { IUser, IUserMap } from "../../Types/Users";
 import { calculateScore } from "../../Utils/GraphHelpers";
-import { IPeopleGraph, ISingleLocation, ORIGIN } from "../../Utils/selectors";
+import { IPeopleGraph, ISingleLocation, ORIGIN, selectMainPersonGraph } from "../../Utils/selectors";
 import User from "../../Utils/User";
 import { RenderLine } from "./DisplayGraphHelpers/RenderLine";
 import { RenderPerson } from "./DisplayGraphHelpers/RenderPerson";
@@ -16,7 +17,6 @@ export interface IDisplayGraphStoreProps {
     currentUser: IUser | undefined;
     eventData: IEventMap | undefined;
     graphRef: HTMLElement | null;
-    isAdmin?: boolean;
     userData: IUserMap | undefined;
     peopleGraph: IPeopleGraph | undefined;
 }
@@ -25,7 +25,6 @@ export interface IDisplayGraphDispatchProps {
     getGraph(user: IUser): void;
     setGraphRef(ref: HTMLElement | null): void;
     setInfoPerson(infoPerson: User): void;
-    setMainPerson(mainPerson: User): void;
 }
 
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
@@ -65,24 +64,19 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         );
     }
 
-    private returnEventDate = (events: string[]): string | undefined => {
-        if (this.props.eventData === undefined) {
+    private returnEventDate = (events?: string[]): string | undefined => {
+        if (this.props.eventData === undefined || events === undefined) {
             return undefined;
         }
         return this.props.eventData[events.slice(-1)[0]].date;
     }
 
     private renderMainPerson(peopleGraph: IPeopleGraph) {
-        const eventDate = this.returnEventDate(peopleGraph.mainPerson.events);
-        if (eventDate === undefined) {
-            return null;
-        }
         return (
             <RenderPerson
                 changeInfoPerson={this.changeInfoPerson}
                 changeMainPerson={this.changeMainPerson}
                 dimension={peopleGraph.dimension}
-                lastEventDate={eventDate}
                 location={ORIGIN}
                 scoreTally={{ isMain: true }}
                 user={peopleGraph.mainPerson}
@@ -92,12 +86,16 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 
     private renderMainPersonConnections(peopleGraph: IPeopleGraph) {
         const { mainPerson } = peopleGraph;
-        return Object.keys(peopleGraph.mainPerson.connections).map((userID: string) => {
+        if (mainPerson.connections === undefined) {
+            return null;
+        }
+
+        return Object.keys(mainPerson.connections).map((userID: string) => {
             const user = this.props.userData;
-            const eventDate = this.returnEventDate(peopleGraph.mainPerson.connections[userID]);
-            if (user === undefined || eventDate === undefined) {
+            if (user === undefined || mainPerson.connections === undefined) {
                 return null;
             }
+            const eventDate = this.returnEventDate(mainPerson.connections[userID]);
             return (
                 <RenderPerson
                     changeInfoPerson={this.changeInfoPerson}
@@ -118,7 +116,8 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     }
 
     private changeMainPerson(user: User) {
-        return () => this.props.isAdmin && this.props.setMainPerson(user);
+        // CHECK FOR ADMIN PRIVILEGES HERE
+        return () => console.log(user); // this.props.setMainPerson(user);
     }
 
     private renderConnectionLines(peopleGraph: IPeopleGraph) {
@@ -159,11 +158,10 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 function mapStateToProps(state: IStoreState): IDisplayGraphStoreProps {
     return {
         currentUser: state.DatabaseReducer.currentUser,
-        eventData: state.GoogleReducer.eventData,
+        eventData: state.DatabaseReducer.eventData,
         graphRef: state.WebsiteReducer.graphRef,
-        isAdmin: state.GoogleReducer.isAdmin,
-        peopleGraph: undefined, // selectMainPersonGraph(state),
-        userData: state.GoogleReducer.userData,
+        peopleGraph: selectMainPersonGraph(state),
+        userData: state.DatabaseReducer.userData,
     };
 }
 
@@ -172,7 +170,6 @@ function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {
         ...bindActionCreators({
             setGraphRef: SetGraphRef.create,
             setInfoPerson: SetInfoPerson.create,
-            setMainPerson: SetMainPerson.create,
         }, dispatch),
         getGraph: new DatabaseDispatcher(dispatch).getGraph,
     }

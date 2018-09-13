@@ -35,7 +35,7 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
     };
 
     private fields: { [key: number]: [IconName, keyof IUser] } = {
-        1: ["person", "fullName"],
+        1: ["person", "name"],
         2: ["phone", "contact"],
         3: ["key-escape", "gender"],
         4: ["map-marker", "location"],
