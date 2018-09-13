@@ -6,9 +6,8 @@ import { bindActionCreators, Dispatch } from "redux";
 import { Button } from "@blueprintjs/core";
 
 import IStoreState from "../../../State/IStoreState";
-import { ChangeParty, SetInfoPerson, SetMainPerson } from "../../../State/WebsiteActions";
-import { IUserMap } from "../../../Types/Users";
-import User from "../../../Utils/User";
+import { ChangeParty, SetInfoPerson } from "../../../State/WebsiteActions";
+import { IUser, IUserMap } from "../../../Types/Users";
 
 import "./GlobalInfoGraphicHelpers.css";
 
@@ -19,8 +18,7 @@ export interface ICurrentDinnerPartyStoreProps {
 
 export interface ICurrentDinnerPartyDispatchProps {
     setParty(party: string[]): void;
-    setInfoPerson(user: User): void;
-    setMainPerson(user: User): void;
+    setInfoPerson(user: IUser): void;
 }
 
 export class PureCurrentDinnerParty extends React.Component<
@@ -71,11 +69,11 @@ export class PureCurrentDinnerParty extends React.Component<
         );
     }
 
-    private makeInfoPerson(user: User) {
+    private makeInfoPerson(user: IUser) {
         return () => this.props.setInfoPerson(user);
     }
 
-    private removePerson(user: User) {
+    private removePerson(user: IUser) {
         return () => this.props.setParty(_.filter(this.props.party, (id) => id !== user.id));
     }
 }
@@ -83,14 +81,13 @@ export class PureCurrentDinnerParty extends React.Component<
 function mapStateToProps(state: IStoreState): ICurrentDinnerPartyStoreProps {
     return {
         party: state.WebsiteReducer.party,
-        userData: state.GoogleReducer.userData,
+        userData: state.DatabaseReducer.userData,
     };
 }
 
 function mapDispatchToProps(dispatch: Dispatch) {
     return bindActionCreators({
         setInfoPerson: SetInfoPerson.create,
-        setMainPerson: SetMainPerson.create,
         setParty: ChangeParty.create,
     }, dispatch);
 }

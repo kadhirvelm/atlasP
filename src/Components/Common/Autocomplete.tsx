@@ -115,7 +115,7 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                             key={index}
                             onClick={this.handleSelection(key)}
                         >
-                            <strong className="key"> {key} </strong>
+                            <strong className="key"> {key.slice(-6)} </strong>
                             <div className="value"> {dataSource[key][display]} </div>
                         </div>
                     ))

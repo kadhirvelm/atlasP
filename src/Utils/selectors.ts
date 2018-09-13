@@ -1,9 +1,9 @@
 import { createSelector } from "reselect";
 
-import IStoreState, { IEventMap } from "../State/IStoreState";
-import { IUserMap } from "../Types/Users";
+import IStoreState from "../State/IStoreState";
+import { IEventMap } from "../Types/Events";
+import { IUser, IUserMap } from "../Types/Users";
 import Event from "./Event";
-import User from "./User";
 
 const MAX_RADIANS = 2 * Math.PI;
 const RADIUS = 42;
@@ -31,24 +31,31 @@ export interface ILocation {
 }
 
 export interface IPeopleGraph {
-  mainPerson: User;
+  mainPerson: IUser;
   connections: ILines;
   dimension: number;
   locations: ILocation;
 }
 
-const selectMainPerson = (state: IStoreState) => state.WebsiteReducer.mainPerson;
+const selectMainPerson = (state: IStoreState) => state.DatabaseReducer.currentUser;
 
 export const selectMainPersonLines = createSelector(
   selectMainPerson,
-  (mainPerson: User): ILines => {
+  (mainPerson: IUser | undefined): ILines => {
+    if (mainPerson === undefined) {
+      return {};
+    }
     const connections = {};
-    mainPerson.redList.map(
-      singlePerson => (connections[singlePerson] = { fromHost: true, red: true })
-    );
-    mainPerson.greenList.map(
-      singlePerson => (connections[singlePerson] = { fromHost: true, green: true })
-    );
+    if (mainPerson.redList !== undefined) {
+      mainPerson.redList.map(
+        singlePerson => (connections[singlePerson] = { fromHost: true, red: true })
+      );
+    }
+    if (mainPerson.greenList !== undefined) {
+      mainPerson.greenList.map(
+        singlePerson => (connections[singlePerson] = { fromHost: true, green: true })
+      );
+    }
     return connections;
   }
 );
@@ -56,8 +63,16 @@ export const selectMainPersonLines = createSelector(
 export const selectMainPersonConnectionLines = createSelector(
   selectMainPerson,
   selectMainPersonLines,
-  (state: IStoreState) => state.GoogleReducer.userData,
-  (mainPerson: User, connections: ILines, userData: IUserMap) => {
+  (state: IStoreState) => state.DatabaseReducer.userData,
+  (mainPerson: IUser | undefined, connections: ILines, userData: IUserMap | undefined) => {
+    if (
+      mainPerson === undefined ||
+      mainPerson.connections === undefined ||
+      userData === undefined
+    ) {
+      return connections;
+    }
+
     Object.keys(mainPerson.connections).map((userID: string) => {
       const user = userData[userID];
       if (user.redList && user.redList.includes(mainPerson.id)) {
@@ -73,9 +88,9 @@ export const selectMainPersonConnectionLines = createSelector(
 
 export const selectConnectionLocations = createSelector(
   selectMainPerson,
-  (state: IStoreState) => state.GoogleReducer.userData,
-  (mainPerson: User, users: IUserMap | undefined): ILocation => {
-    if (users === undefined) {
+  (state: IStoreState) => state.DatabaseReducer.userData,
+  (mainPerson: IUser | undefined, users: IUserMap | undefined): ILocation => {
+    if (mainPerson === undefined || users === undefined || mainPerson.connections === undefined) {
       return {};
     }
 
@@ -93,7 +108,7 @@ export const selectConnectionLocations = createSelector(
     };
 
     Object.keys(mainPerson.connections)
-      .sort((a: string, b: string) => users[a].fullName.localeCompare(users[b].fullName))
+      .sort((a: string, b: string) => users[a].name.localeCompare(users[b].name))
       .map((userID: string, index: number) => {
         locations[userID] = {
           x: returnPositionOnCircle(ORIGIN.x, Math.cos, index),
@@ -108,21 +123,27 @@ export const selectMainPersonGraph = createSelector(
   selectMainPerson,
   selectMainPersonConnectionLines,
   selectConnectionLocations,
-  (mainPerson: User, connections: ILines, locations: ILocation): IPeopleGraph => {
+  (
+    mainPerson: IUser | undefined,
+    connections: ILines,
+    locations: ILocation
+  ): IPeopleGraph | undefined => {
+    if (mainPerson === undefined || mainPerson.connections === undefined) {
+      return undefined;
+    }
     const dimension = -Object.keys(mainPerson.connections).length / 2.25 + 19;
     return { mainPerson, connections, dimension, locations };
   }
 );
 
 export const selectSortedEvents = createSelector(
-  (state: IStoreState) => state.WebsiteReducer.mainPerson,
-  (state: IStoreState) => state.GoogleReducer.eventData,
-  (mainPerson: User | undefined, eventData: IEventMap | undefined) => {
-    if (mainPerson === undefined || eventData === undefined) {
+  (state: IStoreState) => state.DatabaseReducer.eventData,
+  (eventData: IEventMap | undefined) => {
+    if (eventData === undefined) {
       return [];
     }
-    return Object.values(eventData)
-      .filter((event: Event) => event.attendees.includes(mainPerson.id))
-      .sort((a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return Object.values(eventData).sort(
+      (a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
   }
 );

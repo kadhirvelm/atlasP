@@ -35,7 +35,7 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
     };
 
     private fields: { [key: number]: [IconName, keyof IUser] } = {
-        1: ["person", "fullName"],
+        1: ["person", "name"],
         2: ["phone", "contact"],
         3: ["key-escape", "gender"],
         4: ["map-marker", "location"],
@@ -84,7 +84,7 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
 
     private renderField(currentUser: IUser, icon: IconName, key: string) {
         return (
-            <div className="render-field-container">
+            <div className="render-field-container" key={key}>
                 <Icon className="render-field-icon" icon={icon} title={key} />
                 <div className="render-field-divider" />
                 {this.renderTextfield(currentUser, key)}

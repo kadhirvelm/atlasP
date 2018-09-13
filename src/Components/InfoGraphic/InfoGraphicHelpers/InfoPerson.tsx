@@ -1,38 +1,24 @@
 import * as React from "react";
-import { connect } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
 
-import { Button, Icon, Intent, Popover } from "@blueprintjs/core";
+import { Icon, Popover } from "@blueprintjs/core";
 
-import IStoreState from "../../../State/IStoreState";
-import { SetMainPerson } from "../../../State/WebsiteActions";
 import { IScore } from "../../../Types/Graph";
+import { IUser } from "../../../Types/Users";
 import { calculateScore } from "../../../Utils/GraphHelpers";
-import User from "../../../Utils/User";
 import { ScoreDisplay } from "./ScoreDisplay";
 
 import "./GlobalInfoGraphicHelpers.css";
 
 export interface IPersonInformationProps {
-    mainPerson: User;
-    person: User | undefined;
+    currentUser: IUser;
+    person: IUser | undefined;
     openPopover: boolean;
     closePopoverHover(): void;
     openInformationDialog(): void;
     openPopoverHover(): void;
 }
 
-export interface IPersonInformationStoreProps {
-    isAdmin: boolean | undefined;
-}
-
-export interface IPersonInformationDispatchProps {
-    setMainPerson(user: User): void;
-}
-
-export class PurePersonInformation extends React.Component<
-    IPersonInformationProps & IPersonInformationDispatchProps & IPersonInformationStoreProps
-> {
+export class InfoPerson extends React.Component<IPersonInformationProps> {
     public render() {
         if (this.props.person === undefined) {
             return this.renderNoPerson();
@@ -44,29 +30,11 @@ export class PurePersonInformation extends React.Component<
                     <div className="justify-end"> {this.renderPopover(this.props.person)} </div>
                 </div>
                 {this.renderScore(this.props.person)}
-                {this.maybeRenderChangeButton()}
             </div>
         );
     }
 
-    private maybeRenderChangeButton() {
-        if (!this.props.isAdmin) {
-            return null;
-        }
-        return (
-            <div style={{ position: "absolute", left: "50%", bottom: "1%", transform: "translate(-50%, -1%)" }}>
-                <Button
-                    icon="exchange"
-                    text="Change"
-                    onClick={this.setMainPerson}
-                    intent={Intent.WARNING}
-                    className="grow"
-                />
-            </div>
-        )
-    }
-
-    private renderPopover(person: User) {
+    private renderPopover(person: IUser) {
         return (
             <Popover isOpen={this.props.openPopover} className="change-to-pointer">
                 <div>
@@ -82,7 +50,7 @@ export class PurePersonInformation extends React.Component<
                     className={person.gender === "M" ? "blue-box" : "red-box"}
                 >
                     <div className="padding-box">
-                        {person.fullName} ({person.id})
+                        {person.name} ({person.id})
                     </div>
                     <div className="padding-box"> {person.contact} </div>
                     <div className="padding-box">
@@ -101,31 +69,11 @@ export class PurePersonInformation extends React.Component<
         );
     }
 
-    private renderScore(user: User) {
+    private renderScore(user: IUser) {
         const score: IScore | null = (
-            (this.props.mainPerson && (user.id !== this.props.mainPerson.id)) &&
-                calculateScore(user, this.props.mainPerson)
+            (this.props.currentUser && (user.id !== this.props.currentUser.id)) &&
+                calculateScore(user, this.props.currentUser)
         ) || null;
         return <ScoreDisplay score={score} />;
     }
-
-    private setMainPerson = () => {
-        if (this.props.person && this.props.setMainPerson) {
-            this.props.setMainPerson(this.props.person);
-        }
-    }
 }
-
-function mapStoreToProps(state: IStoreState): IPersonInformationStoreProps {
-    return {
-        isAdmin: state.GoogleReducer.isAdmin,
-    }
-}
-
-function mapDispatchToProps(dispatch: Dispatch): IPersonInformationDispatchProps {
-    return bindActionCreators({
-        setMainPerson: SetMainPerson.create,
-    }, dispatch);
-}
-
-export const InfoPerson = connect(mapStoreToProps, mapDispatchToProps)(PurePersonInformation);

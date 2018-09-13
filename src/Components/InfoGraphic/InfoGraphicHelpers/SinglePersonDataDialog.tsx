@@ -3,18 +3,17 @@ import { connect } from "react-redux";
 
 import { Dialog, Icon, Popover, Position } from "@blueprintjs/core";
 
-import IStoreState, { IEventMap } from "../../../State/IStoreState";
-import { IUserMap } from "../../../Types/Users";
-import Event from "../../../Utils/Event";
-import User from "../../../Utils/User";
+import IStoreState from "../../../State/IStoreState";
+import { IEvent, IEventMap } from "../../../Types/Events";
+import { IUser, IUserMap } from "../../../Types/Users";
 
 import "./GlobalInfoGraphicHelpers.css";
 
 export interface ISinglePersonDataDialogProps {
-    events: number[] | undefined;
+    events: string[] | undefined;
     isOpen: boolean;
     onClose: () => void;
-    person: User;
+    person: IUser;
 }
 
 export interface ISinglePersonDataDialogStoreProps {
@@ -39,7 +38,7 @@ export class PureSinglePersonDataDialog extends React.Component<
                 icon="person"
                 isOpen={this.props.isOpen}
                 onClose={this.props.onClose}
-                title="Person Info"
+                title={this.props.person.name}
             >
                 <div className="flexbox-column">
                     <div className="flexbox-row">
@@ -60,8 +59,11 @@ export class PureSinglePersonDataDialog extends React.Component<
         if (events === undefined) {
             return null;
         }
-        return events.map((eventID: number, index: number) => {
-            const event: Event = this.props.eventData && this.props.eventData[eventID];
+        return events.map((eventID: string, index: number) => {
+            const event = this.props.eventData && this.props.eventData[eventID];
+            if (event === undefined) {
+                return undefined;
+            }
             return this.renderEventStuff(event, index);
         });
     }
@@ -69,7 +71,7 @@ export class PureSinglePersonDataDialog extends React.Component<
     private openInformationHover = (eventID: string) => () => this.setState({ openInformationPopover: eventID });
     private closeInformationHover = () => this.setState({ openInformationPopover: undefined });
 
-    private renderEventStuff(event: Event, index: number) {
+    private renderEventStuff(event: IEvent, index: number) {
         if (this.props.userData === undefined) {
             return null;
         }
@@ -92,7 +94,7 @@ export class PureSinglePersonDataDialog extends React.Component<
         );
     }
 
-    private renderPeoplePopover(event: Event) {
+    private renderPeoplePopover(event: IEvent) {
         return (
             <div className="flex-basis-10" style={{ justifyContent: "center" }}>
                     <Popover isOpen={this.state.openInformationPopover === event.id} position={Position.RIGHT}>
@@ -111,9 +113,9 @@ export class PureSinglePersonDataDialog extends React.Component<
         );
     }
 
-    private renderEvents(event: Event) {
-        return event.attendees.map((id: string) => (
-                <div key={id}> {this.props.userData && this.props.userData[id].name} ({id}) </div>
+    private renderEvents(event: IEvent) {
+        return event.attendees.map((user: IUser) => (
+                <div key={user.id}> {user.name} ({user.id}) </div>
             ),
         );
     }
@@ -121,8 +123,8 @@ export class PureSinglePersonDataDialog extends React.Component<
 
 function mapStateToProps(state: IStoreState): ISinglePersonDataDialogStoreProps {
     return {
-        eventData: state.GoogleReducer.eventData,
-        userData: state.GoogleReducer.userData,
+        eventData: state.DatabaseReducer.eventData,
+        userData: state.DatabaseReducer.userData,
     };
 }
 

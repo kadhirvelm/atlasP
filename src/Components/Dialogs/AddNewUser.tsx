@@ -1,5 +1,5 @@
 import * as React from "react";
-import { connect, Dispatch } from "react-redux";
+import { connect } from "react-redux";
 
 import { Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
@@ -11,7 +11,6 @@ import { DialogUtils } from "./DialogUtils";
 import "./AddNewEvent.css";
 
 export interface IAddNewPersonStateProps {
-    rawData: any;
     users: IUserMap | undefined;
 }
 
@@ -25,7 +24,7 @@ interface IAddNewPersonProps {
 }
 
 export interface IFinalPerson {
-    fullName: string,
+    name: string,
     gender: string,
     age: string,
     location: string,
@@ -38,19 +37,15 @@ export interface IAddNewPersonState {
 const EMPTY_STATE: IAddNewPersonState = {
     finalPerson: {
         age: "",
-        fullName: "",
         gender: "X",
         location: "",
+        name: "",
     },
 }
 
 export class PureAddNewPerson extends React.Component<
     IAddNewPersonProps & IAddNewPersonStateProps & IAddNewPersonDispatchProps, IAddNewPersonState> {
     public state: IAddNewPersonState = EMPTY_STATE;
-
-    public componentDidMount() {
-        this.props.dialogUtils.setReset(this.resetStateAndClose);
-    }
 
     public render() {
         return(
@@ -62,7 +57,7 @@ export class PureAddNewPerson extends React.Component<
             >
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup>
-                        <InputGroup className="input-group" onChange={this.handleChange("fullName")} placeholder="Full name" />
+                        <InputGroup className="input-group" onChange={this.handleChange("name")} placeholder="Full name" />
                         <InputGroup className="input-group" onChange={this.handleChange("gender")} placeholder="Gender (M, F or X)" />
                         <InputGroup className="input-group" onChange={this.handleChange("age")} placeholder="Age" />
                         <InputGroup className="input-group" onChange={this.handleChange("location")} placeholder="Location" />
@@ -81,8 +76,9 @@ export class PureAddNewPerson extends React.Component<
 
     private handleSubmit = () => {
         const { finalPerson } = this.state;
-        this.props.dialogUtils.setData(this.props.rawData);
-        this.props.dialogUtils.submitFinalPerson(finalPerson);
+        console.log("SUBMIT NEW USER", finalPerson);
+        // this.props.dialogUtils.setData(this.props.rawData);
+        // this.props.dialogUtils.submitFinalPerson(finalPerson);
     }
 
     private handleChange = (key: string) => {
@@ -99,14 +95,13 @@ export class PureAddNewPerson extends React.Component<
 
 function mapStateToProps(state: IStoreState): IAddNewPersonStateProps {
     return {
-        rawData: state.GoogleReducer.rawData,
-        users: state.GoogleReducer.userData,
+        users: state.DatabaseReducer.userData,
     };
 }
 
-function mapDispatchToProps(dispatch: Dispatch): IAddNewPersonDispatchProps {
+function mapDispatchToProps(): IAddNewPersonDispatchProps {
     return {
-        dialogUtils: new DialogUtils(dispatch),
+        dialogUtils: new DialogUtils(),
     };
 }
 

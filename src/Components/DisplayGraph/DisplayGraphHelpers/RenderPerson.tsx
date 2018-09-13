@@ -1,19 +1,18 @@
 import * as React from "react";
 
 import { IScore, IScoreMainPerson } from "../../../Types/Graph";
+import { IUser } from "../../../Types/Users";
 import { ISingleLocation } from "../../../Utils/selectors";
-import User from "../../../Utils/User";
 
 import "./RenderPerson.css";
 
 export interface IRenderPersonProps {
     dimension: number;
-    lastEventDate: string;
+    lastEventDate?: string;
     location: ISingleLocation;
     scoreTally: IScore | IScoreMainPerson;
-    user: User;
-    changeInfoPerson(user: User): () => void;
-    changeMainPerson(user: User): () => void;
+    user: IUser;
+    changeInfoPerson(user: IUser): () => void;
 }
 
 export class RenderPerson extends React.Component<IRenderPersonProps> {
@@ -37,7 +36,6 @@ export class RenderPerson extends React.Component<IRenderPersonProps> {
                     className={"user-node" + " " + this.props.user.gender}
                     draggable={true}
                     onDragStart={this.handleDragStart}
-                    onDoubleClick={this.props.changeMainPerson(this.props.user)}
                     onClick={this.props.changeInfoPerson(this.props.user)}
                     style={{ width: this.props.dimension + "vmin", height: this.props.dimension + "vmin" }}
                 >
@@ -71,7 +69,12 @@ export class RenderPerson extends React.Component<IRenderPersonProps> {
     }
 
     private calcuateTimeDifferenceInDays() {
-        const currentTime = (new Date().getTime() - new Date(this.props.lastEventDate).getTime());
+        const { lastEventDate } = this.props;
+        if (lastEventDate === undefined) {
+            return "";
+        }
+
+        const currentTime = (new Date().getTime() - new Date(lastEventDate).getTime());
         const daysDifference = currentTime / (this.MILLISECONDS_IN_DAY);
         if (daysDifference < this.GREEN_DAYS) {
             return "G";

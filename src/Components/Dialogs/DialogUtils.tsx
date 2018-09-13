@@ -1,30 +1,12 @@
 import { Button, Classes, Intent } from "@blueprintjs/core";
 import * as React from "react";
-import { Dispatch } from "redux";
 
-import { GoogleDispatcher } from "../../Dispatchers/GoogleDispatcher";
 import Event from "../../Utils/Event";
 import { showToast } from "../../Utils/Toaster";
 import { IFinalEventChecked, IFinalEventEmpty } from "./AddNewEvent";
 import { IFinalPerson } from "./AddNewUser";
 
 export class DialogUtils {
-    private googleDispatch: GoogleDispatcher;
-    private rawData: any;
-    private resetStateAndClose: () => void;
-
-    public constructor(private dispatch: Dispatch) {
-        this.googleDispatch = new GoogleDispatcher(this.dispatch);
-    }
-
-    public setReset(resetStateAndClose: () => void) {
-        this.resetStateAndClose = resetStateAndClose;
-    }
-
-    public setData(rawData: any) {
-        this.rawData = rawData;
-    }
-
     public submitFinalPerson(finalPerson: IFinalPerson) {
         if (this.isCompletePerson(finalPerson)) {
             this.sendUserToAPI(finalPerson);
@@ -57,7 +39,7 @@ export class DialogUtils {
     private isCompletePerson(finalPerson: IFinalPerson) {
         if (
             parseInt(finalPerson.age, 10) !== undefined &&
-            finalPerson.fullName.length > 0 &&
+            finalPerson.name.length > 0 &&
             finalPerson.location.length > 0 &&
             (finalPerson.gender === "F" || finalPerson.gender === "M" || finalPerson.gender === "X")) {
             return true;
@@ -66,13 +48,7 @@ export class DialogUtils {
     }
 
     private sendUserToAPI = async (finalPerson: IFinalPerson) => {
-        const resolution = await this.googleDispatch.writeNewUserData(finalPerson, this.rawData);
-        if (resolution) {
-            showToast(Intent.SUCCESS, "Successfully created a new user.");
-            this.resetStateAndClose();
-        } else {
-            showToast(Intent.DANGER, "Error writing person to the database. Check console for more details.");
-        }
+        console.log("CREATE NEW USER", finalPerson);
     }
     
     private sendEventAndUsersToAPI = async (finalEvent: IFinalEventChecked) => {
@@ -80,15 +56,10 @@ export class DialogUtils {
             this.assembleEventID(finalEvent),
             parseInt(finalEvent.host.id, 10),
             finalEvent.date,
-            finalEvent.description
+            finalEvent.description,
+            finalEvent.attendees,
         );
-        const resolution = await this.googleDispatch.writeEventData(newEvent, finalEvent.attendees, this.rawData);
-        if (resolution) {
-            showToast(Intent.SUCCESS, "Successfully created event.");
-            this.resetStateAndClose();
-        } else {
-            showToast(Intent.DANGER, "Error writing data to the database. Check console for more details.");
-        }
+        console.log("NEW EVENT", newEvent);
     }
     
     private assembleEventID = (finalEvent: IFinalEventChecked) => (finalEvent.host.id + '_' + finalEvent.date).replace(/\s/g, "_");
