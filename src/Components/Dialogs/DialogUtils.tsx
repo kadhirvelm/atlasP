@@ -1,15 +1,23 @@
 import { Button, Classes, Intent } from "@blueprintjs/core";
 import * as React from "react";
+import { Dispatch } from "react-redux";
 
+import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import Event from "../../Utils/Event";
 import { showToast } from "../../Utils/Toaster";
 import { IFinalEventChecked, IFinalEventEmpty } from "./AddNewEvent";
 import { IFinalPerson } from "./AddNewUser";
 
 export class DialogUtils {
-    public submitFinalPerson(finalPerson: IFinalPerson) {
+    private databaseDispatcher: DatabaseDispatcher;
+
+    public constructor(private dispatch: Dispatch) {
+        this.databaseDispatcher = new DatabaseDispatcher(this.dispatch);
+    }
+
+    public async submitFinalPerson(finalPerson: IFinalPerson) {
         if (this.isCompletePerson(finalPerson)) {
-            this.sendUserToAPI(finalPerson);
+            await this.databaseDispatcher.createNewUser(finalPerson);
         } else {
             showToast(Intent.DANGER, "Cannot leave fields blank/some fields are incorrect.");
         }
@@ -45,10 +53,6 @@ export class DialogUtils {
             return true;
         }
         return false;
-    }
-
-    private sendUserToAPI = async (finalPerson: IFinalPerson) => {
-        console.log("CREATE NEW USER", finalPerson);
     }
     
     private sendEventAndUsersToAPI = async (finalEvent: IFinalEventChecked) => {

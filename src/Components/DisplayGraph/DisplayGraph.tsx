@@ -22,7 +22,7 @@ export interface IDisplayGraphStoreProps {
 }
 
 export interface IDisplayGraphDispatchProps {
-    getGraph(user: IUser): void;
+    getLatestGraph(user: IUser): void;
     setGraphRef(ref: HTMLElement | null): void;
     setInfoPerson(infoPerson: User): void;
 }
@@ -34,7 +34,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 
     public componentDidMount() {
         if (this.props.currentUser !== undefined) {
-            this.props.getGraph(this.props.currentUser);
+            this.props.getLatestGraph(this.props.currentUser);
         }
     }
 
@@ -64,7 +64,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     }
 
     private returnEventDate = (events?: string[]): string | undefined => {
-        if (this.props.eventData === undefined || events === undefined) {
+        if (this.props.eventData === undefined || events === undefined || events.length === 0) {
             return undefined;
         }
         return this.props.eventData[events.slice(-1)[0]].date;
@@ -163,7 +163,7 @@ function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {
             setGraphRef: SetGraphRef.create,
             setInfoPerson: SetInfoPerson.create,
         }, dispatch),
-        getGraph: new DatabaseDispatcher(dispatch).getGraph,
+        getLatestGraph: new DatabaseDispatcher(dispatch).getLatestGraph,
     }
 }
 

@@ -15,6 +15,8 @@ export const UpdateGraph = TypedAction.define("DatabaseAction//UPDATE_GRAPH")<{
   events: IEvent[]
 }>();
 
+export const UpdateUserData = TypedAction.define("DatabaseAction//UPDATE_USER_DATA")<IUser>();
+
 export const EmptyDatabaseCache = TypedAction.defineWithoutPayload(
   "WebsiteReducer//EMPTY_DATABASE_CACHE"
 )();
