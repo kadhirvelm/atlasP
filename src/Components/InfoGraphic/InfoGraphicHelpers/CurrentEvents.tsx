@@ -50,7 +50,7 @@ export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps &
             <div className="event" key={event.id}>
                 <div> {event.date} </div>
                 <div> {event.description} </div>
-                <div> Host: {(users[event.host] as User).name} </div>
+                <div> Host: {(users[event.host.id] as User).name} </div>
             </div>
         )
     }

@@ -3,8 +3,9 @@ import { Dispatch } from "redux";
 
 import { Intent } from "@blueprintjs/core";
 
+import { IFinalEventChecked } from "../Components/Dialogs/AddNewEvent";
 import { IFinalPerson } from "../Components/Dialogs/AddNewUser";
-import { ForceUpdate, Login, UpdateGraph, UpdateUser, UpdateUserData } from "../State/DatabaseActions";
+import { ForceUpdate, Login, UpdateEventData, UpdateGraph, UpdateUser, UpdateUserData } from "../State/DatabaseActions";
 import { IRawUser, IUser } from "../Types/Users";
 import Event from "../Utils/Event";
 import { saveAuthenticationToken, securePassword } from "../Utils/Security";
@@ -75,7 +76,7 @@ export class DatabaseDispatcher {
             }
             const [ rawUsers, rawEvents ] = await Promise.all([ axios.post(this.retrieveURL("users/getMany"), { ids: Object.keys(user.connections) }), axios.post(this.retrieveURL("events/getMany"), { eventIds: Object.values(user.connections).reduce((previous, next) => previous.concat(next)) }) ]);
             const users = rawUsers.data.payload.map((rawUser: any) => new User(rawUser._id, rawUser.name, rawUser.gender, rawUser.age, rawUser.location, rawUser.phoneNumber))
-            const events = rawEvents.data.payload.map((rawEvent: any) => new Event(rawEvent._id, rawEvent.host, rawEvent.date, rawEvent.description, this.mapToUsers(rawEvent.attendees, users)));
+            const events = rawEvents.data.payload.map((rawEvent: any) => new Event(rawEvent._id, this.mapToUsers([ rawEvent.host ], users)[0], rawEvent.date, rawEvent.description, this.mapToUsers(rawEvent.attendees, users)));
             this.dispatch(UpdateGraph.create({ users, events }))
         } catch (error) {
             showToast(Intent.DANGER, "We were unable to retrieve your graph. Try logging out or refreshing the page?");
@@ -96,6 +97,16 @@ export class DatabaseDispatcher {
             this.dispatch(UpdateUserData.create(new User(response.data.payload.newUserId, user.name, user.gender, parseInt(user.age, 10), user.location, "")))
         } catch (error) {
             showToast(Intent.DANGER, `There was a problem creating this user. ${error.response.data.message.join(", ")}`);
+            throw error;
+        }
+    }
+
+    public createNewEvent = async (event: IFinalEventChecked) => {
+        try {
+            const response = await axios.post(this.retrieveURL("events/new"), { ...event, attendees: event.attendees.map(user => user.id), host: event.host.id });
+            this.dispatch(UpdateEventData.create(new Event(response.data.payload.id, event.host, event.date, event.description, event.attendees)));
+        } catch (error) {
+            showToast(Intent.DANGER, `Looks like there's something missing from the event: ${error.response.data.message.join(", ")}`);
             throw error;
         }
     }

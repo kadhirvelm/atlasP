@@ -3,7 +3,6 @@ import * as React from "react";
 import { Dispatch } from "react-redux";
 
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
-import Event from "../../Utils/Event";
 import { showToast } from "../../Utils/Toaster";
 import { IFinalEventChecked, IFinalEventEmpty } from "./AddNewEvent";
 import { IFinalPerson } from "./AddNewUser";
@@ -19,17 +18,16 @@ export class DialogUtils {
         if (this.isCompletePerson(finalPerson)) {
             await this.databaseDispatcher.createNewUser(finalPerson);
         } else {
-            showToast(Intent.DANGER, "Cannot leave fields blank/some fields are incorrect.");
+            this.errorToast();
         }
     }
 
-    public submitFinalEvent(finalEvent: IFinalEventEmpty): Error | void {
+    public async submitFinalEvent(finalEvent: IFinalEventEmpty) {
         if (this.isCompleteEvent(finalEvent)) {
             finalEvent.attendees.push(finalEvent.host);
-            this.sendEventAndUsersToAPI(finalEvent);
+            await this.databaseDispatcher.createNewEvent(finalEvent);
         } else {
-            showToast(Intent.DANGER, "Cannot leave fields blank.");
-            throw new Error("Event missing fields.");
+            this.errorToast();
         }
     }
 
@@ -44,6 +42,11 @@ export class DialogUtils {
         )
     }
 
+    private errorToast() {
+        showToast(Intent.DANGER, "Cannot leave event fields blank/some fields are incorrect.");
+        throw new Error("Incorrect fields.");
+    }
+
     private isCompletePerson(finalPerson: IFinalPerson) {
         if (
             parseInt(finalPerson.age, 10) !== undefined &&
@@ -54,19 +57,6 @@ export class DialogUtils {
         }
         return false;
     }
-    
-    private sendEventAndUsersToAPI = async (finalEvent: IFinalEventChecked) => {
-        const newEvent = new Event(
-            this.assembleEventID(finalEvent),
-            parseInt(finalEvent.host.id, 10),
-            finalEvent.date,
-            finalEvent.description,
-            finalEvent.attendees,
-        );
-        console.log("NEW EVENT", newEvent);
-    }
-    
-    private assembleEventID = (finalEvent: IFinalEventChecked) => (finalEvent.host.id + '_' + finalEvent.date).replace(/\s/g, "_");
     
     private isCompleteEvent(finalEvent: IFinalEventEmpty): finalEvent is IFinalEventChecked {
         return (

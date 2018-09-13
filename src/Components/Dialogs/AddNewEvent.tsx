@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 
-import { Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
 import IStoreState from "../../State/IStoreState";
@@ -10,6 +10,7 @@ import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
 import { IDialogProps } from "./DialogWrapper";
 
+import { showToast } from "../../Utils/Toaster";
 import "./AddNewEvent.css";
 
 export interface IAddNewEventStateProps {
@@ -93,10 +94,12 @@ export class PureAddNewEvent extends React.Component<
     }
 
     private handleSubmit = () => {
-        this.setState({ isSubmitting: true }, () => {
+        this.setState({ isSubmitting: true }, async () => {
             try {
                 const { finalEvent } = this.state;
-                console.log("SUBMIT HERE", finalEvent);
+                await this.props.dialogUtils.submitFinalEvent(finalEvent);
+                showToast(Intent.SUCCESS, "Successfully added a new event.");
+                this.props.onClose();
             } catch (error) {
                 this.setState({ isSubmitting: false });
             }
