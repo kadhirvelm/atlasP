@@ -1,11 +1,12 @@
 import axios from "axios";
+import { CompoundAction } from "redoodle";
 import { Dispatch } from "redux";
 
 import { Intent } from "@blueprintjs/core";
 
 import { IFinalEventChecked } from "../Components/Dialogs/AddNewEvent";
 import { IFinalPerson } from "../Components/Dialogs/AddNewUser";
-import { ForceUpdate, Login, UpdateEventData, UpdateGraph, UpdateUser, UpdateUserData } from "../State/DatabaseActions";
+import { ClearForceUpdate, ForceUpdate, Login, UpdateEventData, UpdateGraph, UpdateUser, UpdateUserData } from "../State/DatabaseActions";
 import { IRawUser, IUser } from "../Types/Users";
 import Event from "../Utils/Event";
 import { saveAuthenticationToken, securePassword } from "../Utils/Security";
@@ -18,7 +19,11 @@ export class DatabaseDispatcher {
 
     public login = async (phoneNumber: string, password: string | undefined, temporaryPassword?: string) => {
         try {
-            const loginResponse = await axios.post(this.retrieveURL("users/login"), { phoneNumber, password: securePassword(password), temporaryPassword });
+            const finalPhoneNumber = phoneNumber.match(/\d+/g);
+            if (finalPhoneNumber === null) {
+                throw new Error("Invalid phone number");
+            }
+            const loginResponse = await axios.post(this.retrieveURL("users/login"), { phoneNumber: finalPhoneNumber.join(""), password: securePassword(password), temporaryPassword });
             saveAuthenticationToken(loginResponse.data.payload.token);
             this.dispatch(Login.create(loginResponse.data.payload.userDetails as IRawUser));
         } catch (error) {
@@ -47,7 +52,7 @@ export class DatabaseDispatcher {
                 phoneNumber: newUserDetails.contact,
             };
             await axios.post(this.retrieveURL("users/update"), finalUser);
-            this.dispatch(UpdateUser.create({ ...newUserDetails, password: "" }));
+            this.dispatch(CompoundAction.create([ UpdateUser.create({ ...newUserDetails, password: "" }), ClearForceUpdate.create() ]));
         } catch (error) {
             showToast(Intent.DANGER, `Hum, something went wrong. ${error.response.data.message.join(", ")}.`);
             throw error;
