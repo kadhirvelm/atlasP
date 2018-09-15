@@ -1,3 +1,4 @@
+import * as d3 from "d3";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -7,11 +8,7 @@ import IStoreState from "../../State/IStoreState";
 import { SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
 import { IEventMap } from "../../Types/Events";
 import { IUser, IUserMap } from "../../Types/Users";
-import { calculateScore } from "../../Utils/GraphHelpers";
-import { IPeopleGraph, ISingleLocation, ORIGIN, selectMainPersonGraph } from "../../Utils/selectors";
-import User from "../../Utils/User";
-import { RenderLine } from "./DisplayGraphHelpers/RenderLine";
-import { RenderPerson } from "./DisplayGraphHelpers/RenderPerson";
+import { IDateMap, ILink, IPeopleGraph, selectMainPersonGraph } from "../../Utils/selectors";
 
 export interface IDisplayGraphStoreProps {
     currentUser: IUser | undefined;
@@ -24,14 +21,18 @@ export interface IDisplayGraphStoreProps {
 export interface IDisplayGraphDispatchProps {
     getLatestGraph(user: IUser): void;
     setGraphRef(ref: HTMLElement | null): void;
-    setInfoPerson(infoPerson: User): void;
+    setInfoPerson(infoPerson: IUser): void;
 }
 
-class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
-    public componentWillMount() {
-        this.changeInfoPerson = this.changeInfoPerson.bind(this);
-    }
+const GREEN_DAYS = 30;
+const YELLOW_DAYS = 90;
 
+const BLACK = "#1B2631";
+const RED = "#F1948A";
+const YELLOW = "#F7DC6F";
+const GREEN = "#7DCEA0";
+
+class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     public componentDidMount() {
         if (this.props.currentUser !== undefined) {
             this.props.getLatestGraph(this.props.currentUser);
@@ -39,16 +40,13 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     }
 
     public setRef = (ref: HTMLElement | null ) => {
-        if (this.props.graphRef == null) {
+        if (this.props.graphRef == null && ref !== null) {
             this.props.setGraphRef(ref);
+            this.renderD3Graph(ref.clientWidth, ref.clientHeight);
         }
     }
 
     public render() {
-        const { peopleGraph } = this.props;
-        if (peopleGraph === undefined) {
-            return null;
-        }
         return(
             <div
                 id="Graph Container"
@@ -56,94 +54,62 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                 className="flexbox-row"
                 style={{ position: "relative", width: "100%", height: "100%" }}
             >
-                {this.renderMainPerson(peopleGraph)}
-                {this.renderMainPersonConnections(peopleGraph)}
-                {this.renderConnectionLines(peopleGraph)}
+                <svg id="graph" />
             </div>
         );
     }
 
-    private returnEventDate = (events?: string[]): string | undefined => {
-        if (this.props.eventData === undefined || events === undefined || events.length === 0) {
-            return undefined;
-        }
-        return this.props.eventData[events.slice(-1)[0]].date;
+    private handleClick = (node: IUser) => {
+        this.props.setInfoPerson(node)
     }
 
-    private renderMainPerson(peopleGraph: IPeopleGraph) {
-        return (
-            <RenderPerson
-                changeInfoPerson={this.changeInfoPerson}
-                dimension={peopleGraph.dimension}
-                location={ORIGIN}
-                scoreTally={{ isMain: true }}
-                user={peopleGraph.mainPerson}
-            />
-        );
-    }
-
-    private renderMainPersonConnections(peopleGraph: IPeopleGraph) {
-        const { mainPerson } = peopleGraph;
-        if (mainPerson.connections === undefined) {
-            return null;
+    private renderBorderColor(id: string, map: IDateMap) {
+        const lastTime = map[id];
+        if (lastTime === undefined) {
+            return BLACK;
         }
 
-        return Object.keys(mainPerson.connections).map((userID: string) => {
-            const user = this.props.userData;
-            if (user === undefined || mainPerson.connections === undefined) {
-                return null;
-            }
-            const eventDate = this.returnEventDate(mainPerson.connections[userID]);
-            return (
-                <RenderPerson
-                    changeInfoPerson={this.changeInfoPerson}
-                    dimension={peopleGraph.dimension}
-                    key={`${mainPerson.id}_${userID}`}
-                    lastEventDate={eventDate}
-                    location={peopleGraph.locations[userID]}
-                    scoreTally={calculateScore(user[userID], peopleGraph.mainPerson)}
-                    user={user[userID]}
-                />
-            );
+        const totalDifference = (new Date().getTime() - new Date(lastTime).getTime()) / (1000 * 60 * 60 * 24);
+        if (totalDifference < GREEN_DAYS) {
+            return GREEN;
+        } else if (totalDifference < YELLOW_DAYS) {
+            return YELLOW;
+        } else {
+            return RED;
+        }
+    }
+
+    private renderD3Graph(width: number, height: number) {
+        const { peopleGraph } = this.props;
+        if (peopleGraph === undefined) {
+            return;
+        }
+
+        const svg = d3.select("#graph").attr("width", width).attr("height", height);
+
+        const simulation = d3.forceSimulation().force("charge", d3.forceManyBody().strength(-75)).force("center", d3.forceCenter(width / 2, height / 2));
+        simulation.force("link", d3.forceLink().id((link: any) => link.id).strength((link: ILink) => link.strength));
+
+        const linkElements = svg.append("g").selectAll("line").data(peopleGraph.links).enter().append("line").attr("stroke-width", 1).attr("stroke", "black").attr("opacity", 0.1).attr("user-select", "none");
+        const nodeElements = svg.append("g").selectAll("circle").data(peopleGraph.nodes).enter().append("circle").attr("r", 12).attr("fill", node => node.gender === "M" ? "#2874A6" : "#B03A2E").attr("cursor", "pointer").on("click", this.handleClick).attr("user-select", "none").attr("stroke-width", 3).attr("stroke", node => this.renderBorderColor(node.id, peopleGraph.lastEvents));
+        const firstNames = svg.append("g").selectAll("text").data(peopleGraph.nodes).enter().append("text").text(node => node.name.split(" ")[0]).attr("font-size", 10).attr("dy", -5).attr("cursor", "pointer").attr("user-select", "none").on("click", this.handleClick);
+        const lastNames = svg.append("g").selectAll("text").data(peopleGraph.nodes).enter().append("text").text(node => node.name.split(" ")[1]).attr("font-size", 13).attr("dy", 5).attr("cursor", "pointer").attr("user-select", "none").on("click", this.handleClick);
+        
+        simulation.nodes(peopleGraph.nodes).on("tick", () => {
+            nodeElements.attr("cx", (node: any) => node.x).attr("cy", (node: any) => node.y);
+            firstNames.attr("x", (node: any) => node.x).attr("y", (node: any) => node.y);
+            lastNames.attr("x", (node: any) => node.x).attr("y", (node: any) => node.y);
+            linkElements.attr("x1", (link: any) => link.source.x).attr('y1', (link: any) => link.source.y).attr('x2', (link: any) => link.target.x).attr('y2', (link: any) => link.target.y)
         });
-    }
 
-    private changeInfoPerson(user: User) {
-        return () => this.props.setInfoPerson(user);
-    }
+        const dragDrop: any = d3.drag().on("start", (node: any) => { node.fx = node.x; node.fy = node.y }).on("drag", (node: any) => { simulation.alphaTarget(0.7).restart(); node.fx = d3.event.x; node.fy = d3.event.y }).on("end", (node: any) => { if (!d3.event.active){ simulation.alphaTarget(0) }; node.fx = null; node.fy = null } )
+        nodeElements.call(dragDrop);
 
-    private renderConnectionLines(peopleGraph: IPeopleGraph) {
-        if (this.props.graphRef == null) {
-            return null;
+        const linkForce: any = simulation.force("link");
+        if (linkForce === undefined) {
+            return;
         }
-        const origin = this.convertToAbsolutePoint(ORIGIN);
-        return (
-            <svg height={this.props.graphRef.clientHeight} width={this.props.graphRef.clientWidth}>
-                {this.renderPeopleGraphConnections(origin, peopleGraph)}
-            </svg>
-        );
-    }
-
-    private renderPeopleGraphConnections(origin: ISingleLocation, peopleGraph: IPeopleGraph) {
-        return Object.entries(peopleGraph.connections).map((line) => (
-            <RenderLine
-                key={line[0]}
-                index={line[0]}
-                lineSettings={line[1]}
-                location={this.convertToAbsolutePoint(peopleGraph.locations[line[0]])}
-                origin={origin}
-            />
-        ));
-    }
-
-    private convertToAbsolutePoint(location: ISingleLocation) {
-        if (location == null || this.props.graphRef == null) {
-            return {x: 0, y: 0 };
-        }
-        return {
-            x: (this.props.graphRef.clientWidth * location.x / 100),
-            y: (this.props.graphRef.clientHeight * location.y / 100),
-        };
+        linkForce.links(peopleGraph.links);
     }
 }
 
