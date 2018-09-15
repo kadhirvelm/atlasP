@@ -9,21 +9,23 @@ export interface ILink {
   source: string;
   target: string;
   strength: number;
-};
+}
 
 export interface IDateMap {
   [id: string]: Date;
-};
+}
 
 export interface IPeopleGraph {
   nodes: IUser[];
   links: ILink[];
   lastEvents: IDateMap;
-};
+}
 
 const selectMainPerson = (state: IStoreState) => state.DatabaseReducer.currentUser;
 const selectAllPeople = (state: IStoreState) => state.DatabaseReducer.userData;
 const selectAllEvents = (state: IStoreState) => state.DatabaseReducer.eventData;
+
+const STRENGTH_DIVIDER = 25;
 
 export const selectMainPersonGraph = createSelector(
   selectMainPerson,
@@ -32,27 +34,34 @@ export const selectMainPersonGraph = createSelector(
   (
     mainPerson: IUser | undefined,
     allUsers: IUserMap | undefined,
-    allEvents: IEventMap | undefined,
+    allEvents: IEventMap | undefined
   ): IPeopleGraph | undefined => {
-    if (mainPerson === undefined || mainPerson.connections === undefined || allUsers === undefined || allEvents === undefined) {
+    if (
+      mainPerson === undefined ||
+      mainPerson.connections === undefined ||
+      allUsers === undefined ||
+      allEvents === undefined
+    ) {
       return undefined;
     }
 
     const connectionCopy = { ...mainPerson.connections };
     delete connectionCopy[mainPerson.id];
 
-    const links = Object.entries(connectionCopy).map((userAndEvents) => ({ source: mainPerson.id, target: userAndEvents[0], strength: userAndEvents[1].length / 25 }));
+    const links = Object.entries(connectionCopy).map(userAndEvents => ({
+      source: mainPerson.id,
+      strength: userAndEvents[1].length / STRENGTH_DIVIDER,
+      target: userAndEvents[0],
+    }));
     const lastEvents = {};
 
     for (const key in connectionCopy) {
       if (connectionCopy.hasOwnProperty(key)) {
         const eventId = connectionCopy[key].slice(-1)[0];
-        lastEvents[key] = eventId === undefined ? undefined : allEvents[eventId].date
+        lastEvents[key] = eventId === undefined ? undefined : allEvents[eventId].date;
       }
     }
 
-    console.log(lastEvents);
-  
     return { nodes: Object.values(allUsers), links, lastEvents };
   }
 );

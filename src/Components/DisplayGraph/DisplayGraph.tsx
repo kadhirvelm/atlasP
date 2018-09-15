@@ -32,6 +32,13 @@ const RED = "#F1948A";
 const YELLOW = "#F7DC6F";
 const GREEN = "#7DCEA0";
 
+const MALE_COLOR = "#2874A6";
+const FEMALE_COLOR = "#B03A2E";
+
+const CHARGE_STRENGTH = -75;
+
+const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     public componentDidMount() {
         if (this.props.currentUser !== undefined) {
@@ -69,7 +76,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             return BLACK;
         }
 
-        const totalDifference = (new Date().getTime() - new Date(lastTime).getTime()) / (1000 * 60 * 60 * 24);
+        const totalDifference = (new Date().getTime() - new Date(lastTime).getTime()) / MILLISECONDS_PER_DAY;
         if (totalDifference < GREEN_DAYS) {
             return GREEN;
         } else if (totalDifference < YELLOW_DAYS) {
@@ -87,11 +94,11 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 
         const svg = d3.select("#graph").attr("width", width).attr("height", height);
 
-        const simulation = d3.forceSimulation().force("charge", d3.forceManyBody().strength(-75)).force("center", d3.forceCenter(width / 2, height / 2));
+        const simulation = d3.forceSimulation().force("charge", d3.forceManyBody().strength(CHARGE_STRENGTH)).force("center", d3.forceCenter(width / 2, height / 2));
         simulation.force("link", d3.forceLink().id((link: any) => link.id).strength((link: ILink) => link.strength));
 
         const linkElements = svg.append("g").selectAll("line").data(peopleGraph.links).enter().append("line").attr("stroke-width", 1).attr("stroke", "black").attr("opacity", 0.1).attr("user-select", "none");
-        const nodeElements = svg.append("g").selectAll("circle").data(peopleGraph.nodes).enter().append("circle").attr("r", 12).attr("fill", node => node.gender === "M" ? "#2874A6" : "#B03A2E").attr("cursor", "pointer").on("click", this.handleClick).attr("user-select", "none").attr("stroke-width", 3).attr("stroke", node => this.renderBorderColor(node.id, peopleGraph.lastEvents));
+        const nodeElements = svg.append("g").selectAll("circle").data(peopleGraph.nodes).enter().append("circle").attr("r", 12).attr("fill", node => node.gender === "M" ? MALE_COLOR : FEMALE_COLOR).attr("cursor", "pointer").on("click", this.handleClick).attr("user-select", "none").attr("stroke-width", 3).attr("stroke", node => this.renderBorderColor(node.id, peopleGraph.lastEvents));
         const firstNames = svg.append("g").selectAll("text").data(peopleGraph.nodes).enter().append("text").text(node => node.name.split(" ")[0]).attr("font-size", 10).attr("dy", -5).attr("cursor", "pointer").attr("user-select", "none").on("click", this.handleClick);
         const lastNames = svg.append("g").selectAll("text").data(peopleGraph.nodes).enter().append("text").text(node => node.name.split(" ")[1]).attr("font-size", 13).attr("dy", 5).attr("cursor", "pointer").attr("user-select", "none").on("click", this.handleClick);
         
