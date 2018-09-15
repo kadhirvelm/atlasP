@@ -8,7 +8,9 @@ export const Login = TypedAction.define("DatabaseActions//LOGIN")<IRawUser>();
 
 export const ForceUpdate = TypedAction.define("DatabaseActions//FORCE_UPDATE")<IForceUpdate>();
 
-export const ClearForceUpdate = TypedAction.defineWithoutPayload("DatabaseAction//FORCE_UPDATE_CLEAR")();
+export const ClearForceUpdate = TypedAction.defineWithoutPayload(
+  "DatabaseAction//FORCE_UPDATE_CLEAR"
+)();
 
 export const UpdateUser = TypedAction.define("DatabaseAction//UPDATE_USER")<IUser>();
 
