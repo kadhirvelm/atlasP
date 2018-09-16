@@ -116,34 +116,29 @@
     cursor: pointer;
 }
 
-.flexbox-row .flex-basis-10 {
+.single-event-row {
     display: flex;
-    flex: 1 0 10%;
-    margin: 0.5%;
+    margin: 5px 0;
+    flex: 1;
+}
+
+.flex-10 {
+    display: flex;
+    flex: 2 0;
     flex-wrap: wrap;
     word-break: break-word;
 }
 
-.flexbox-row .flex-basis-15 {
+.flex-25 {
     display: flex;
-    flex: 1 0 15%;
-    margin: 0.5%;
+    flex: 6 0;
     flex-wrap: wrap;
     word-break: break-word;
 }
 
-.flexbox-row .flex-basis-20 {
+.flex-35 {
     display: flex;
-    flex: 1 0 20%;
-    margin: 0.5%;
-    flex-wrap: wrap;
-    word-break: break-word;
-}
-
-.flexbox-row .flex-basis-35 {
-    display: flex;
-    flex: 1 0 35%;
-    margin: 0.5%;
+    flex: 7 0;
     flex-wrap: wrap;
     word-break: break-word;
 }
@@ -156,6 +151,10 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+}
+
+.flexbox-events::-webkit-scrollbar {
+    display:none;
 }
 
 .overflow-y {

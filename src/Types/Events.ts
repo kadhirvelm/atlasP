@@ -4,7 +4,7 @@ export interface IEvent {
   attendees: IUser[];
   id: string;
   host: IUser;
-  date: string;
+  date: Date;
   description: string;
 }
 

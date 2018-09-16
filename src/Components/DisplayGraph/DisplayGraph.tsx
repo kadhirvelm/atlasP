@@ -47,14 +47,9 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         }
     }
 
-    public componentWillUnmount() {
-        this.hasRenderedGraph = false;
-    }
-
     public setRef = (ref: HTMLElement | null ) => {
         if (this.props.graphRef == null && ref !== null) {
             this.props.setGraphRef(ref);
-            this.renderD3Graph(ref.clientWidth, ref.clientHeight, this.props.peopleGraph);
         }
     }
     

@@ -42,11 +42,10 @@ export class PureSinglePersonDataDialog extends React.Component<
             >
                 <div className="flexbox-column">
                     <div className="flexbox-row">
-                        <u className="flex-basis-20">Event ID</u>
-                        <u className="flex-basis-15">Host</u>
-                        <u className="flex-basis-10">People</u>
-                        <u className="flex-basis-15 flexbox-centered">Date</u>
-                        <u className="flex-basis-35 flexbox-centered">Description</u>
+                        <u className="flex-25">Date</u>
+                        <u className="flex-25">Host</u>
+                        <u className="flex-35">Description</u>
+                        <u className="flex-10">People</u>
                     </div>
                     {this.renderInfoPersonContent()}
                 </div>
@@ -64,39 +63,36 @@ export class PureSinglePersonDataDialog extends React.Component<
             if (event === undefined) {
                 return undefined;
             }
-            return this.renderEventStuff(event, index);
+            return this.renderEventDetails(event, index);
         });
     }
 
     private openInformationHover = (eventID: string) => () => this.setState({ openInformationPopover: eventID });
     private closeInformationHover = () => this.setState({ openInformationPopover: undefined });
 
-    private renderEventStuff(event: IEvent, index: number) {
+    private renderEventDetails(event: IEvent, index: number) {
         if (this.props.userData === undefined) {
             return null;
         }
         return (
-            <div key={index} className="flexbox-row" style={{ flexGrow: 1 }}>
-                <div className="flex-basis-20">
-                    {event.id}
+            <div key={index} className="single-event-row">
+                <div className="flex-25">
+                    {event.date.toDateString()}
                 </div>
-                <div className="flex-basis-15">
+                <div className="flex-25">
                     {this.props.userData && this.props.userData[event.host.id].name}
                 </div>
-                {this.renderPeoplePopover(event)}
-                <div className="flex-basis-15 flexbox-centered">
-                    {event.date}
-                </div>
-                <div className="flex-basis-35 flexbox-centered">
+                <div className="flex-35">
                     {event.description}
                 </div>
+                {this.renderPeoplePopover(event)}
             </div>
         );
     }
 
     private renderPeoplePopover(event: IEvent) {
         return (
-            <div className="flex-basis-10" style={{ justifyContent: "center" }}>
+            <div className="flex-10 flexbox-centered">
                     <Popover isOpen={this.state.openInformationPopover === event.id} position={Position.RIGHT}>
                         <Icon
                             onMouseEnter={this.openInformationHover(event.id)}

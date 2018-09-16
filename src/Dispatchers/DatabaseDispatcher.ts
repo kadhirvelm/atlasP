@@ -81,7 +81,7 @@ export class DatabaseDispatcher {
             }
             const [ rawUsers, rawEvents ] = await Promise.all([ axios.post(this.retrieveURL("users/getMany"), { ids: Object.keys(user.connections) }), axios.post(this.retrieveURL("events/getMany"), { eventIds: Object.values(user.connections).reduce((previous, next) => previous.concat(next)) }) ]);
             const users = rawUsers.data.payload.map((rawUser: any) => new User(rawUser._id, rawUser.name, rawUser.gender, rawUser.age, rawUser.location, rawUser.phoneNumber))
-            const events = rawEvents.data.payload.map((rawEvent: any) => new Event(rawEvent._id, this.mapToUsers([ rawEvent.host ], users)[0], rawEvent.date, rawEvent.description, this.mapToUsers(rawEvent.attendees, users)));
+            const events = rawEvents.data.payload.map((rawEvent: any) => new Event(rawEvent._id, this.mapToUsers([ rawEvent.host ], users)[0], new Date(rawEvent.date), rawEvent.description, this.mapToUsers(rawEvent.attendees, users)));
             this.dispatch(UpdateGraph.create({ users, events }))
         } catch (error) {
             showToast(Intent.DANGER, "We were unable to retrieve your graph. Try logging out or refreshing the page?");
@@ -109,7 +109,7 @@ export class DatabaseDispatcher {
     public createNewEvent = async (event: IFinalEventChecked) => {
         try {
             const response = await axios.post(this.retrieveURL("events/new"), { ...event, attendees: event.attendees.map(user => user.id), host: event.host.id });
-            this.dispatch(UpdateEventData.create(new Event(response.data.payload.id, event.host, event.date, event.description, event.attendees)));
+            this.dispatch(UpdateEventData.create(new Event(response.data.payload.id, event.host, new Date(event.date), event.description, event.attendees)));
         } catch (error) {
             showToast(Intent.DANGER, `Looks like there's something missing from the event: ${error.response.data.message.join(", ")}`);
             throw error;
