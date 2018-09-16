@@ -26,15 +26,12 @@ export interface IDisplayGraphDispatchProps {
 const GREEN_DAYS = 30;
 const YELLOW_DAYS = 90;
 
-const BLACK = "#1B2631";
+const GRAY = "#839192";
 const RED = "#F1948A";
 const YELLOW = "#F7DC6F";
 const GREEN = "#7DCEA0";
 
-const MALE_COLOR = "#2874A6";
-const FEMALE_COLOR = "#B03A2E";
-
-const CHARGE_STRENGTH = -75;
+const CHARGE_STRENGTH = -100;
 
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -78,7 +75,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     private renderBorderColor(id: string, map: IDateMap) {
         const lastTime = map[id];
         if (lastTime === undefined) {
-            return BLACK;
+            return GRAY;
         }
 
         const totalDifference = (new Date().getTime() - new Date(lastTime).getTime()) / MILLISECONDS_PER_DAY;
@@ -113,9 +110,8 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             .data(nodes)
             .enter().append("circle")
                 .attr("r", 12)
-                .attr("fill", node => node.gender === "M" ? MALE_COLOR : FEMALE_COLOR)
+                .attr("fill", node => this.renderBorderColor(node.id, lastEvents))
                 .on("click", this.handleClick)
-                .attr("stroke", node => this.renderBorderColor(node.id, lastEvents))
                 .attr("class", "node")
     }
 
@@ -170,6 +166,19 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 
         nodeElements.call(this.returnDragDrop(simulation) as any);
         names.call(this.returnDragDrop(simulation) as any);
+
+        const zoomed = () => {
+            linkElements.attr("transform", d3.event.transform);
+            nodeElements.attr("transform", d3.event.transform);
+            names.attr("transform", d3.event.transform);
+        }
+
+        svg.append("rect")
+            .attr("width", (svg.node() as any).getBoundingClientRect().width)
+            .attr("height", (svg.node() as any).getBoundingClientRect().height)
+            .style("fill", "none")
+            .style("pointer-events", "all")
+            .call(d3.zoom().scaleExtent([ 1 / 2, 4 ]).on("zoom", zoomed))
 
         this.maybeApplyLinkForce(simulation, peopleGraph.links);
     }

@@ -46,9 +46,10 @@ export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps &
     }
 
     private renderSingleEvent(event: IEvent, users: IUserMap) {
+        const finalEvent = typeof event.date === "string" ? new Date(event.date) : event.date;
         return (
             <div className="event" key={event.id}>
-                <div> {event.date.toDateString()} </div>
+                <div> {finalEvent.toDateString()} </div>
                 <div> {event.description} </div>
                 <div> Host: {(users[event.host.id] as User).name} </div>
             </div>
