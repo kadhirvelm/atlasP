@@ -3,8 +3,8 @@ import * as React from "react";
 import { connect } from "react-redux";
 
 import IStoreState from "../../../State/IStoreState";
+import { IEvent } from "../../../Types/Events";
 import { IUserMap } from "../../../Types/Users";
-import Event from "../../../Utils/Event";
 import { selectSortedEvents } from "../../../Utils/selectors";
 import User from "../../../Utils/User";
 
@@ -15,7 +15,7 @@ export interface ICurrentEventsProps {
 }
 
 export interface ICurrentEventsStoreProps {
-    events: Event[];
+    events: IEvent[];
     users: IUserMap | undefined;
 }
 
@@ -40,15 +40,16 @@ export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps &
         }
         return (
             <div className="flexbox-events overflow-y">
-                {Object.values(this.props.events).map((event: Event) => this.renderSingleEvent(event, users))}
+                {Object.values(this.props.events).map((event: IEvent) => this.renderSingleEvent(event, users))}
             </div>
         )
     }
 
-    private renderSingleEvent(event: Event, users: IUserMap) {
+    private renderSingleEvent(event: IEvent, users: IUserMap) {
+        const finalDate = typeof event.date === "string" ? new Date(event.date) : event.date;
         return (
             <div className="event" key={event.id}>
-                <div> {event.date} </div>
+                <div> {finalDate.toDateString()} </div>
                 <div> {event.description} </div>
                 <div> Host: {(users[event.host.id] as User).name} </div>
             </div>
