@@ -1,8 +1,7 @@
 .graph-container {
-    top: 65px;
-    position: absolute;
-    height: 90%;
-    width: 99%;
+    margin-top: 10px;
+    height: 90vh;
+    width: 99vw;
 }
 
 .centered {

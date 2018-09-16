@@ -21,16 +21,12 @@ export interface IPeopleGraph {
   lastEvents: IDateMap;
 }
 
-const selectMainPerson = (state: IStoreState) => state.DatabaseReducer.currentUser;
-const selectAllPeople = (state: IStoreState) => state.DatabaseReducer.userData;
-const selectAllEvents = (state: IStoreState) => state.DatabaseReducer.eventData;
-
 const STRENGTH_DIVIDER = 25;
 
 export const selectMainPersonGraph = createSelector(
-  selectMainPerson,
-  selectAllPeople,
-  selectAllEvents,
+  (state: IStoreState) => state.DatabaseReducer.currentUser,
+  (state: IStoreState) => state.DatabaseReducer.userData,
+  (state: IStoreState) => state.DatabaseReducer.eventData,
   (
     mainPerson: IUser | undefined,
     allUsers: IUserMap | undefined,
