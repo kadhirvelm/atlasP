@@ -1,4 +1,4 @@
-import { createStore, loggingMiddleware, StoreEnhancer } from "redoodle";
+import { createStore, loggingMiddleware, reduceCompoundActions, StoreEnhancer } from "redoodle";
 import { applyMiddleware, Store } from "redux";
 
 import { RootReducer } from "./CombineReducers";
@@ -9,5 +9,5 @@ export default function configureStore(savedState: IStoreState): Store<IStoreSta
   const logging = applyMiddleware(loggingMiddleware()) as StoreEnhancer;
   const initialState: IStoreState = { ...EMPTY_STATE, ...savedState};
 
-  return createStore(RootReducer, initialState, logging);
+  return createStore(reduceCompoundActions(RootReducer), initialState, logging);
 }

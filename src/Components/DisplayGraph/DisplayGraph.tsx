@@ -6,15 +6,14 @@ import { bindActionCreators, Dispatch } from "redux";
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import IStoreState from "../../State/IStoreState";
 import { SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
-import { IEventMap } from "../../Types/Events";
-import { IUser, IUserMap } from "../../Types/Users";
+import { IUser } from "../../Types/Users";
 import { IDateMap, ILink, IPeopleGraph, selectMainPersonGraph } from "../../Utils/selectors";
+
+import "./DisplayGraph.css";
 
 export interface IDisplayGraphStoreProps {
     currentUser: IUser | undefined;
-    eventData: IEventMap | undefined;
     graphRef: HTMLElement | null;
-    userData: IUserMap | undefined;
     peopleGraph: IPeopleGraph | undefined;
 }
 
@@ -40,16 +39,28 @@ const CHARGE_STRENGTH = -75;
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
+    private hasRenderedGraph = false;
+
     public componentDidMount() {
         if (this.props.currentUser !== undefined) {
             this.props.getLatestGraph(this.props.currentUser);
         }
     }
 
+    public componentWillUnmount() {
+        this.hasRenderedGraph = false;
+    }
+
     public setRef = (ref: HTMLElement | null ) => {
         if (this.props.graphRef == null && ref !== null) {
             this.props.setGraphRef(ref);
-            this.renderD3Graph(ref.clientWidth, ref.clientHeight);
+            this.renderD3Graph(ref.clientWidth, ref.clientHeight, this.props.peopleGraph);
+        }
+    }
+    
+    public componentWillReceiveProps(nextProps: IDisplayGraphStoreProps & IDisplayGraphDispatchProps) {
+        if (nextProps.graphRef !== null) {
+            this.renderD3Graph(nextProps.graphRef.clientWidth, nextProps.graphRef.clientHeight, nextProps.peopleGraph);
         }
     }
 
@@ -58,10 +69,9 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             <div
                 id="Graph Container"
                 ref={this.setRef}
-                className="flexbox-row"
-                style={{ position: "relative", width: "100%", height: "100%" }}
+                className="d3-graph-container"
             >
-                <svg id="graph" />
+                <svg id="graph" className="d3-graph" />
             </div>
         );
     }
@@ -86,47 +96,107 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         }
     }
 
-    private renderD3Graph(width: number, height: number) {
-        const { peopleGraph } = this.props;
-        if (peopleGraph === undefined) {
-            return;
-        }
-
-        const svg = d3.select("#graph").attr("width", width).attr("height", height);
-
-        const simulation = d3.forceSimulation().force("charge", d3.forceManyBody().strength(CHARGE_STRENGTH)).force("center", d3.forceCenter(width / 2, height / 2));
+    private returnSimulation(width: number, height: number) {
+        const simulation = d3.forceSimulation()
+            .force("charge", d3.forceManyBody().strength(CHARGE_STRENGTH))
+            .force("center", d3.forceCenter(width / 2, height / 2));
         simulation.force("link", d3.forceLink().id((link: any) => link.id).strength((link: ILink) => link.strength));
+        return simulation;
+    }
 
-        const linkElements = svg.append("g").selectAll("line").data(peopleGraph.links).enter().append("line").attr("stroke-width", 1).attr("stroke", "black").attr("opacity", 0.1).attr("user-select", "none");
-        const nodeElements = svg.append("g").selectAll("circle").data(peopleGraph.nodes).enter().append("circle").attr("r", 12).attr("fill", node => node.gender === "M" ? MALE_COLOR : FEMALE_COLOR).attr("cursor", "pointer").on("click", this.handleClick).attr("user-select", "none").attr("stroke-width", 3).attr("stroke", node => this.renderBorderColor(node.id, peopleGraph.lastEvents));
-        const firstNames = svg.append("g").selectAll("text").data(peopleGraph.nodes).enter().append("text").text(node => node.name.split(" ")[0]).attr("font-size", 10).attr("dy", -5).attr("cursor", "pointer").attr("user-select", "none").on("click", this.handleClick);
-        const lastNames = svg.append("g").selectAll("text").data(peopleGraph.nodes).enter().append("text").text(node => node.name.split(" ")[1]).attr("font-size", 13).attr("dy", 5).attr("cursor", "pointer").attr("user-select", "none").on("click", this.handleClick);
-        
-        simulation.nodes(peopleGraph.nodes).on("tick", () => {
-            nodeElements.attr("cx", (node: any) => node.x).attr("cy", (node: any) => node.y);
-            firstNames.attr("x", (node: any) => node.x).attr("y", (node: any) => node.y);
-            lastNames.attr("x", (node: any) => node.x).attr("y", (node: any) => node.y);
-            linkElements.attr("x1", (link: any) => link.source.x).attr('y1', (link: any) => link.source.y).attr('x2', (link: any) => link.target.x).attr('y2', (link: any) => link.target.y)
-        });
+    private returnLinkElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, links: ILink[]) {
+        return svg.append("g")
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+                .attr("class", "connection-line");
+    }
 
-        const dragDrop: any = d3.drag().on("start", (node: any) => { node.fx = node.x; node.fy = node.y }).on("drag", (node: any) => { simulation.alphaTarget(0.7).restart(); node.fx = d3.event.x; node.fy = d3.event.y }).on("end", (node: any) => { if (!d3.event.active){ simulation.alphaTarget(0) }; node.fx = null; node.fy = null } )
-        nodeElements.call(dragDrop);
+    private returnNodeElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[], lastEvents: IDateMap) {
+        return svg.append("g")
+            .selectAll("circle")
+            .data(nodes)
+            .enter().append("circle")
+                .attr("r", 12)
+                .attr("fill", node => node.gender === "M" ? MALE_COLOR : FEMALE_COLOR)
+                .on("click", this.handleClick)
+                .attr("stroke", node => this.renderBorderColor(node.id, lastEvents))
+                .attr("class", "node")
+    }
 
+    private returnNames(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[]) {
+        return svg.append("g")
+            .selectAll("text")
+            .data(nodes)
+            .enter().append("text")
+                .text(node => {
+                    const name = node.name.split(" ");
+                    return name.length > 1 ? `${name[0]} ${name[1][0]}` : name[0];
+                })
+                .attr("dx", (node) => -((node.name.split(" ")[0]).length + 2) * 3.5)
+                .attr("dy", 5)
+                .on("click", this.handleClick)
+                .attr("class", "name");
+    }
+
+    private returnDragDrop(simulation: d3.Simulation<{}, undefined>) {
+        return d3.drag()
+            .on("start", (node: any) => { node.fx = node.x; node.fy = node.y })
+            .on("drag", (node: any) => { simulation.alphaTarget(0.7).restart(); node.fx = d3.event.x; node.fy = d3.event.y })
+            .on("end", (node: any) => { if (!d3.event.active){ simulation.alphaTarget(0) }; node.fx = null; node.fy = null } );
+    }
+
+    private maybeApplyLinkForce(simulation: d3.Simulation<{}, undefined>, links: ILink[]) {
         const linkForce: any = simulation.force("link");
         if (linkForce === undefined) {
             return;
         }
-        linkForce.links(peopleGraph.links);
+        linkForce.links(links);
+    }
+
+    private runSimulation(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, peopleGraph: IPeopleGraph, simulation: d3.Simulation<{}, undefined>) {
+        const linkElements = this.returnLinkElements(svg, peopleGraph.links);
+        const nodeElements = this.returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents);
+        const names = this.returnNames(svg, peopleGraph.nodes);
+        
+        simulation.nodes(peopleGraph.nodes).on("tick", () => {
+            nodeElements
+                .attr("cx", (node: any) => node.x)
+                .attr("cy", (node: any) => node.y);
+            names
+                .attr("x", (node: any) => node.x)
+                .attr("y", (node: any) => node.y);
+            linkElements
+                .attr("x1", (link: any) => link.source.x)
+                .attr('y1', (link: any) => link.source.y)
+                .attr('x2', (link: any) => link.target.x)
+                .attr('y2', (link: any) => link.target.y);
+        });
+
+        nodeElements.call(this.returnDragDrop(simulation) as any);
+        names.call(this.returnDragDrop(simulation) as any);
+
+        this.maybeApplyLinkForce(simulation, peopleGraph.links);
+    }
+
+    private renderD3Graph(width: number, height: number, peopleGraph: IPeopleGraph | undefined ) {
+        if (peopleGraph === undefined || this.hasRenderedGraph) {
+            return;
+        }
+        this.hasRenderedGraph = true;
+
+        const svg = d3.select("#graph").attr("width", width).attr("height", height);
+        const simulation = this.returnSimulation(width, height);
+
+        this.runSimulation(svg, peopleGraph, simulation);
     }
 }
 
 function mapStateToProps(state: IStoreState): IDisplayGraphStoreProps {
     return {
         currentUser: state.DatabaseReducer.currentUser,
-        eventData: state.DatabaseReducer.eventData,
         graphRef: state.WebsiteReducer.graphRef,
         peopleGraph: selectMainPersonGraph(state),
-        userData: state.DatabaseReducer.userData,
     };
 }
 
