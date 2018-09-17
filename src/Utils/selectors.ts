@@ -2,10 +2,11 @@ import { createSelector } from "reselect";
 
 import IStoreState from "../State/IStoreState";
 import { IEventMap } from "../Types/Events";
-import { IUser, IUserMap } from "../Types/Users";
+import { IConnections, IUser, IUserMap } from "../Types/Users";
 import Event from "./Event";
 
 export interface ILink {
+  distance: number;
   source: string;
   target: string;
   strength: number;
@@ -21,7 +22,36 @@ export interface IPeopleGraph {
   lastEvents: IDateMap;
 }
 
-const STRENGTH_DIVIDER = 25;
+const STRENGTH_DIVIDER = 100;
+const DISTANCE_MULTIPLIER = 100;
+
+function returnNormalizedLinks(source: string, connectionCopy: IConnections, applyStrength: boolean = false) {
+  let normalization = 0;
+  let maximum = 0;
+  const links = Object.entries(connectionCopy).map(userAndEvents => {
+    normalization += userAndEvents[1].length;
+    maximum = Math.max(maximum, userAndEvents[1].length);
+    return {
+      distance: userAndEvents[1].length,
+      source,
+      strength: userAndEvents[1].length,
+      target: userAndEvents[0],
+    }
+  });
+  normalization = normalization * STRENGTH_DIVIDER / Object.keys(connectionCopy).length;
+  return links.map(userAndEvents => ({ ...userAndEvents, distance: (maximum + 1 - userAndEvents.distance) * DISTANCE_MULTIPLIER, strength: applyStrength ? userAndEvents.strength / normalization : 0.5 }));
+}
+
+function returnLastEvent(connectionCopy: IConnections, allEvents: IEventMap) {
+  const lastEvents = {};
+  for (const key in connectionCopy) {
+    if (connectionCopy.hasOwnProperty(key)) {
+      const eventId = connectionCopy[key].slice(-1)[0];
+      lastEvents[key] = eventId === undefined ? undefined : allEvents[eventId].date;
+    }
+  }
+  return lastEvents;
+}
 
 export const selectMainPersonGraph = createSelector(
   (state: IStoreState) => state.DatabaseReducer.currentUser,
@@ -44,19 +74,8 @@ export const selectMainPersonGraph = createSelector(
     const connectionCopy = { ...mainPerson.connections };
     delete connectionCopy[mainPerson.id];
 
-    const links = Object.entries(connectionCopy).map(userAndEvents => ({
-      source: mainPerson.id,
-      strength: userAndEvents[1].length / STRENGTH_DIVIDER,
-      target: userAndEvents[0],
-    }));
-    const lastEvents = {};
-
-    for (const key in connectionCopy) {
-      if (connectionCopy.hasOwnProperty(key)) {
-        const eventId = connectionCopy[key].slice(-1)[0];
-        lastEvents[key] = eventId === undefined ? undefined : allEvents[eventId].date;
-      }
-    }
+    const links = returnNormalizedLinks(mainPerson.id, connectionCopy);
+    const lastEvents = returnLastEvent(connectionCopy, allEvents);
 
     return { nodes: Object.values(allUsers), links, lastEvents };
   }
