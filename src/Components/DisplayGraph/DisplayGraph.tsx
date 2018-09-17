@@ -75,7 +75,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         this.props.setInfoPerson(node)
     }
 
-    private renderBorderColor(id: string, map: IDateMap) {
+    private returnFill(id: string, map: IDateMap) {
         const lastTime = map[id];
         if (lastTime === undefined) {
             return GRAY;
@@ -126,7 +126,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             .data(nodes)
             .enter().append("circle")
                 .attr("r", (node: IUser) => node.id === currentUser.id ? MAIN_PERSON_RADIUS : DEFAULT_RADIUS)
-                .attr("fill", node => this.renderBorderColor(node.id, lastEvents))
+                .attr("fill", node => this.returnFill(node.id, lastEvents))
                 .on("click", this.handleClick)
                 .attr("class", "node");
     }
