@@ -36,6 +36,7 @@ const CHARGE_STRENGTH = -200;
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
 const DEFAULT_RADIUS = 12;
+const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
 
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     private hasRenderedGraph = false;
@@ -124,7 +125,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             .selectAll("circle")
             .data(nodes)
             .enter().append("circle")
-                .attr("r", (node: IUser) => DEFAULT_RADIUS * (node.id === currentUser.id ? 2 : 1))
+                .attr("r", (node: IUser) => node.id === currentUser.id ? MAIN_PERSON_RADIUS : DEFAULT_RADIUS)
                 .attr("fill", node => this.renderBorderColor(node.id, lastEvents))
                 .on("click", this.handleClick)
                 .attr("class", "node");
