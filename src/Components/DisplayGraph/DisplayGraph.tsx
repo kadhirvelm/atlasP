@@ -26,17 +26,17 @@ export interface IDisplayGraphDispatchProps {
 const GREEN_DAYS = 30;
 const YELLOW_DAYS = 90;
 
-const BLACK = "#1B2631";
+const GRAY = "#839192";
 const RED = "#F1948A";
 const YELLOW = "#F7DC6F";
 const GREEN = "#7DCEA0";
 
-const MALE_COLOR = "#2874A6";
-const FEMALE_COLOR = "#B03A2E";
-
-const CHARGE_STRENGTH = -75;
+const CHARGE_STRENGTH = -200;
 
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+
+const DEFAULT_RADIUS = 12;
+const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
 
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     private hasRenderedGraph = false;
@@ -75,10 +75,10 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         this.props.setInfoPerson(node)
     }
 
-    private renderBorderColor(id: string, map: IDateMap) {
+    private returnFill(id: string, map: IDateMap) {
         const lastTime = map[id];
         if (lastTime === undefined) {
-            return BLACK;
+            return GRAY;
         }
 
         const totalDifference = (new Date().getTime() - new Date(lastTime).getTime()) / MILLISECONDS_PER_DAY;
@@ -95,8 +95,17 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         const simulation = d3.forceSimulation()
             .force("charge", d3.forceManyBody().strength(CHARGE_STRENGTH))
             .force("center", d3.forceCenter(width / 2, height / 2));
-        simulation.force("link", d3.forceLink().id((link: any) => link.id).strength((link: ILink) => link.strength));
+        simulation.force("link", d3.forceLink().id((link: any) => link.id).strength((link: ILink) => link.strength).distance((link: ILink) => link.distance));
         return simulation;
+    }
+    
+    private returnBoundRectangle(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, zoomed: () => void) {
+        return svg.append("rect")
+            .attr("width", (svg.node() as any).getBoundingClientRect().width)
+            .attr("height", (svg.node() as any).getBoundingClientRect().height)
+            .style("fill", "none")
+            .style("pointer-events", "all")
+            .call(d3.zoom().scaleExtent([ 1 / 4, 4 ]).on("zoom", zoomed));
     }
 
     private returnLinkElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, links: ILink[]) {
@@ -108,15 +117,18 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     }
 
     private returnNodeElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[], lastEvents: IDateMap) {
+        const { currentUser } = this.props;
+        if (currentUser === undefined) {
+            throw new Error("Tried to fetch an undefined current user in graph");
+        }
         return svg.append("g")
             .selectAll("circle")
             .data(nodes)
             .enter().append("circle")
-                .attr("r", 12)
-                .attr("fill", node => node.gender === "M" ? MALE_COLOR : FEMALE_COLOR)
+                .attr("r", (node: IUser) => node.id === currentUser.id ? MAIN_PERSON_RADIUS : DEFAULT_RADIUS)
+                .attr("fill", node => this.returnFill(node.id, lastEvents))
                 .on("click", this.handleClick)
-                .attr("stroke", node => this.renderBorderColor(node.id, lastEvents))
-                .attr("class", "node")
+                .attr("class", "node");
     }
 
     private returnNames(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[]) {
@@ -151,6 +163,11 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 
     private runSimulation(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, peopleGraph: IPeopleGraph, simulation: d3.Simulation<{}, undefined>) {
         const linkElements = this.returnLinkElements(svg, peopleGraph.links);
+        this.returnBoundRectangle(svg, () => {
+            linkElements.attr("transform", d3.event.transform);
+            nodeElements.attr("transform", d3.event.transform);
+            names.attr("transform", d3.event.transform);
+        });
         const nodeElements = this.returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents);
         const names = this.returnNames(svg, peopleGraph.nodes);
         
