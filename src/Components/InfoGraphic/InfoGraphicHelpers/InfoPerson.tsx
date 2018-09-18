@@ -25,7 +25,7 @@ export class InfoPerson extends React.Component<IPersonInformationProps> {
         }
         return (
             <div key={this.props.person.id} className="info-person pt-dark show-change">
-                <div className="flexbox-row" style={{ alignItems: "center" }}>
+                <div className="flexbox-row" style={{ alignItems: "flex-start" }}>
                     <div className="info-person-name">{this.props.person.name}</div>
                     <div className="justify-end"> {this.renderPopover(this.props.person)} </div>
                 </div>

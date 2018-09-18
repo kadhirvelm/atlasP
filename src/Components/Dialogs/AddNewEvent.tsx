@@ -68,7 +68,7 @@ export class PureAddNewEvent extends React.Component<
                             className="autocomplete-margin"
                             dataSource={this.props.users}
                             displayKey="name"
-                            placeholderText="Search for host..."
+                            placeholderText="Search for host…"
                             values={this.finalEventValue("host")}
                             onSelection={this.handleHostSelection}
                         />
@@ -76,7 +76,7 @@ export class PureAddNewEvent extends React.Component<
                             dataSource={this.props.users}
                             displayKey="name"
                             multiselection={true}
-                            placeholderText="Search for users..."
+                            placeholderText="Search for users…"
                             values={this.finalEventValue("attendees")}
                             onSelection={this.handleAttendeeSelection}
                         />
@@ -99,7 +99,7 @@ export class PureAddNewEvent extends React.Component<
                 const { finalEvent } = this.state;
                 await this.props.dialogUtils.submitFinalEvent(finalEvent);
                 showToast(Intent.SUCCESS, "Successfully added a new event.");
-                this.props.onClose();
+                this.resetStateAndClose();
             } catch (error) {
                 this.setState({ isSubmitting: false });
             }
