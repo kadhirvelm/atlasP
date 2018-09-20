@@ -5,8 +5,9 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import IStoreState from "../../State/IStoreState";
 import { SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
-import { IUser } from "../../Types/Users";
+import { IUser, IUserMap } from "../../Types/Users";
 import { IDateMap, ILink, IPeopleGraph, selectMainPersonGraph } from "../../Utils/selectors";
+import { Autocomplete } from "../Common/Autocomplete";
 
 import "./DisplayGraph.css";
 
@@ -14,6 +15,7 @@ export interface IDisplayGraphStoreProps {
     currentUser: IUser | undefined;
     graphRef: HTMLElement | null;
     peopleGraph: IPeopleGraph | undefined;
+    userMap: IUserMap | undefined;
 }
 
 export interface IDisplayGraphDispatchProps {
@@ -58,9 +60,31 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                 ref={this.setRef}
                 className="d3-graph-container"
             >
+                <Autocomplete
+                    className="find-user"
+                    dataSource={this.props.userMap}
+                    displayKey="name"
+                    placeholderText="Search for user…"
+                    onSelection={this.zoomToNode}
+                />
                 <svg id="graph" className="d3-graph" />
             </div>
         );
+    }
+
+    private zoomToNode = (node: IUser) => {
+        if (!this.hasRenderedGraph) {
+            return;
+        }
+        const selectedNode = d3.select(`[id="${node.id}"]`)
+        d3.select("rect")
+            .call(d3.zoom().translateTo, parseInt(selectedNode.attr("cx"), 10), parseInt(selectedNode.attr("cy"), 10))
+            .call(d3.zoom().scaleTo, 3)
+            .dispatch("zoomToPerson", {
+                detail: {
+                    transform: d3.zoomTransform(d3.select("rect").node() as any)
+                }
+            } as any);
     }
 
     private handleClick = (node: IUser) => {
@@ -97,15 +121,17 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             .attr("height", (svg.node() as any).getBoundingClientRect().height)
             .style("fill", "none")
             .style("pointer-events", "all")
-            .call(d3.zoom().scaleExtent([ 1 / 4, 4 ]).on("zoom", zoomed));
+            .call(d3.zoom().scaleExtent([ 1 / 4, 4 ]).on("zoom", zoomed))
+            .on("zoomToPerson", zoomed);
     }
 
     private returnLinkElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, links: ILink[]) {
         return svg.append("g")
             .selectAll("line")
+            .exit().remove()
             .data(links)
             .enter().append("line")
-                .attr("class", "connection-line");
+                .attr("class", "connection-line")
     }
 
     private returnNodeElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[], lastEvents: IDateMap) {
@@ -115,17 +141,20 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         }
         return svg.append("g")
             .selectAll("circle")
+            .exit().remove()
             .data(nodes)
             .enter().append("circle")
                 .attr("r", (node: IUser) => node.id === currentUser.id ? MAIN_PERSON_RADIUS : DEFAULT_RADIUS)
-                .attr("fill", node => this.returnFill(node.id, lastEvents))
+                .attr("fill", (node: IUser) => this.returnFill(node.id, lastEvents))
                 .on("click", this.handleClick)
-                .attr("class", "node");
+                .attr("class", "node")
+                .attr("id", (node: IUser) => node.id);
     }
 
     private returnNames(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[]) {
         return svg.append("g")
             .selectAll("text")
+            .exit().remove()
             .data(nodes)
             .enter().append("text")
                 .text(node => {
@@ -135,7 +164,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                 .attr("dx", (node) => -((node.name.split(" ")[0]).length + 2) * 3.5)
                 .attr("dy", 5)
                 .on("click", this.handleClick)
-                .attr("class", "name");
+                .attr("class", "name")
     }
 
     private returnDragDrop(simulation: d3.Simulation<{}, undefined>) {
@@ -156,9 +185,16 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     private runSimulation(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, peopleGraph: IPeopleGraph, simulation: d3.Simulation<{}, undefined>) {
         const linkElements = this.returnLinkElements(svg, peopleGraph.links);
         this.returnBoundRectangle(svg, () => {
-            linkElements.attr("transform", d3.event.transform);
-            nodeElements.attr("transform", d3.event.transform);
-            names.attr("transform", d3.event.transform);
+            const zoomToPersonTransform = d3.event.detail && d3.event.detail.transform
+            if (zoomToPersonTransform === undefined) {
+                linkElements.attr("transform", d3.event.transform);
+                nodeElements.attr("transform", d3.event.transform);
+                names.attr("transform", d3.event.transform);
+                return;
+            }
+            linkElements.transition().duration(500).attr("transform", zoomToPersonTransform);
+            nodeElements.transition().duration(500).attr("transform", zoomToPersonTransform);
+            names.transition().duration(500).attr("transform", zoomToPersonTransform);
         });
         const nodeElements = this.returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents);
         const names = this.returnNames(svg, peopleGraph.nodes);
@@ -201,6 +237,7 @@ function mapStateToProps(state: IStoreState): IDisplayGraphStoreProps {
         currentUser: state.DatabaseReducer.currentUser,
         graphRef: state.WebsiteReducer.graphRef,
         peopleGraph: selectMainPersonGraph(state),
+        userMap: state.DatabaseReducer.userData,
     };
 }
 

@@ -16,6 +16,7 @@ export interface IAutocompleteProps {
     displayKey?: string;
     multiselection?: boolean;
     placeholderText?: string;
+    shouldDisplayId?: boolean;
     values?: IAutcompleteValuesProps;
     onSelection?(item: {}): void;
 }
@@ -52,6 +53,7 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                         autoComplete="off"
                         type="text"
                         className="autofill-input"
+                        leftIcon="search"
                         onChange={this.handleChange()}
                         onClick={this.openAutofill}
                         onFocus={this.openAutofill}
@@ -115,7 +117,7 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                             key={index}
                             onClick={this.handleSelection(key)}
                         >
-                            <strong className="key"> {key.slice(-6)} </strong>
+                            { this.props.shouldDisplayId && <strong className="key"> {key.slice(-6)} </strong> }
                             <div className="value"> {dataSource[key][display]} </div>
                         </div>
                     ))

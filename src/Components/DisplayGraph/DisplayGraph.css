@@ -1,4 +1,5 @@
 .d3-graph-container {
+    position: relative;
     display: flex;
     flex: 1;
 }
@@ -27,4 +28,11 @@
 
 .name:hover {
     opacity: 1;
+}
+
+.find-user {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
 }

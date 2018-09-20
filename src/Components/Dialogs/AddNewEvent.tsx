@@ -69,6 +69,7 @@ export class PureAddNewEvent extends React.Component<
                             dataSource={this.props.users}
                             displayKey="name"
                             placeholderText="Search for host…"
+                            shouldDisplayId={true}
                             values={this.finalEventValue("host")}
                             onSelection={this.handleHostSelection}
                         />
@@ -77,6 +78,7 @@ export class PureAddNewEvent extends React.Component<
                             displayKey="name"
                             multiselection={true}
                             placeholderText="Search for users…"
+                            shouldDisplayId={true}
                             values={this.finalEventValue("attendees")}
                             onSelection={this.handleAttendeeSelection}
                         />
