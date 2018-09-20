@@ -33,7 +33,12 @@ export const emptyCache = () => {
 
 export const saveState = (state: IStoreState) => {
   try {
-    const substate = (({ currentUser, isFetching, isLoggedIn, forceUpdate }) => ({ currentUser, isFetching, isLoggedIn, forceUpdate }))(state.DatabaseReducer);
+    const substate = (({ currentUser, isFetching, isLoggedIn, forceUpdate }) => ({
+      currentUser,
+      forceUpdate,
+      isFetching,
+      isLoggedIn,
+    }))(state.DatabaseReducer);
     const serializedState = JSON.stringify(substate);
     localStorage.setItem("state", serializedState);
   } catch (error) {
