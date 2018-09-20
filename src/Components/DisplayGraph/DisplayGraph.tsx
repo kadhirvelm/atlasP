@@ -3,7 +3,6 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import IStoreState from "../../State/IStoreState";
 import { SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
 import { IUser } from "../../Types/Users";
@@ -18,7 +17,6 @@ export interface IDisplayGraphStoreProps {
 }
 
 export interface IDisplayGraphDispatchProps {
-    getLatestGraph(user: IUser): void;
     setGraphRef(ref: HTMLElement | null): void;
     setInfoPerson(infoPerson: IUser): void;
 }
@@ -40,12 +38,6 @@ const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
 
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     private hasRenderedGraph = false;
-
-    public componentDidMount() {
-        if (this.props.currentUser !== undefined) {
-            this.props.getLatestGraph(this.props.currentUser);
-        }
-    }
 
     public setRef = (ref: HTMLElement | null ) => {
         if (this.props.graphRef == null && ref !== null) {
@@ -213,13 +205,10 @@ function mapStateToProps(state: IStoreState): IDisplayGraphStoreProps {
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {
-    return {
-        ...bindActionCreators({
+    return bindActionCreators({
             setGraphRef: SetGraphRef.create,
             setInfoPerson: SetInfoPerson.create,
-        }, dispatch),
-        getLatestGraph: new DatabaseDispatcher(dispatch).getLatestGraph,
-    }
+        }, dispatch)
 }
 
 export const DisplayGraph = connect(mapStateToProps, mapDispatchToProps)(PureDispayGraph);

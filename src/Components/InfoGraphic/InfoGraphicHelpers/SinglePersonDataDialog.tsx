@@ -17,7 +17,7 @@ export interface ISinglePersonDataDialogProps {
 }
 
 export interface ISinglePersonDataDialogStoreProps {
-    eventData?: IEventMap;
+    eventData?: IEvent[];
     userData?: IUserMap;
 }
 
@@ -54,33 +54,28 @@ export class PureSinglePersonDataDialog extends React.Component<
     }
 
     private renderInfoPersonContent() {
-        const { events } = this.props;
-        if (events === undefined) {
+        const { eventData } = this.props;
+        if (eventData === undefined) {
             return null;
         }
-        return events.map((eventID: string, index: number) => {
-            const event = this.props.eventData && this.props.eventData[eventID];
-            if (event === undefined) {
-                return undefined;
-            }
-            return this.renderEventDetails(event, index);
-        });
+        return eventData.map(event => this.renderEventDetails(event));
     }
 
     private openInformationHover = (eventID: string) => () => this.setState({ openInformationPopover: eventID });
     private closeInformationHover = () => this.setState({ openInformationPopover: undefined });
 
-    private renderEventDetails(event: IEvent, index: number) {
-        if (this.props.userData === undefined) {
+    private renderEventDetails(event: IEvent) {
+        const { userData } = this.props;
+        if (userData === undefined) {
             return null;
         }
         return (
-            <div key={index} className="single-event-row">
+            <div key={event.id} className="single-event-row">
                 <div className="flex-25">
                     {event.date.toDateString()}
                 </div>
                 <div className="flex-25">
-                    {this.props.userData && this.props.userData[event.host.id].name}
+                    {userData[event.host.id].name}
                 </div>
                 <div className="flex-35">
                     {event.description}
@@ -101,7 +96,7 @@ export class PureSinglePersonDataDialog extends React.Component<
                         />
                         <div style={{ padding: "15px", textAlign: "center" }}>
                             <div className="flexbox-column">
-                                {this.renderEvents(event)}
+                                {this.renderEventAttendees(event)}
                             </div>
                         </div>
                     </Popover>
@@ -109,17 +104,24 @@ export class PureSinglePersonDataDialog extends React.Component<
         );
     }
 
-    private renderEvents(event: IEvent) {
+    private renderEventAttendees(event: IEvent) {
         return event.attendees.map((user: IUser) => (
-                <div key={user.id}> {user.name} ({user.id}) </div>
+                <div key={user.id}> {user.name} ({user.id.slice(-6)}) </div>
             ),
         );
     }
 }
 
-function mapStateToProps(state: IStoreState): ISinglePersonDataDialogStoreProps {
+function mapAndSortEvents(events: string[] | undefined, eventData?: IEventMap) {
+    if (events === undefined || eventData === undefined) {
+        return undefined;
+    }
+    return events.map(id => eventData[id]).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+function mapStateToProps(state: IStoreState, ownProps: ISinglePersonDataDialogProps & ISinglePersonDataDialogStoreProps): ISinglePersonDataDialogStoreProps {
     return {
-        eventData: state.DatabaseReducer.eventData,
+        eventData: mapAndSortEvents(ownProps.events, state.DatabaseReducer.eventData),
         userData: state.DatabaseReducer.userData,
     };
 }

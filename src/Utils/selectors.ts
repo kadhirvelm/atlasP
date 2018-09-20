@@ -25,7 +25,11 @@ export interface IPeopleGraph {
 const STRENGTH_DIVIDER = 100;
 const DISTANCE_MULTIPLIER = 100;
 
-function returnNormalizedLinks(source: string, connectionCopy: IConnections, applyStrength: boolean = false) {
+function returnNormalizedLinks(
+  source: string,
+  connectionCopy: IConnections,
+  applyStrength: boolean = false
+) {
   let normalization = 0;
   let maximum = 0;
   const links = Object.entries(connectionCopy).map(userAndEvents => {
@@ -35,11 +39,15 @@ function returnNormalizedLinks(source: string, connectionCopy: IConnections, app
       distance: userAndEvents[1].length,
       source,
       strength: userAndEvents[1].length,
-      target: userAndEvents[0],
-    }
+      target: userAndEvents[0]
+    };
   });
-  normalization = normalization * STRENGTH_DIVIDER / Object.keys(connectionCopy).length;
-  return links.map(userAndEvents => ({ ...userAndEvents, distance: (maximum + 1 - userAndEvents.distance) * DISTANCE_MULTIPLIER, strength: applyStrength ? userAndEvents.strength / normalization : 0.5 }));
+  normalization = (normalization * STRENGTH_DIVIDER) / Object.keys(connectionCopy).length;
+  return links.map(userAndEvents => ({
+    ...userAndEvents,
+    distance: (maximum + 1 - userAndEvents.distance) * DISTANCE_MULTIPLIER,
+    strength: applyStrength ? userAndEvents.strength / normalization : 0.5
+  }));
 }
 
 function returnLastEvent(connectionCopy: IConnections, allEvents: IEventMap) {
