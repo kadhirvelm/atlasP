@@ -1,0 +1,8 @@
+.splash-page-background {
+    background: no-repeat center center fixed;
+    background-size: cover;
+    height: auto;
+    width: auto;
+    max-width: 100vw;
+    overflow: hidden;
+}
