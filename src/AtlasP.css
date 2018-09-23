@@ -35,14 +35,11 @@
 
 .fade-in {
     opacity: 1;
-    animation: fade-in 1.5s linear;
+    animation: fade-in 0.75s linear;
 }
 
 @keyframes fade-in {
     0% {
-        opacity: 0;
-    }
-    20% {
         opacity: 0;
     }
     100% {
