@@ -58,7 +58,7 @@ jobs:
           command: sudo apt-get -y -qq install awscli
       - run:
           name: Deploying to S3
-          command: aws s3 sync build/ s3://atlasp --delete --region us-west-1 --cache-control max-age=86400
+          command: aws s3 sync build/ s3://www.atlas-people.com --delete --region us-west-1 --cache-control max-age=86400
 workflows:
   version: 2
   build_and_test:
