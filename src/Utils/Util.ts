@@ -1,6 +1,10 @@
+import { PhoneNumberUtil } from "google-libphonenumber";
+
 import { IEvent } from "../Types/Events";
 import { IUser } from "../Types/Users";
 import User from "./User";
+
+const phoneUtils = new PhoneNumberUtil();
 
 export function convertObjectToMap(object: {} | undefined): Map<string, {}> {
   const finalMap = new Map();
@@ -23,4 +27,12 @@ export function convertPayloadToUser(rawUser: any) {
     return undefined;
   }
   return new User(rawUser._id, rawUser.name, rawUser.gender, rawUser.age, rawUser.location, rawUser.phoneNumber, [], [], rawUser.connections);
+}
+
+export function isValidPhoneNumber(rawNumber: string) {
+  try {
+      return phoneUtils.isValidNumber(phoneUtils.parse(rawNumber, "US"));
+  } catch (e) {
+      return false;
+  }
 }
