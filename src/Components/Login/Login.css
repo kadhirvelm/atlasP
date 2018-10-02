@@ -1,26 +1,43 @@
-.centered .center-login {
-    display: flex;
-    flex-direction: column;
-}
-
-.details {
-    display: flex;
-    flex-direction: column;
-}
-
-.details .textfield {
-    margin: 10px;
-}
-
-.action-buttons {
-    display: flex;
-}
-
-.action-buttons .action-button {
+.login-title {
     display: flex;
     flex: 1;
+    justify-content: center;
+    font-size: 35px;
+    margin-bottom: 10px;
 }
 
-.action-buttons .divider {
-    width: 10px;
+.centered .login-center {
+    display: flex;
+}
+
+.login-main-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+}
+
+.login-divider {
+    width: 1px;
+    margin: 0 20px;
+    background: rgba(112, 112, 112, 0.25);
+}
+
+.login-textfield {
+    margin: 5px 0;
+    border: 1px solid rgba(112, 112, 112, 0.25);
+    border-radius: 3px;
+    padding: 3px 6px;
+    font-size: 12px;
+    min-width: 200px;
+}
+
+.login-action-button {
+    margin-top: 5px;
+    min-width: 100px;
+}
+
+.login-action-button {
+    display: flex;
+    flex: 0;
 }
