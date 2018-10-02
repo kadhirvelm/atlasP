@@ -1,20 +1,9 @@
+import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import {
-    Alignment,
-    Button,
-    Intent,
-    Menu,
-    MenuItem,
-    Navbar,
-    NavbarDivider,
-    NavbarGroup,
-    NavbarHeading,
-    Popover,
-    Spinner,
-} from "@blueprintjs/core";
+import { Button } from "@blueprintjs/core";
 
 import { EmptyDatabaseCache } from "../../State/DatabaseActions";
 import IStoreState from "../../State/IStoreState";
@@ -28,12 +17,11 @@ import { UpdateUser } from "../Dialogs/UpdateUser";
 import "../Main.css";
 import "./Navbar.css";
 
+const logo = require("./white_logo.svg");
+
 interface INavbarState {
   accountDetailsDialogOpen: boolean;
-}
-
-export interface INavbarProps {
-    mobile?: boolean;
+  hovering: boolean;
 }
 
 export interface INavbarStateProps {
@@ -46,72 +34,41 @@ export interface INavbarDispatchProps {
     signOut(): void;
 }
 
-class PureAtlaspNavbar extends React.PureComponent<INavbarProps & INavbarStateProps & INavbarDispatchProps, INavbarState> {
+class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDispatchProps, INavbarState> {
     public state = {
         accountDetailsDialogOpen: this.props.forceUpdate !== undefined,
+        hovering: false,
     };
 
     public render() {
         return(
-            <Navbar className="pt-dark" style={{ zIndex: 10 }}>
-                {this.renderLeftButtonGroup()}
-                {this.renderRightButtonGroup()}
-            </Navbar>
+            <div className={classNames("atlas-navbar", "pt-dark")} onMouseEnter={this.handleHoverStart} onMouseDown={this.handleHoverLeave} onMouseLeave={this.handleHoverLeave} style={{ zIndex: 10 }}>
+                {this.renderNavbarComponent(<img height={40} src={logo} width={33} />, "AtlasP")}
+                <div className="navbar-separator" />
+                {this.renderNavbarComponent(<DialogWrapper className="navbar-new-event" dialog={AddNewEvent} icon="add" text="" />, "New Event")}
+                {this.renderNavbarComponent(<DialogWrapper className="navbar-new-person" dialog={AddNewPerson} icon="new-person" text="" />, "New Person")}
+                <div className="navbar-separator" />
+                {this.renderNavbarComponent(<DialogWrapper className="navbar-account" dialog={UpdateUser} icon="user" text="" />, "Account")}
+                {this.renderNavbarComponent(<Button icon="log-out" onClick={this.props.signOut} text="" />, "Sign Out")}
+            </div>
         );
     }
 
-    private renderLeftButtonGroup() {
+    private renderNavbarComponent(mainElement: JSX.Element, secondaryElement: JSX.Element | string) {
         return (
-            <NavbarGroup align={Alignment.LEFT}>
-                <NavbarHeading> AtlasP </NavbarHeading>
-                <NavbarDivider />
-                {this.maybeRenderSpinner()}
-                {this.maybeRenderOtherLeftButtons()}
-            </NavbarGroup>
-        );
-    }
-
-    private maybeRenderSpinner() {
-        if (!this.props.fetching) {
-            return null;
-        }
-        return <Spinner className="pt-small" intent={Intent.WARNING} />
-    }
-
-    private maybeRenderOtherLeftButtons() {
-        if (this.props.mobile) {
-            return undefined;
-        }
-        return (
-            <div className="flexrow">
-                <DialogWrapper className="navbar-button" dialog={AddNewEvent} icon="add" text="Enter Event" />
-                <DialogWrapper className="navbar-button" dialog={AddNewPerson} icon="new-person" text="Add Person" />
+            <div className="navbar-button-component">
+                {mainElement}
+                {this.state.hovering && 
+                    <div className="navbar-hovered-component">
+                        {secondaryElement}
+                    </div>
+                }
             </div>
         )
     }
 
-    private renderRightButtonGroup() {
-        if (this.props.currentUser === undefined) {
-            return null;
-        }
-        return (
-            <NavbarGroup align={Alignment.RIGHT}>
-                <Popover>
-                    <Button icon="user" text={this.props.currentUser.name} rightIcon="caret-down" />
-                    <Menu>
-                        <MenuItem icon="edit" text="Account details"  onClick={this.handleOpenAccountDetails} />
-                        <MenuItem icon="log-out" text="Sign out" onClick={this.handleSignOut} />
-                    </Menu>
-                </Popover>
-                <UpdateUser isOpen={this.state.accountDetailsDialogOpen} onClose={this.handleCloseAccountDetails} />
-            </NavbarGroup>
-        );
-    }
-
-    private handleOpenAccountDetails = () => this.setState({ accountDetailsDialogOpen: true });
-    private handleCloseAccountDetails = () => this.setState({ accountDetailsDialogOpen: false });
-
-    private handleSignOut = () => this.props.signOut();
+    private handleHoverStart = () => this.setState({ hovering: true });
+    private handleHoverLeave = () => this.setState({ hovering: false });
 }
 
 function mapStateToProps(state: IStoreState): INavbarStateProps {

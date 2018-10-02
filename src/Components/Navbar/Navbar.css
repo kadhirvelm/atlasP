@@ -5,3 +5,52 @@
 .flexrow {
     display: flex;
 }
+
+.atlas-navbar {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background: #283747;
+    width: 50px;
+    transition: width 200ms ease-in-out;
+}
+
+.atlas-navbar:hover {
+    width: 150px;
+}
+
+.navbar-button-component {
+    display: flex;
+    margin: 10px 10px;
+    align-items: center;
+}
+
+.navbar-hovered-component {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+    animation: fade-in 400ms ease-in;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.navbar-separator {
+    display: flex;
+    height: 1px;
+    width: 80%;
+    margin: 0 10%;
+    background: rgba(255, 255, 255, 0.5);
+}
