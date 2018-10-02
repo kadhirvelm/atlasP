@@ -32,7 +32,7 @@
 
 .find-user {
     position: absolute;
-    top: 0;
+    top: 10px;
     right: 0;
     z-index: 2;
 }

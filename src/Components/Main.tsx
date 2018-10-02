@@ -67,10 +67,10 @@ export class PureMain extends React.Component<IMainStoreProps & IMainDispatchPro
   private renderGraphAndInfo = () => {
     return(
       <div className="graph-container flexbox-row">
-        <div style={{ display: "flex", flexBasis: "85%" }}>
+        <div className="display-graph">
           <DisplayGraph />
         </div>
-        <div style={{ display: "flex", flexBasis: "15%" }}>
+        <div className="info-graphic">
           <InfoGraphic />
         </div>
       </div>

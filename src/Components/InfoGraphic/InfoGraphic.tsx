@@ -45,7 +45,7 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
             return null;
         }
         return(
-            <div className="flexbox">
+            <div className="main-info-graphic-container">
                 <InfoPerson
                     currentUser={currentUser}
                     openPopover={this.state.openPopover}
