@@ -3,7 +3,9 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 
 import { Button, EditableText, Intent } from "@blueprintjs/core";
+
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
+import { isValidPhoneNumber } from "../../Utils/Util";
 import { PasswordField } from "../Common/PasswordField";
 
 import "./Login.css";
@@ -28,7 +30,7 @@ class PureLoginComponent extends React.Component<ILoginComponentDispatchProps, I
 
     public render() {
         return (
-            <div className="centered fade-in">
+            <div className="centered fade-in" onKeyDown={this.handleKeyboard}>
                 <div className="login-title">Welcome to AtlasP</div>
                 <div className="login-center">
                     <div className="login-main-container">
@@ -39,7 +41,7 @@ class PureLoginComponent extends React.Component<ILoginComponentDispatchProps, I
                         />
                         <Button
                             className="login-action-button"
-                            disabled={this.checkClaim()}
+                            disabled={!this.isValidClaim()}
                             id="claim-button"
                             intent={Intent.PRIMARY}
                             onClick={this.handleClaim}
@@ -60,7 +62,7 @@ class PureLoginComponent extends React.Component<ILoginComponentDispatchProps, I
                         />
                         <Button
                             className="login-action-button"
-                            disabled={this.checkSignIn()}
+                            disabled={!this.isValidSignIn()}
                             intent={Intent.NONE}
                             id="authorize-button"
                             onClick={this.handleLogin}
@@ -72,15 +74,25 @@ class PureLoginComponent extends React.Component<ILoginComponentDispatchProps, I
         )
     }
 
-    private checkClaim() {
-        return this.state.claimNumber === "";
+    private handleKeyboard = (event: React.KeyboardEvent<HTMLElement>) => {
+        if (event.key === "Enter") {
+            if (this.isValidSignIn()) {
+                this.handleLogin();
+            } else if (this.isValidClaim()) {
+                this.handleClaim();
+            }
+        }
     }
 
-    private checkSignIn() {
-        return this.state.phoneNumber === "" || this.state.password === "";
+    private isValidClaim() {
+        return isValidPhoneNumber(this.state.claimNumber);
     }
 
-    private storeClaimNumber = (claimNumber: string) => this.setState({ claimNumber })
+    private isValidSignIn() {
+        return isValidPhoneNumber(this.state.phoneNumber) && this.state.password !== "";
+    }
+
+    private storeClaimNumber = (claimNumber: string) => this.setState({ claimNumber });
     private storePhoneNumber = (phoneNumber: string) => this.setState({ phoneNumber })
     private storePassword = (password: string) => this.setState({ password });
 
