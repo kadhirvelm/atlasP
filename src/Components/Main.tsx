@@ -50,7 +50,6 @@ export class PureMain extends React.Component<IMainStoreProps & IMainDispatchPro
   private renderMobile() {
     return (
       <Mobile>
-        <AtlaspNavbar mobile={true} />
         <MobileView />
       </Mobile>
     )
