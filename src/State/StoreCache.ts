@@ -37,7 +37,7 @@ export const saveState = (state: IStoreState) => {
       currentUser,
       forceUpdate,
       isFetching,
-      isLoggedIn,
+      isLoggedIn
     }))(state.DatabaseReducer);
     const serializedState = JSON.stringify(substate);
     localStorage.setItem("state", serializedState);
