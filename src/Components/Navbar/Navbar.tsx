@@ -20,8 +20,7 @@ import "./Navbar.css";
 const logo = require("./white_logo.svg");
 
 interface INavbarState {
-  accountDetailsDialogOpen: boolean;
-  hovering: boolean;
+    hovering: boolean;
 }
 
 export interface INavbarStateProps {
@@ -36,7 +35,6 @@ export interface INavbarDispatchProps {
 
 class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDispatchProps, INavbarState> {
     public state = {
-        accountDetailsDialogOpen: this.props.forceUpdate !== undefined,
         hovering: false,
     };
 
@@ -72,7 +70,18 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
     private renderUserAccountItems() {
         return (
             <>
-                {this.renderNavbarComponent(<DialogWrapper className="navbar-account" dialog={UpdateUser} icon="user" text="" />, "Account")}
+                {this.renderNavbarComponent(
+                    <DialogWrapper
+                        className="navbar-account"
+                        dialog={UpdateUser}
+                        dialogProps={ { forceUpdate: this.props.forceUpdate } }
+                        forceOpen={this.props.forceUpdate !== undefined}
+                        icon="user"
+                        text=""
+                    />,
+                    "Account"
+                    )
+                }
                 {this.renderNavbarComponent(<Button icon="log-out" onClick={this.props.signOut} text="" />, "Sign Out")}
             </>
         )
