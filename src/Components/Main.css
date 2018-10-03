@@ -1,7 +1,9 @@
 .graph-container {
-    margin-top: 10px;
-    height: 90vh;
-    width: 99vw;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }
 
 .centered {
@@ -10,4 +12,14 @@
     transform: translate(-50%, -50%);
     z-index: 10;
     position: absolute;
+}
+
+.display-graph {
+    display: flex;
+    flex: 17;
+}
+
+.info-graphic {
+    display: flex;
+    flex: 3;
 }

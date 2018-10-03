@@ -1,7 +1,6 @@
-.flexbox {
+.main-info-graphic-container {
     display: flex;
     flex: 1 0;
+    margin: 10px 10px 0 0;
     flex-direction: column;
-    margin-left: 15px;
-    max-width: 100%;
 }
