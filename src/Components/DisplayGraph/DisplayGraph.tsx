@@ -79,7 +79,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         const selectedNode = d3.select(`[id="${node.id}"]`)
         d3.select("rect")
             .call(d3.zoom().translateTo, parseInt(selectedNode.attr("cx"), 10), parseInt(selectedNode.attr("cy"), 10))
-            .call(d3.zoom().scaleTo, 3)
+            .call(d3.zoom().scaleTo, 2.5)
             .dispatch("zoomToPerson", {
                 detail: {
                     transform: d3.zoomTransform(d3.select("rect").node() as any)
@@ -121,7 +121,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             .attr("height", (svg.node() as any).getBoundingClientRect().height)
             .style("fill", "none")
             .style("pointer-events", "all")
-            .call(d3.zoom().scaleExtent([ 1 / 4, 4 ]).on("zoom", zoomed))
+            .call(d3.zoom().scaleExtent([ 1 / 5, 1 ]).on("zoom", zoomed))
             .on("zoomToPerson", zoomed);
     }
 
