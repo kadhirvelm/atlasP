@@ -146,31 +146,3 @@
 .flexbox-centered {
     justify-content: center;
 }
-
-.flexbox-events {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-.flexbox-events::-webkit-scrollbar {
-    display:none;
-}
-
-.overflow-y {
-    overflow-y: auto;
-    height: 100%;
-}
-
-.event {
-    padding: 8px 0;
-    width: 100%;
-    flex-direction: column;
-    border-bottom: 1px solid white;
-    transition: all 300ms ease-in;
-    cursor: pointer;
-}
-
-.event:hover {
-    background-color: #455561;
-}

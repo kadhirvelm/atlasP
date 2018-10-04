@@ -7,7 +7,7 @@ import { ChangeParty, SetInfoPerson } from "../../State/WebsiteActions";
 import { IEventMap } from "../../Types/Events";
 import { IUser, IUserMap } from "../../Types/Users";
 import User from "../../Utils/User";
-import { CurrentEvents } from "./InfoGraphicHelpers/CurrentEvents";
+import { CurrentEvents } from "./CurrentEvents";
 import { InfoPerson } from "./InfoGraphicHelpers/InfoPerson";
 import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
 

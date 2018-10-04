@@ -2,13 +2,13 @@ import * as classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 
-import IStoreState from "../../../State/IStoreState";
-import { IEvent } from "../../../Types/Events";
-import { IUserMap } from "../../../Types/Users";
-import { selectSortedEvents } from "../../../Utils/selectors";
-import User from "../../../Utils/User";
+import { Icon, Text } from "@blueprintjs/core";
 
-import "./GlobalInfoGraphicHelpers.css";
+import IStoreState from "../../State/IStoreState";
+import { IEvent } from "../../Types/Events";
+import { selectSortedEvents } from "../../Utils/selectors";
+
+import "./CurrentEvents.css";
 
 export interface ICurrentEventsProps {
     className?: string;
@@ -16,7 +16,6 @@ export interface ICurrentEventsProps {
 
 export interface ICurrentEventsStoreProps {
     events: IEvent[];
-    users: IUserMap | undefined;
 }
 
 export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps & ICurrentEventsStoreProps> {
@@ -26,32 +25,34 @@ export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps &
 
     public render() {
         return (
-            <div className={classNames("info-person pt-dark", this.props.className)}>
-                <h4> Events </h4>
+            <div className={classNames("info-person", "pt-dark", this.props.className)}>
+                <div className="title"> Events </div>
                 {this.maybeRenderEvents()}
             </div>
         )
     }
 
     private maybeRenderEvents() {
-        const { events, users } = this.props;
-        if (events === undefined || users === undefined) {
+        const { events } = this.props;
+        if (events === undefined) {
             return null;
         }
         return (
             <div className="flexbox-events overflow-y">
-                {Object.values(this.props.events).map((event: IEvent) => this.renderSingleEvent(event, users))}
+                {Object.values(this.props.events).map((event: IEvent) => this.renderSingleEvent(event))}
             </div>
         )
     }
 
-    private renderSingleEvent(event: IEvent, users: IUserMap) {
+    private renderSingleEvent(event: IEvent) {
         const finalEvent = typeof event.date === "string" ? new Date(event.date) : event.date;
         return (
             <div className="event" key={event.id}>
-                <div> {finalEvent.toDateString()} </div>
-                <div> {event.description} </div>
-                <div> Host: {(users[event.host.id] as User).name} </div>
+                <div className="event-labels">
+                    <div className="date">{finalEvent.toDateString()}</div>
+                    <div className="attendees"><Icon className="people_icon" icon="people" />{event.attendees.length}</div>
+                </div>
+                <Text className="description" ellipsize={true}> {event.description} </Text>
             </div>
         )
     }
@@ -60,7 +61,6 @@ export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps &
 function mapStateToProps(state: IStoreState): ICurrentEventsStoreProps {
     return {
         events: selectSortedEvents(state),
-        users: state.DatabaseReducer.userData,
     }
 }
 
