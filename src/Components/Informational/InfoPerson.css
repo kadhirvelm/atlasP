@@ -1,0 +1,37 @@
+.info-person {
+    display: flex;
+    flex: 1 0;
+    background: #394b59;
+    color: white;
+    position: relative;
+    flex-direction: column;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.show-change {
+    animation: flash 1s ease-in-out;
+}
+
+@keyframes flash {
+    50% {
+        background: #AED6F1;
+    }
+}
+
+.name-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.info-person-name {
+    font-size: 18px;
+}
+
+.more-icon {
+    position: absolute;
+    right: 0;
+    margin-right: 10px;
+}

@@ -3,40 +3,37 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import IStoreState from "../../State/IStoreState";
-import { ChangeParty, SetInfoPerson } from "../../State/WebsiteActions";
-import { IEventMap } from "../../Types/Events";
+import { SetInfoPerson } from "../../State/WebsiteActions";
+import { IEvent } from "../../Types/Events";
 import { IUser, IUserMap } from "../../Types/Users";
+import { selectSortedEvents } from "../../Utils/selectors";
 import User from "../../Utils/User";
-import { CurrentEvents } from "./CurrentEvents";
-import { InfoPerson } from "./InfoGraphicHelpers/InfoPerson";
+import { EventList } from "./EventList";
 import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
+import { InfoPerson } from "./InfoPerson";
 
 import "./InfoGraphic.css";
 
 interface IInfoGraphicProps {
     currentUser: IUser | undefined;
-    eventData: IEventMap | undefined;
+    events: IEvent[] | undefined;
     infoPerson: IUser | undefined;
-    party: string[] | undefined;
     userData: IUserMap | undefined;
 }
 
 export interface IInfoGraphDispatchProps {
-    setParty(party: string[]): void;
     setInfoPerson(user: User): void;
 }
 
 interface IStateProps {
     openDialog: boolean;
     openInformationPopover: boolean;
-    openPopover: boolean;
 }
 
 class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDispatchProps, IStateProps> {
     public state = {
         openDialog: false,
         openInformationPopover: false,
-        openPopover: false,
     };
 
     public render() {
@@ -47,14 +44,10 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
         return(
             <div className="main-info-graphic-container">
                 <InfoPerson
-                    currentUser={currentUser}
-                    openPopover={this.state.openPopover}
                     person={this.props.infoPerson}
-                    closePopoverHover={this.closePopoverHover}
                     openInformationDialog={this.openInformationDialog}
-                    openPopoverHover={this.openPopoverHover}
                 />
-                <CurrentEvents />
+                <EventList events={this.props.events} />
                 {this.maybeRenderSinglePersonDataDialog()}
             </div>
         );
@@ -75,9 +68,6 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
         );
     }
 
-    private openPopoverHover = () => this.setState({ openPopover: true });
-    private closePopoverHover = () => this.setState({ openPopover: false });
-
     private openInformationDialog = () => this.setState({ openDialog: true });
     private closeInformationDialog = () => this.setState({ openDialog: false });
 }
@@ -85,9 +75,8 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
 function mapStateToProps(state: IStoreState): IInfoGraphicProps {
   return {
     currentUser: state.DatabaseReducer.currentUser,
-    eventData: state.DatabaseReducer.eventData,
+    events: selectSortedEvents(state),
     infoPerson: state.WebsiteReducer.infoPerson,
-    party: state.WebsiteReducer.party,
     userData: state.DatabaseReducer.userData,
   };
 }
@@ -95,7 +84,6 @@ function mapStateToProps(state: IStoreState): IInfoGraphicProps {
 function mapDispatchToProps(dispatch: Dispatch): IInfoGraphDispatchProps {
     return bindActionCreators({
         setInfoPerson: SetInfoPerson.create,
-        setParty: ChangeParty.create,
     }, dispatch);
 }
 
