@@ -8,7 +8,7 @@ import IStoreState from "../State/IStoreState";
 import { IUser } from "../Types/Users";
 import { getAuthenticationToken } from "../Utils/Security";
 import { DisplayGraph } from "./DisplayGraph/DisplayGraph";
-import { InfoGraphic } from "./InfoGraphic/InfoGraphic";
+import { InfoGraphic } from "./Informational/InfoGraphic";
 import { MobileView } from "./Mobile/MobileView";
 import { AtlaspNavbar } from "./Navbar/Navbar";
 

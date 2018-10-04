@@ -11,7 +11,7 @@ import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
 import { UpdateUser } from "../Dialogs/UpdateUser";
-import { CurrentEvents } from "../InfoGraphic/InfoGraphicHelpers/CurrentEvents";
+import { CurrentEvents } from "../Informational/CurrentEvents";
 
 import "./MobileView.css";
 
