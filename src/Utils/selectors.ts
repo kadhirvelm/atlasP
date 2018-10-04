@@ -89,14 +89,26 @@ export const selectMainPersonGraph = createSelector(
   }
 );
 
+const sortDate = (a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime();
+
 export const selectSortedEvents = createSelector(
   (state: IStoreState) => state.DatabaseReducer.eventData,
   (eventData: IEventMap | undefined) => {
     if (eventData === undefined) {
       return [];
     }
-    return Object.values(eventData).sort(
-      (a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    return Object.values(eventData).sort(sortDate);
   }
 );
+
+export const selectInfoPersonSortedEvents = createSelector(
+  (state: IStoreState) => state.DatabaseReducer.currentUser,
+  (state: IStoreState) => state.DatabaseReducer.eventData,
+  (state: IStoreState) => state.WebsiteReducer.infoPerson,
+  (mainPerson: IUser | undefined, eventData: IEventMap | undefined, infoPerson: IUser | undefined) => {
+    if (mainPerson === undefined || mainPerson.connections === undefined || eventData === undefined || infoPerson === undefined) {
+      return undefined;
+    }
+    return mainPerson.connections[infoPerson.id].map(id => eventData[id]).sort(sortDate);
+  }
+)

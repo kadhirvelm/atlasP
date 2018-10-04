@@ -6,12 +6,14 @@ import { Alignment, Button, Menu, MenuItem, Navbar, NavbarDivider, NavbarGroup, 
 
 import { EmptyDatabaseCache } from "../../State/DatabaseActions";
 import IStoreState from "../../State/IStoreState";
+import { IEvent } from "../../Types/Events";
 import { IUser } from "../../Types/Users";
+import { selectSortedEvents } from "../../Utils/selectors";
 import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
 import { UpdateUser } from "../Dialogs/UpdateUser";
-import { CurrentEvents } from "../Informational/CurrentEvents";
+import { EventList } from "../Informational/EventList";
 
 import "./MobileView.css";
 
@@ -23,7 +25,9 @@ export interface IMobileViewState {
 
 export interface IMobileViewStore {
     currentUser: IUser | undefined;
+    events: IEvent[] | undefined;
 }
+
 export interface IMobileViewDispatchProps {
     signOut(): void;
 }
@@ -59,7 +63,7 @@ export class PureMobileView extends React.PureComponent<IMobileViewStore & IMobi
                 </Navbar>
                 <DialogWrapper className="main-mobile-button" containerClassName="display" dialog={AddNewEvent} icon="add" text="New Event" />
                 <DialogWrapper className="main-mobile-button" containerClassName="display" dialog={AddNewPerson} icon="new-person" text="Add Person" />
-                <CurrentEvents className="mobile-current-events" />
+                <EventList className="mobile-current-events" events={this.props.events} />
             </div>
         )
     }
@@ -70,9 +74,10 @@ export class PureMobileView extends React.PureComponent<IMobileViewStore & IMobi
     private handleSignOut = () => this.props.signOut();
 }
 
-function mapStoreToProps(store: IStoreState): IMobileViewStore {
+function mapStoreToProps(state: IStoreState): IMobileViewStore {
     return {
-        currentUser: store.DatabaseReducer.currentUser,
+        currentUser: state.DatabaseReducer.currentUser,
+        events: selectSortedEvents(state),
     }
 }
 function mapDispatchToProps(dispatch: Dispatch): IMobileViewDispatchProps {

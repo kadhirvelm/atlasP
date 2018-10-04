@@ -1,24 +1,7 @@
-.info-person {
-    display: flex;
-    flex: 1 0;
-    background: #394b59;
-    color: white;
-    position: relative;
-    flex-direction: column;
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
 .dark-background {
     background: #394b59;
     color: white;
     position: relative;
-}
-
-.info-person-name {
-    font-size: 2vw;
 }
 
 .flexbox-column {
@@ -49,16 +32,6 @@
     justify-content: flex-end;
 }
 
-.flexbox-row {
-    display: flex;
-}
-
-.justify-end {
-    position: absolute;
-    right: 0;
-    margin-right: 10px;
-}
-
 .no-person {
     justify-content: center;
     align-items: center;
@@ -67,16 +40,6 @@
 
 .big-icon {
     size: 50px;
-}
-
-.show-change {
-    animation: flash 1s ease-in-out;
-}
-
-@keyframes flash {
-    50% {
-        background: #AED6F1;
-    }
 }
 
 .party-holder {

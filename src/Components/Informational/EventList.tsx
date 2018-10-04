@@ -1,24 +1,21 @@
 import * as classNames from "classnames";
 import * as React from "react";
-import { connect } from "react-redux";
 
 import { Icon, Text } from "@blueprintjs/core";
 
-import IStoreState from "../../State/IStoreState";
 import { IEvent } from "../../Types/Events";
-import { selectSortedEvents } from "../../Utils/selectors";
 
-import "./CurrentEvents.css";
+import "./EventList.css";
 
-export interface ICurrentEventsProps {
+export interface IEventListProps {
     className?: string;
 }
 
-export interface ICurrentEventsStoreProps {
-    events: IEvent[];
+export interface IEventListProps {
+    events: IEvent[] | undefined;
 }
 
-export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps & ICurrentEventsStoreProps> {
+export class EventList extends React.PureComponent<IEventListProps & IEventListProps> {
     public componentWillMount() {
         this.renderSingleEvent = this.renderSingleEvent.bind(this);
     }
@@ -39,7 +36,7 @@ export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps &
         }
         return (
             <div className="flexbox-events overflow-y">
-                {Object.values(this.props.events).map((event: IEvent) => this.renderSingleEvent(event))}
+                {Object.values(events).map((event: IEvent) => this.renderSingleEvent(event))}
             </div>
         )
     }
@@ -57,11 +54,3 @@ export class PureCurrentEvents extends React.PureComponent<ICurrentEventsProps &
         )
     }
 }
-
-function mapStateToProps(state: IStoreState): ICurrentEventsStoreProps {
-    return {
-        events: selectSortedEvents(state),
-    }
-}
-
-export const CurrentEvents = connect(mapStateToProps)(PureCurrentEvents);

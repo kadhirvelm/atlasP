@@ -85,6 +85,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                     transform: d3.zoomTransform(d3.select("rect").node() as any)
                 }
             } as any);
+        this.props.setInfoPerson(node);
     }
 
     private handleClick = (node: IUser) => {
