@@ -1,0 +1,33 @@
+.navbar-button-component {
+    display: flex;
+    padding: 12.5px;
+    margin: 1px 0;
+    align-items: center;
+    height: 50px;
+    transition: background-color 200ms ease-in-out;
+    cursor: pointer;
+}
+
+.navbar-button-component:hover {
+    background-color: #34495E;
+}
+
+.navbar-hovered-component {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+    animation: fade-in 400ms ease-in;
+    cursor: pointer;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}

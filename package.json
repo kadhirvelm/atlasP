@@ -1,9 +1,9 @@
 {
   "name": "atlasp",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "private": true,
   "dependencies": {
-    "@blueprintjs/core": "^2.1.1",
+    "@blueprintjs/core": "^3.6.1",
     "@blueprintjs/datetime": "^3.0.0",
     "@blueprintjs/docs-theme": "^2.1.1",
     "@blueprintjs/icons": "^3.0.0",

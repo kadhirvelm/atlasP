@@ -22,7 +22,7 @@ export class EventList extends React.PureComponent<IEventListProps & IEventListP
 
     public render() {
         return (
-            <div className={classNames("info-person", "pt-dark", this.props.className)}>
+            <div className={classNames("info-person", "bp3-dark", this.props.className)}>
                 <div className="title"> Events </div>
                 {this.maybeRenderEvents()}
             </div>
