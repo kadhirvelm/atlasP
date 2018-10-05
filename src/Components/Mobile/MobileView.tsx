@@ -45,7 +45,7 @@ export class PureMobileView extends React.PureComponent<IMobileViewStore & IMobi
         }
         return (
             <div className="main-mobile-view">
-                <Navbar className="pt-dark" style={{ zIndex: 10 }}>
+                <Navbar className="bp3-dark" style={{ zIndex: 10 }}>
                     <NavbarGroup align={Alignment.LEFT}>
                         <NavbarHeading> AtlasP </NavbarHeading>
                         <NavbarDivider />

@@ -11,12 +11,13 @@ export interface IDialogProps {
 export interface IDialogWrapperProps {
     className?: string;
     containerClassName?: string;
-    containerElement?: React.ComponentClass<any & { classNames?: string, icon: IconName, text: string, onClick(): void }>;
+    containerElement?: React.ComponentClass<any & { className?: string, icon: IconName | JSX.Element, text?: string, onClick(): void }>;
     dialog: React.ComponentClass<IDialogProps>;
     dialogProps?: any;
-    icon: IconName;
+    elementProps?: any;
+    icon: IconName | JSX.Element;
     forceOpen?: boolean;
-    text: string;
+    text?: string;
 }
 
 export interface IDialogWrapperState {
@@ -38,6 +39,7 @@ export class DialogWrapper extends React.PureComponent<IDialogWrapperProps, IDia
                     icon={this.props.icon}
                     text={this.props.text}
                     onClick={this.handleOpenDialog}
+                    {...this.props.elementProps}
                 />
                 <Dialog
                     isOpen={this.state.dialogOpen}

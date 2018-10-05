@@ -3,8 +3,10 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Button } from "@blueprintjs/core";
+import { Icon } from "@blueprintjs/core";
 
+import { NewEventIcon } from "../../icons/newEventIcon";
+import { NewPersonIcon } from "../../icons/newPersonIcon";
 import { EmptyDatabaseCache } from "../../State/DatabaseActions";
 import IStoreState from "../../State/IStoreState";
 import { IForceUpdate } from "../../Types/Other";
@@ -13,14 +15,18 @@ import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
 import { UpdateUser } from "../Dialogs/UpdateUser";
+import { NavbarRow } from "./NavbarRow";
 
 import "../Main.css";
 import "./Navbar.css";
 
 const logo = require("./white_logo.svg");
 
+const ICON_SIZE = 25;
+
 interface INavbarState {
     hovering: boolean;
+    handleHoverLeave(): void;
 }
 
 export interface INavbarStateProps {
@@ -35,12 +41,18 @@ export interface INavbarDispatchProps {
 
 class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDispatchProps, INavbarState> {
     public state = {
+        handleHoverLeave: () => this.setState({ hovering: false }),
         hovering: false,
     };
 
     public render() {
         return(
-            <div className={classNames("atlas-navbar", "pt-dark")} onMouseEnter={this.handleHoverStart} onMouseDown={this.handleHoverLeave} onMouseLeave={this.handleHoverLeave} style={{ zIndex: 10 }}>
+            <div
+                className={classNames("atlas-navbar", "bp3-dark", { hover: this.state.hovering })}
+                onMouseEnter={this.handleHoverStart}
+                onMouseLeave={this.handleHoverLeave}
+                style={{ zIndex: 10 }}
+            >
                 {this.renderLogo()}
                 <div className="navbar-separator" />
                 {this.renderAdditionItems()}
@@ -53,16 +65,31 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
     private renderLogo() {
         return (
             <>
-                {this.renderNavbarComponent(<img height={40} src={logo} width={33} />, "AtlasP")}
+                <NavbarRow className="navbar-atlas-logo" handleHoverLeave={this.handleHoverLeave} hovering={this.state.hovering} icon={<img height={40} src={logo} width={33} />} text="Learn AtlasP" />
             </>
         )
     }
 
     private renderAdditionItems() {
+        const customAttributes = { height: ICON_SIZE, width: ICON_SIZE, style: { fill: "white", minHeight: ICON_SIZE, minWidth: ICON_SIZE } };
         return (
             <>
-                {this.renderNavbarComponent(<DialogWrapper className="navbar-new-event" dialog={AddNewEvent} icon="add" text="" />, "New Event")}
-                {this.renderNavbarComponent(<DialogWrapper className="navbar-new-person" dialog={AddNewPerson} icon="new-person" text="" />, "New Person")}
+                <DialogWrapper
+                    className="navbar-new-person"
+                    containerElement={NavbarRow}
+                    dialog={AddNewPerson}
+                    elementProps={this.state}
+                    icon={<NewPersonIcon attributes={customAttributes} />}
+                    text="Add person"
+                />
+                <DialogWrapper
+                    className="navbar-new-event"
+                    containerElement={NavbarRow}
+                    dialog={AddNewEvent}
+                    elementProps={this.state}
+                    icon={<NewEventIcon attributes={customAttributes} />}
+                    text="Add event"
+                />
             </>
         )
     }
@@ -70,33 +97,19 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
     private renderUserAccountItems() {
         return (
             <>
-                {this.renderNavbarComponent(
-                    <DialogWrapper
-                        className="navbar-account"
-                        dialog={UpdateUser}
-                        dialogProps={ { forceUpdate: this.props.forceUpdate } }
-                        forceOpen={this.props.forceUpdate !== undefined}
-                        icon="user"
-                        text=""
-                    />,
-                    "Account"
-                    )
-                }
-                {this.renderNavbarComponent(<Button icon="log-out" onClick={this.props.signOut} text="" />, "Sign Out")}
+                <DialogWrapper
+                    className="navbar-account"
+                    containerElement={NavbarRow}
+                    dialog={UpdateUser}
+                    dialogProps={ { forceUpdate: this.props.forceUpdate } }
+                    elementProps={this.state}
+                    forceOpen={this.props.forceUpdate !== undefined}
+                    icon={<Icon icon="user" iconSize={ICON_SIZE} />}
+                    text="Account"
+                />
+                <div className="navbar-logout-separator" />
+                <NavbarRow handleHoverLeave={this.handleHoverLeave} hovering={this.state.hovering} icon={<Icon icon="log-out" iconSize={ICON_SIZE} />} onClick={this.props.signOut} text="Sign out" />
             </>
-        )
-    }
-
-    private renderNavbarComponent(mainElement: JSX.Element, secondaryElement: JSX.Element | string) {
-        return (
-            <div className="navbar-button-component">
-                {mainElement}
-                {this.state.hovering &&
-                    <div className="navbar-hovered-component">
-                        {secondaryElement}
-                    </div>
-                }
-            </div>
         )
     }
 

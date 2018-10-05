@@ -18,39 +18,23 @@
     transition: width 200ms ease-in-out;
 }
 
-.atlas-navbar:hover {
+.navbar-atlas-logo {
+    height: 65px;
+    padding: 8.5px;
+}
+
+.atlas-navbar.hover {
     width: 150px;
 }
 
-.navbar-button-component {
+.navbar-logout-separator {
     display: flex;
-    margin: 10px 8px;
-    align-items: center;
-}
-
-.navbar-hovered-component {
-    display: flex;
-    justify-content: flex-end;
     flex: 1;
-    animation: fade-in 400ms ease-in;
-}
-
-@keyframes fade-in {
-    0% {
-        opacity: 0;
-    }
-    50% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
 }
 
 .navbar-separator {
     display: flex;
     height: 1px;
-    width: 80%;
-    margin: 0 10%;
+    margin: 0 5px;
     background: rgba(255, 255, 255, 0.5);
 }

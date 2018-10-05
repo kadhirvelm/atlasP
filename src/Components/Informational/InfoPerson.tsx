@@ -27,7 +27,7 @@ export class PureInfoPerson extends React.Component<IPersonInformationProps & II
             return this.renderNoPerson();
         }
         return (
-            <div key={this.props.person.id} className={classNames("info-person", "pt-dark", "show-change")}>
+            <div key={this.props.person.id} className={classNames("info-person", "bp3-dark", "show-change")}>
                 <div className="name-container">
                     <div className="info-person-name">{this.props.person.name}</div>
                     <div className="more-icon">
@@ -45,7 +45,7 @@ export class PureInfoPerson extends React.Component<IPersonInformationProps & II
     private renderNoPerson() {
         return (
             <div key="No Person" className="info-person">
-                <NonIdealState visual="person" />
+                <NonIdealState icon="person" />
             </div>
         );
     }
