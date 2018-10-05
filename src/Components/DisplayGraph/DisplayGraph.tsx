@@ -38,6 +38,8 @@ const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 const DEFAULT_RADIUS = 12;
 const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
 
+const GRAPH_ID = "BOUNDING_RECTANGLE"
+
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     private hasRenderedGraph = false;
 
@@ -77,12 +79,12 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             return;
         }
         const selectedNode = d3.select(`[id="${node.id}"]`)
-        d3.select("rect")
+        d3.select(`#${GRAPH_ID}`)
             .call(d3.zoom().translateTo, parseInt(selectedNode.attr("cx"), 10), parseInt(selectedNode.attr("cy"), 10))
             .call(d3.zoom().scaleTo, 2.5)
-            .dispatch("zoomToPerson", {
+            .dispatch("executeZoomToPerson", {
                 detail: {
-                    transform: d3.zoomTransform(d3.select("rect").node() as any)
+                    transform: d3.zoomTransform(d3.select(`#${GRAPH_ID}`).node() as any)
                 }
             } as any);
         this.props.setInfoPerson(node);
@@ -118,12 +120,13 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     
     private returnBoundRectangle(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, zoomed: () => void) {
         return svg.append("rect")
+            .attr("id", GRAPH_ID)
             .attr("width", (svg.node() as any).getBoundingClientRect().width)
             .attr("height", (svg.node() as any).getBoundingClientRect().height)
             .style("fill", "none")
             .style("pointer-events", "all")
             .call(d3.zoom().scaleExtent([ 1 / 5, 1 ]).on("zoom", zoomed))
-            .on("zoomToPerson", zoomed);
+            .on("executeZoomToPerson", zoomed);
     }
 
     private returnLinkElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, links: ILink[]) {
