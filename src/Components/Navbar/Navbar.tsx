@@ -5,6 +5,7 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { Icon } from "@blueprintjs/core";
 
+import { AtlasPIcon } from "../../icons/atlaspLogoIcon";
 import { NewEventIcon } from "../../icons/newEventIcon";
 import { NewPersonIcon } from "../../icons/newPersonIcon";
 import { EmptyDatabaseCache } from "../../State/DatabaseActions";
@@ -19,8 +20,6 @@ import { NavbarRow } from "./NavbarRow";
 
 import "../Main.css";
 import "./Navbar.css";
-
-const logo = require("./white_logo.svg");
 
 const ICON_SIZE = 25;
 
@@ -41,8 +40,14 @@ export interface INavbarDispatchProps {
 
 class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDispatchProps, INavbarState> {
     public state = {
+        // HACK: remove this once the navbar rows slide open
         handleHoverLeave: () => this.setState({ hovering: false }),
         hovering: false,
+    };
+    public customAttributes = {
+        height: ICON_SIZE,
+        style: { fill: "white", minHeight: ICON_SIZE, minWidth: ICON_SIZE },
+        width: ICON_SIZE,
     };
 
     public render() {
@@ -65,13 +70,32 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
     private renderLogo() {
         return (
             <>
-                <NavbarRow className="navbar-atlas-logo" handleHoverLeave={this.handleHoverLeave} hovering={this.state.hovering} icon={<img height={40} src={logo} width={33} />} text="Learn AtlasP" />
+                <NavbarRow
+                    className="navbar-atlas-logo"
+                    handleHoverLeave={this.handleHoverLeave}
+                    hovering={this.state.hovering}
+                    icon={
+                        <AtlasPIcon
+                            attributes={
+                                {
+                                    height: 40,
+                                    style: {
+                                        fill: "white",
+                                        minHeight: 40,
+                                        minWidth: 33,
+                                    },
+                                    width: 33
+                                }
+                            }
+                        />
+                    }
+                    text="AtlasP"
+                />
             </>
         )
     }
 
     private renderAdditionItems() {
-        const customAttributes = { height: ICON_SIZE, width: ICON_SIZE, style: { fill: "white", minHeight: ICON_SIZE, minWidth: ICON_SIZE } };
         return (
             <>
                 <DialogWrapper
@@ -79,7 +103,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                     containerElement={NavbarRow}
                     dialog={AddNewPerson}
                     elementProps={this.state}
-                    icon={<NewPersonIcon attributes={customAttributes} />}
+                    icon={<NewPersonIcon attributes={this.customAttributes} />}
                     text="Add person"
                 />
                 <DialogWrapper
@@ -87,7 +111,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                     containerElement={NavbarRow}
                     dialog={AddNewEvent}
                     elementProps={this.state}
-                    icon={<NewEventIcon attributes={customAttributes} />}
+                    icon={<NewEventIcon attributes={this.customAttributes} />}
                     text="Add event"
                 />
             </>
@@ -108,7 +132,13 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                     text="Account"
                 />
                 <div className="navbar-logout-separator" />
-                <NavbarRow handleHoverLeave={this.handleHoverLeave} hovering={this.state.hovering} icon={<Icon icon="log-out" iconSize={ICON_SIZE} />} onClick={this.props.signOut} text="Sign out" />
+                <NavbarRow
+                    handleHoverLeave={this.handleHoverLeave}
+                    hovering={this.state.hovering}
+                    icon={<Icon icon="log-out" iconSize={ICON_SIZE} />}
+                    onClick={this.props.signOut}
+                    text="Sign out"
+                />
             </>
         )
     }

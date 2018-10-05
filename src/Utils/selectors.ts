@@ -105,10 +105,19 @@ export const selectInfoPersonSortedEvents = createSelector(
   (state: IStoreState) => state.DatabaseReducer.currentUser,
   (state: IStoreState) => state.DatabaseReducer.eventData,
   (state: IStoreState) => state.WebsiteReducer.infoPerson,
-  (mainPerson: IUser | undefined, eventData: IEventMap | undefined, infoPerson: IUser | undefined) => {
-    if (mainPerson === undefined || mainPerson.connections === undefined || eventData === undefined || infoPerson === undefined) {
+  (
+    mainPerson: IUser | undefined,
+    eventData: IEventMap | undefined,
+    infoPerson: IUser | undefined
+  ) => {
+    if (
+      mainPerson === undefined ||
+      mainPerson.connections === undefined ||
+      eventData === undefined ||
+      infoPerson === undefined
+    ) {
       return undefined;
     }
     return mainPerson.connections[infoPerson.id].map(id => eventData[id]).sort(sortDate);
   }
-)
+);
