@@ -1,6 +1,6 @@
 .main-info-graphic-container {
     display: flex;
-    flex: 1 0;
-    margin: 10px 10px 0 0;
     flex-direction: column;
+    flex: 1;
+    height: 50vh;
 }

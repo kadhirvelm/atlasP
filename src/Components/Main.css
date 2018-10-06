@@ -16,10 +16,15 @@
 
 .display-graph {
     display: flex;
-    flex: 17;
+    flex: 1;
 }
 
 .info-graphic {
     display: flex;
-    flex: 3;
+    align-items: flex-end;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 250px;
+    z-index: 1;
 }

@@ -2,7 +2,7 @@ import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 
-import { Icon, NonIdealState } from "@blueprintjs/core";
+import { NonIdealState, Text } from "@blueprintjs/core";
 
 import IStoreState from "../../State/IStoreState";
 import { IEvent } from "../../Types/Events";
@@ -28,14 +28,8 @@ export class PureInfoPerson extends React.Component<IPersonInformationProps & II
         }
         return (
             <div key={this.props.person.id} className={classNames("info-person", "bp3-dark", "show-change")}>
-                <div className="name-container">
-                    <div className="info-person-name">{this.props.person.name}</div>
-                    <div className="more-icon">
-                        <Icon
-                            onClick={this.props.openInformationDialog}
-                            icon="more"
-                        />
-                    </div>
+                <div className="info-person-name" onClick={this.props.openInformationDialog}>
+                    <Text ellipsize={true}>{this.props.person.name}</Text>
                 </div>
                 <EventList className="show-change" events={this.props.events} />
             </div>

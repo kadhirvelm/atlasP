@@ -51,8 +51,8 @@
 .autofill-container {
     z-index: 10;
     position: absolute;
-    width: 95%;
-    left: 10px;
+    left: 0;
+    right: 0;
 
     padding: 10px;
     justify-content: center;
@@ -62,13 +62,16 @@
 
     height: 200px;
     overflow-y: auto;
-    animation: fade-in-grow 200ms ease-in;
+    animation: fade-in 200ms ease-in;
+}
+
+.autofill-container::-webkit-scrollbar {
+    display: none;
 }
 
 .autofill-input {
     display: flex;
     flex-grow: 1;
-    margin-right: 10px;
     transition: width 200ms ease;
 }
 
@@ -90,7 +93,6 @@
 .values-container {
     display: flex;
     flex-grow: 1;
-    margin-left: 10px;
     align-items: baseline;
 }
 
@@ -100,17 +102,5 @@
     }
     100% {
         opacity: 1;
-    }
-}
-
-
-@keyframes fade-in-grow {
-    0% {
-        opacity: 0;
-        max-height: 0;
-    }
-    100% {
-        opacity: 1;
-        max-height: 200px;
     }
 }
