@@ -27,7 +27,7 @@
     cursor: pointer;
 }
 
-.event:nth-of-type(even) {
+.event:nth-of-type(odd) {
     background-color: rgba(229,232,232, 0.1);
 }
 

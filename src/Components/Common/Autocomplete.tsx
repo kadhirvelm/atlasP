@@ -16,7 +16,6 @@ export interface IAutocompleteProps {
     displayKey?: string;
     multiselection?: boolean;
     placeholderText?: string;
-    shouldDisplayId?: boolean;
     values?: IAutcompleteValuesProps;
     onSelection?(item: {}): void;
 }
@@ -117,7 +116,6 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
                             key={index}
                             onClick={this.handleSelection(key)}
                         >
-                            { this.props.shouldDisplayId && <strong className="key"> {key.slice(-6)} </strong> }
                             <div className="value"> {dataSource[key][display]} </div>
                         </div>
                     ))

@@ -65,20 +65,19 @@ export class PureAddNewEvent extends React.Component<
                         <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder="Date" />
                         <InputGroup className="input-group" onChange={this.handleChange("description")} placeholder="Description" />
                         <Autocomplete
-                            className="autocomplete-margin"
+                            className="input-group"
                             dataSource={this.props.users}
                             displayKey="name"
                             placeholderText="Search for host…"
-                            shouldDisplayId={true}
                             values={this.finalEventValue("host")}
                             onSelection={this.handleHostSelection}
                         />
                         <Autocomplete
+                            className="input-group"
                             dataSource={this.props.users}
                             displayKey="name"
                             multiselection={true}
                             placeholderText="Search for users…"
-                            shouldDisplayId={true}
                             values={this.finalEventValue("attendees")}
                             onSelection={this.handleAttendeeSelection}
                         />

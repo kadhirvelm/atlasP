@@ -8,7 +8,6 @@ import { IEvent } from "../../Types/Events";
 import { IUser, IUserMap } from "../../Types/Users";
 import { selectSortedEvents } from "../../Utils/selectors";
 import User from "../../Utils/User";
-import { EventList } from "./EventList";
 import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
 import { InfoPerson } from "./InfoPerson";
 
@@ -47,7 +46,6 @@ class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDisp
                     person={this.props.infoPerson}
                     openInformationDialog={this.openInformationDialog}
                 />
-                <EventList events={this.props.events} />
                 {this.maybeRenderSinglePersonDataDialog()}
             </div>
         );
