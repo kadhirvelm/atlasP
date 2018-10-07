@@ -38,7 +38,8 @@ const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 const DEFAULT_RADIUS = 12;
 const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
 
-const GRAPH_ID = "BOUNDING_RECTANGLE"
+const GRAPH_ID = "BOUNDING_RECTANGLE";
+const INITIAL_ZOOM_DELAY = 500;
 
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     private hasRenderedGraph = false;
@@ -74,14 +75,14 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         );
     }
 
-    private zoomToNode = (node: IUser) => {
+    private zoomToNode = (node: IUser, zoomAmount?: number) => {
         if (!this.hasRenderedGraph) {
             return;
         }
         const selectedNode = d3.select(`[id="${node.id}"]`)
         d3.select(`#${GRAPH_ID}`)
             .call(d3.zoom().translateTo, parseInt(selectedNode.attr("cx"), 10), parseInt(selectedNode.attr("cy"), 10))
-            .call(d3.zoom().scaleTo, 2.5)
+            .call(d3.zoom().scaleTo, zoomAmount || 2.5)
             .dispatch("executeZoomToPerson", {
                 detail: {
                     transform: d3.zoomTransform(d3.select(`#${GRAPH_ID}`).node() as any)
@@ -131,8 +132,6 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             /* For zooming and panning */
             .style("pointer-events", "all")
             .call(handleZoom)
-            /* Sets the initial zoom and translation */
-            .call(handleZoom.transform, d3.zoomIdentity.scale(0.5).translate(width * 0.4, height * 0.5))
             .on("executeZoomToPerson", zoomed);
     }
 
@@ -195,8 +194,6 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 
     private runSimulation(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, peopleGraph: IPeopleGraph, simulation: d3.Simulation<{}, undefined>) {
         const linkElements = this.returnLinkElements(svg, peopleGraph.links);
-        const nodeElements = this.returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents);
-        const names = this.returnNames(svg, peopleGraph.nodes);
         this.returnBoundRectangle(svg, () => {
             const zoomToPersonTransform = d3.event.detail && d3.event.detail.transform
             if (zoomToPersonTransform === undefined) {
@@ -209,6 +206,8 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             nodeElements.transition().duration(500).attr("transform", zoomToPersonTransform);
             names.transition().duration(500).attr("transform", zoomToPersonTransform);
         });
+        const nodeElements = this.returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents);
+        const names = this.returnNames(svg, peopleGraph.nodes);
         
         simulation.nodes(peopleGraph.nodes).on("tick", () => {
             nodeElements
@@ -230,6 +229,16 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         this.maybeApplyLinkForce(simulation, peopleGraph.links);
     }
 
+    private zoomToCurrentUser() {
+        const { currentUser } = this.props;
+        if (currentUser === undefined) {
+            return;
+        }
+        setTimeout(() => {
+            this.zoomToNode(currentUser, 0.2);
+        }, INITIAL_ZOOM_DELAY);
+    }
+
     private renderD3Graph(width: number, height: number, peopleGraph: IPeopleGraph | undefined ) {
         if (peopleGraph === undefined || this.hasRenderedGraph) {
             return;
@@ -240,6 +249,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         const simulation = this.returnSimulation(width, height);
 
         this.runSimulation(svg, peopleGraph, simulation);
+        this.zoomToCurrentUser();
     }
 }
 
