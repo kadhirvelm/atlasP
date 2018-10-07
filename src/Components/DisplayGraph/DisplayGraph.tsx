@@ -119,13 +119,20 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     }
     
     private returnBoundRectangle(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, zoomed: () => void) {
+        const handleZoom = d3.zoom().scaleExtent([ 1 / 5, 1 ]).on("zoom", zoomed);
+        const width = (svg.node() as any).getBoundingClientRect().width;
+        const height = (svg.node() as any).getBoundingClientRect().height;
+
         return svg.append("rect")
             .attr("id", GRAPH_ID)
-            .attr("width", (svg.node() as any).getBoundingClientRect().width)
-            .attr("height", (svg.node() as any).getBoundingClientRect().height)
+            .attr("width", width)
+            .attr("height", height)
             .style("fill", "none")
+            /* For zooming and panning */
             .style("pointer-events", "all")
-            .call(d3.zoom().scaleExtent([ 1 / 5, 1 ]).on("zoom", zoomed))
+            .call(handleZoom)
+            /* Sets the initial zoom and translation */
+            .call(handleZoom.transform, d3.zoomIdentity.scale(0.5).translate(width * 0.4, height * 0.5))
             .on("executeZoomToPerson", zoomed);
     }
 
@@ -188,6 +195,8 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
 
     private runSimulation(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, peopleGraph: IPeopleGraph, simulation: d3.Simulation<{}, undefined>) {
         const linkElements = this.returnLinkElements(svg, peopleGraph.links);
+        const nodeElements = this.returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents);
+        const names = this.returnNames(svg, peopleGraph.nodes);
         this.returnBoundRectangle(svg, () => {
             const zoomToPersonTransform = d3.event.detail && d3.event.detail.transform
             if (zoomToPersonTransform === undefined) {
@@ -200,8 +209,6 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             nodeElements.transition().duration(500).attr("transform", zoomToPersonTransform);
             names.transition().duration(500).attr("transform", zoomToPersonTransform);
         });
-        const nodeElements = this.returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents);
-        const names = this.returnNames(svg, peopleGraph.nodes);
         
         simulation.nodes(peopleGraph.nodes).on("tick", () => {
             nodeElements
