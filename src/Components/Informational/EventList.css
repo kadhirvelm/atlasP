@@ -58,3 +58,8 @@
 .event:hover {
     background-color: #7D6608;
 }
+
+.event-list-attendees {
+    display: flex;
+    flex-direction: column;
+}
