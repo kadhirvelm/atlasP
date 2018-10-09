@@ -19,11 +19,7 @@ export class DatabaseDispatcher {
 
     public login = async (phoneNumber: string, password: string | undefined, temporaryPassword?: string) => {
         try {
-            const finalPhoneNumber = phoneNumber.match(/\d+/g);
-            if (finalPhoneNumber === null) {
-                throw new Error("Invalid phone number");
-            }
-            const loginResponse = await axios.post(this.retrieveURL("users/login"), { phoneNumber: finalPhoneNumber.join(""), password: securePassword(password), temporaryPassword });
+            const loginResponse = await axios.post(this.retrieveURL("users/login"), { phoneNumber, password: securePassword(password), temporaryPassword });
             saveAuthenticationToken(loginResponse.data.payload.token);
             this.dispatch(Login.create(loginResponse.data.payload.userDetails as IRawUser));
         } catch (error) {
