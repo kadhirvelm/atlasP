@@ -119,9 +119,8 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
             try {
                 await this.props.updateUser(currentUser);
                 showToast(Intent.SUCCESS, "Successfully updated account details.");
-                this.setState({ isLoading: false });
                 this.props.onClose();
-            } catch (error) {
+            } finally {
                 this.setState({ isLoading: false });
             }
         });
