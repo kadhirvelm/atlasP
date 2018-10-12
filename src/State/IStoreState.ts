@@ -1,4 +1,4 @@
-import { IEventMap } from "../Types/Events";
+import { IEvent, IEventMap } from "../Types/Events";
 import { IForceUpdate } from "../Types/Other";
 import { IUser, IUserMap } from "../Types/Users";
 
@@ -14,6 +14,6 @@ export default interface IStoreState {
     WebsiteReducer: {
         infoPerson?: IUser;
         graphRef: HTMLElement | null;
-        party?: string[];
+        selectedEvent: IEvent | undefined;
     };
 }

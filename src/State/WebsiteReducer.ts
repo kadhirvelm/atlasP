@@ -1,7 +1,7 @@
 import { setWith, TypedReducer } from "redoodle";
 
 import IStoreState from "./IStoreState";
-import { SetGraphRef, SetInfoPerson } from "./WebsiteActions";
+import { SelectEvent, SetGraphRef, SetInfoPerson } from "./WebsiteActions";
 
 export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]>()
   .withHandler(SetInfoPerson.TYPE, (state, payload) => {
@@ -13,5 +13,10 @@ export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]
     return setWith(state, {
       graphRef: payload,
     });
+  })
+  .withHandler(SelectEvent.TYPE, (state, payload) => {
+    return setWith(state, {
+      selectedEvent: payload,
+    })
   })
   .build();

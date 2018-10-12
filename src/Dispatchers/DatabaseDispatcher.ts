@@ -7,6 +7,8 @@ import { Intent } from "@blueprintjs/core";
 import { IFinalEventChecked } from "../Components/Dialogs/AddNewEvent";
 import { IFinalPerson } from "../Components/Dialogs/AddNewUser";
 import { ClearForceUpdate, ForceUpdate, Login, UpdateEventData, UpdateGraph, UpdateUser, UpdateUserData } from "../State/DatabaseActions";
+import { SelectEvent } from "../State/WebsiteActions";
+import { IEvent } from "../Types/Events";
 import { IRawUser, IUser } from "../Types/Users";
 import Event from "../Utils/Event";
 import { saveAuthenticationToken, securePassword } from "../Utils/Security";
@@ -74,7 +76,7 @@ export class DatabaseDispatcher {
             if (user === undefined || user.connections === undefined || Object.values(user.connections).length === 0) {
                 throw new Error(`Cannot fetch for user: ${user}`);
             }
-            const [ rawUsers, rawEvents ] = await Promise.all([ axios.post(this.retrieveURL("users/getMany"), { ids: Object.keys(user.connections) }), axios.post(this.retrieveURL("events/getMany"), { eventIds: Object.values(user.connections).reduce((previous, next) => previous.concat(next)) }) ]);
+            const [ rawUsers, rawEvents ] = await Promise.all([ axios.post(this.retrieveURL("users/getMany"), { ids: Object.keys(user.connections) }), axios.post(this.retrieveURL("events/getMany"), { eventIds: Object.values(user.connections).reduce((previous, next) => previous.concat(next), []) }) ]);
             const users = rawUsers.data.payload.map((rawUser: any) => new User(rawUser._id, rawUser.name, rawUser.gender, rawUser.age, rawUser.location, rawUser.phoneNumber))
             const events = rawEvents.data.payload.map((rawEvent: any) => new Event(rawEvent._id, this.mapToUsers([ rawEvent.host ], users)[0], new Date(rawEvent.date), rawEvent.description, this.mapToUsers(rawEvent.attendees, users)));
             this.dispatch(UpdateGraph.create({ users, events }))
@@ -103,12 +105,30 @@ export class DatabaseDispatcher {
 
     public createNewEvent = async (event: IFinalEventChecked) => {
         try {
-            const response = await axios.post(this.retrieveURL("events/new"), { ...event, attendees: event.attendees.map(user => user.id), host: event.host.id });
+            const response = await axios.post(this.retrieveURL("events/new"), this.formatEvent(event));
             this.dispatch(UpdateEventData.create(new Event(response.data.payload.id, event.host, new Date(event.date), event.description, event.attendees)));
         } catch (error) {
             showToast(Intent.DANGER, `Looks like there's something missing from the event: ${error.response.data.message.join(", ")}`);
             throw error;
         }
+    }
+
+    public updateEvent = async (event: IEvent) => {
+        try {
+            const formattedEvent = this.formatEvent(event) as any;
+            formattedEvent["eventId"] = event.id;
+            delete formattedEvent.id;
+            await axios.put(this.retrieveURL("events/update"), formattedEvent);
+            this.dispatch(CompoundAction.create([ SelectEvent.create(undefined), UpdateEventData.create(event) ]));
+            showToast(Intent.SUCCESS, "Event updated successfully. Please refresh the page to update the graph.");
+        } catch (error) {
+            showToast(Intent.DANGER, `Hum, something went wrong when updating the event: ${error.response.data.message.join(", ")}`);
+            throw error;
+        }
+    }
+
+    private formatEvent(event: IFinalEventChecked | IEvent) {
+        return { ...event, attendees: event.attendees.map(user => user.id), host: event.host.id };
     }
 
     private mapToUsers(ids: string[], users: IUser[]) {
