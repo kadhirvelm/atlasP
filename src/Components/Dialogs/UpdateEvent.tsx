@@ -27,22 +27,28 @@ export interface IUpdateEventDispatchProps {
 
 export interface IUpdateEventState {
     isLoading: boolean;
+    newDate: string;
     selectedEvent?: IEvent;
 }
 
 class PureUpdateEvent extends React.Component<IDialogProps & IUpdateEventStoreProps & IUpdateEventDispatchProps, IUpdateEventState> {
     public state = {
         isLoading: false,
+        newDate: "",
         selectedEvent: this.props.selectedEvent,
     };
 
     public componentWillReceiveProps(nextProps: IUpdateEventStoreProps) {
-        if (nextProps.selectedEvent !== this.state.selectedEvent) {
-            this.setState({ selectedEvent: nextProps.selectedEvent });
+        if (nextProps.selectedEvent !== this.state.selectedEvent && nextProps.selectedEvent !== undefined) {
+            this.setState({ newDate: this.formatDate(nextProps.selectedEvent.date), selectedEvent: nextProps.selectedEvent });
         }
     }
 
     public render() {
+        const { selectedEvent } = this.state;
+        if (selectedEvent === undefined) {
+            return null;
+        }
         return (
             <Dialog
                 icon="edit"
@@ -51,32 +57,28 @@ class PureUpdateEvent extends React.Component<IDialogProps & IUpdateEventStorePr
                 title="Update Event"
             >
                 <div className={Classes.DIALOG_BODY}>
-                    {this.maybeRenderEventDetails()}
+                    {this.maybeRenderEventDetails(selectedEvent)}
                 </div>
                 <div className={classNames(Classes.DIALOG_FOOTER, Classes.DIALOG_FOOTER_ACTIONS)}>
                     <Button onClick={this.props.onClose} text="Cancel" />
-                    <Button intent="primary" loading={this.state.isLoading} onClick={this.handleUpdate} text="Save" />
+                    <Button intent="primary" loading={this.state.isLoading} onClick={this.handleUpdate(selectedEvent)} text="Save" />
                 </div>
             </Dialog>
         )
     }
 
-    private maybeRenderEventDetails() {
-        const { selectedEvent } = this.state;
-        if (selectedEvent === undefined) {
-            return null;
-        }
+    private maybeRenderEventDetails(selectedEvent: IEvent) {
         return (
             <div className="edit-event-fields">
-                <EditableText className={classNames("render-field-text", "edit-event-text")} onChange={this.editEvent("description")} value={selectedEvent.description} />
-                <EditableText className={classNames("render-field-text", "edit-event-text")} onChange={this.editEvent("date")} value={selectedEvent.date.toLocaleString()} />
+                <EditableText className={classNames("render-field-text", "edit-event-text")} onChange={this.editEvent(selectedEvent, "description")} value={selectedEvent.description} />
+                <EditableText className={classNames("render-field-text", "edit-event-text")} placeholder={`Eg. ${new Date().toLocaleDateString()}…`} onChange={this.editDate} onConfirm={this.editEventDate(selectedEvent)} value={this.state.newDate} />
                 <Autocomplete
                     className="input-group"
                     dataSource={this.props.users}
                     displayKey="name"
                     placeholderText="Search for host…"
                     values={{[selectedEvent.host.id]: selectedEvent.host.name}}
-                    onSelection={this.editEvent("host")}
+                    onSelection={this.editEvent(selectedEvent, "host")}
                 />
                 <Autocomplete
                     className="input-group"
@@ -85,7 +87,7 @@ class PureUpdateEvent extends React.Component<IDialogProps & IUpdateEventStorePr
                     multiselection={true}
                     placeholderText="Search for users…"
                     values={this.getAttendees(selectedEvent)}
-                    onSelection={this.props.dialogUtils.handleAttendeeSelection(selectedEvent, this.updateAttendees)}
+                    onSelection={this.props.dialogUtils.handleAttendeeSelection(selectedEvent, this.updateAttendees(selectedEvent))}
                 />
             </div>
         )
@@ -95,33 +97,38 @@ class PureUpdateEvent extends React.Component<IDialogProps & IUpdateEventStorePr
         return selectedEvent.attendees.map(user => ({ [user.id]: user.name })).reduce((previous, next) => ({ ...previous, ...next}), {});
     }
 
-    private updateAttendees = (key: "attendees", value: any) => {
-        this.editEvent(key)(value);
+    private updateAttendees(selectedEvent: IEvent) {
+        return (key: "attendees", value: any) => this.editEvent(selectedEvent, key)(value);
     }
 
-    private editEvent(key: "date" | "description" | "host" | "attendees") {
-        return (newValue: any) => {
-            if (this.state.selectedEvent === undefined) {
-                return;
-            }
-            this.setState({ selectedEvent: { ...this.state.selectedEvent, [key]: newValue } });
+    private editDate = (newDate: string) => this.setState({ newDate })
+
+    private editEventDate(selectedEvent: IEvent) {
+        return (newDate: string) => {
+            const date = new Date(newDate);
+            this.setState({ selectedEvent: { ...selectedEvent, date, newDate: this.formatDate(date) } })
         };
     }
 
-    private handleUpdate = () => {
-        const { selectedEvent } = this.state;
-        if (selectedEvent === undefined) {
-            return;
-        }
+    private editEvent(selectedEvent: IEvent, key: "description" | "host" | "attendees") {
+        return (newValue: any) => this.setState({ selectedEvent: { ...selectedEvent, [key]: newValue } });
+    }
 
-        this.setState({ isLoading: true }, async () => {
-            try {
-                await this.props.dialogUtils.updateFinalEvent(selectedEvent);
-            } finally {
-                this.setState({ isLoading: false });
-            }
-        });
+    private handleUpdate(selectedEvent: IEvent) {
+        return () => {
+            this.setState({ isLoading: true }, async () => {
+                try {
+                    await this.props.dialogUtils.updateFinalEvent(selectedEvent);
+                } catch(e) {
+                    console.error(e);
+                } finally {
+                    this.setState({ isLoading: false });
+                }
+            });
+        }
     };
+
+    private formatDate = (date: Date) => date.toLocaleString("en-US", { month: "2-digit", day: "2-digit", year: "2-digit", hour: "numeric", minute: "numeric", hour12: true });
 }
 
 function mapStateToProps(state: IStoreState): IUpdateEventStoreProps {

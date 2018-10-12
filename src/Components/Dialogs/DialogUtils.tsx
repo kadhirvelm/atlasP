@@ -25,11 +25,11 @@ export class DialogUtils {
     }
 
     public async submitFinalEvent(finalEvent: IFinalEventEmpty) {
-        this.checkAndSubmitEvent(finalEvent, this.databaseDispatcher.createNewEvent);
+        return this.checkAndSubmitEvent(finalEvent, this.databaseDispatcher.createNewEvent);
     }
 
     public async updateFinalEvent(finalEvent: IEvent) {
-        this.checkAndSubmitEvent(finalEvent, this.databaseDispatcher.updateEvent);
+        return this.checkAndSubmitEvent(finalEvent, this.databaseDispatcher.updateEvent);
     }
 
     public returnFooterActions(onClose: () => void, handleSubmit: () => void, isActive?: boolean) {
