@@ -40,7 +40,7 @@ export interface IAddNewEventState {
 const EMPTY_STATE: IAddNewEventState = {
     finalEvent: {
         attendees: [],
-        date: "",
+        date: new Date().toLocaleDateString(),
         description: "",
         host: undefined,
     },
@@ -62,8 +62,8 @@ export class PureAddNewEvent extends React.Component<
             >
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup>
-                        <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder="Date" />
-                        <InputGroup className="input-group" onChange={this.handleChange("description")} placeholder="Description" />
+                        <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder={`Date, eg. ${new Date().toLocaleDateString()}`} value={this.state.finalEvent.date} />
+                        <InputGroup className="input-group" onChange={this.handleChange("description")} placeholder="Description" value={this.state.finalEvent.description} />
                         <Autocomplete
                             className="input-group"
                             dataSource={this.props.users}
