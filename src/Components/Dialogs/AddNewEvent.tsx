@@ -79,7 +79,7 @@ export class PureAddNewEvent extends React.Component<
                             multiselection={true}
                             placeholderText="Search for users…"
                             values={this.finalEventValue("attendees")}
-                            onSelection={this.handleAttendeeSelection}
+                            onSelection={this.props.dialogUtils.handleAttendeeSelection(this.state.finalEvent, this.adjustFinalEvent)}
                         />
                     </FormGroup>
                 </div>
@@ -122,19 +122,9 @@ export class PureAddNewEvent extends React.Component<
                 return {[user.id]: user.name}
             }).reduce((a: IAutcompleteValuesProps, b: IAutcompleteValuesProps) => {
                 return {...b, ...a}
-            });
+            }, {});
         }
         return finalValue
-    }
-
-    private handleAttendeeSelection = (item: IUser) => {
-        if (!this.state.finalEvent.attendees.includes(item)) {
-            this.adjustFinalEvent("attendees", [item, ...this.state.finalEvent.attendees]);
-        } else {
-            const finalAttendees = this.state.finalEvent.attendees.slice();
-            finalAttendees.splice(finalAttendees.map(a => a.id).indexOf(item.id), 1);
-            this.adjustFinalEvent("attendees", finalAttendees);
-        }
     }
 
     private handleHostSelection = (item: IUser) => {

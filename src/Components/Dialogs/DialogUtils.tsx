@@ -3,6 +3,8 @@ import * as React from "react";
 import { Dispatch } from "react-redux";
 
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
+import { IEvent } from "../../Types/Events";
+import { IUser } from "../../Types/Users";
 import { showToast } from "../../Utils/Toaster";
 import { IFinalEventChecked, IFinalEventEmpty } from "./AddNewEvent";
 import { IFinalPerson } from "./AddNewUser";
@@ -23,12 +25,11 @@ export class DialogUtils {
     }
 
     public async submitFinalEvent(finalEvent: IFinalEventEmpty) {
-        if (this.isCompleteEvent(finalEvent)) {
-            finalEvent.attendees.push(finalEvent.host);
-            await this.databaseDispatcher.createNewEvent(finalEvent);
-        } else {
-            this.errorToast();
-        }
+        this.checkAndSubmitEvent(finalEvent, this.databaseDispatcher.createNewEvent);
+    }
+
+    public async updateFinalEvent(finalEvent: IEvent) {
+        this.checkAndSubmitEvent(finalEvent, this.databaseDispatcher.updateEvent);
     }
 
     public returnFooterActions(onClose: () => void, handleSubmit: () => void, isActive?: boolean) {
@@ -40,6 +41,27 @@ export class DialogUtils {
                 </div>
             </div>
         )
+    }
+
+    public handleAttendeeSelection(selectedEvent: IEvent | IFinalEventEmpty, callback: (key: string, value: any) => void) {
+        return (item: IUser) => {
+            if (!selectedEvent.attendees.includes(item)) {
+                callback("attendees", [item, ...selectedEvent.attendees]);
+            } else {
+                const finalAttendees = selectedEvent.attendees.slice();
+                finalAttendees.splice(finalAttendees.map(a => a.id).indexOf(item.id), 1);
+                callback("attendees", finalAttendees);
+            }
+        }
+    }
+
+    private async checkAndSubmitEvent(finalEvent: IFinalEventEmpty | IEvent, callback: (event: IFinalEventChecked | IEvent) => void) {
+        if (this.isCompleteEvent(finalEvent)) {
+            finalEvent.attendees.push(finalEvent.host);
+            await callback(finalEvent);
+        } else {
+            this.errorToast();
+        }
     }
 
     private errorToast() {
@@ -57,7 +79,7 @@ export class DialogUtils {
         return false;
     }
     
-    private isCompleteEvent(finalEvent: IFinalEventEmpty): finalEvent is IFinalEventChecked {
+    private isCompleteEvent(finalEvent: IEvent | IFinalEventEmpty): finalEvent is IFinalEventChecked {
         return (
             finalEvent.host !== undefined &&
             finalEvent.attendees.length > 0 &&

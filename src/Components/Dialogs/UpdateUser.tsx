@@ -12,6 +12,7 @@ import { showToast } from "../../Utils/Toaster";
 import { PasswordField } from "../Common/PasswordField";
 import { IDialogProps } from "./DialogWrapper";
 
+import "./Update.css";
 import "./UpdateUser.css";
 
 export interface IUpdateUserStoreProps {

@@ -19,7 +19,7 @@ export function convertObjectToMap(object: {} | undefined): Map<string, {}> {
 }
 
 export function convertArrayToObject<T extends IUser | IEvent>(itemArray: T[]) {
-  return itemArray.map(item => ({ [item.id]: item })).reduce((previous, next) => ({ ...previous, ...next }))
+  return itemArray.map(item => ({ [item.id]: item })).reduce((previous, next) => ({ ...previous, ...next }), {})
 }
 
 export function convertPayloadToUser(rawUser: any) {

@@ -9,12 +9,12 @@
 }
 
 .show-change {
-    animation: flash 1s ease-in-out;
+    animation: flash 0.65s ease-in-out;
 }
 
 @keyframes flash {
     50% {
-        background: #AED6F1;
+        background: #B7950B;
     }
 }
 

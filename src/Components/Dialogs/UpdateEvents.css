@@ -1,0 +1,10 @@
+.edit-event-fields {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.edit-event-text {
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
+    margin: 5px 0;
+}
