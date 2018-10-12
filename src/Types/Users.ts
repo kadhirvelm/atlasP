@@ -1,6 +1,5 @@
 export interface IRawUser {
   _id: string;
-  age: number;
   connections: IConnections;
   claimed: boolean;
   gender: string;
@@ -10,7 +9,6 @@ export interface IRawUser {
 }
 
 export interface IUser {
-  age: number;
   connections?: IConnections;
   contact: string;
   gender: string;

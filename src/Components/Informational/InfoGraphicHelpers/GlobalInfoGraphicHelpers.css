@@ -85,16 +85,16 @@
     flex: 1;
 }
 
-.flex-10 {
+.flex-15 {
     display: flex;
-    flex: 2 0;
+    flex: 3 0;
     flex-wrap: wrap;
     word-break: break-word;
 }
 
 .flex-25 {
     display: flex;
-    flex: 6 0;
+    flex: 5 0;
     flex-wrap: wrap;
     word-break: break-word;
 }
