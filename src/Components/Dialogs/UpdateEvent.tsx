@@ -8,6 +8,7 @@ import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import IStoreState from "../../State/IStoreState";
 import { IEvent } from "../../Types/Events";
 import { IUserMap } from "../../Types/Users";
+import Event from "../../Utils/Event";
 import { Autocomplete } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
 import { IDialogProps } from "./DialogWrapper";
@@ -54,8 +55,8 @@ class PureUpdateEvent extends React.Component<IDialogProps & IUpdateEventStorePr
                     {this.maybeRenderEventDetails()}
                 </div>
                 <div className={classNames(Classes.DIALOG_FOOTER, Classes.DIALOG_FOOTER_ACTIONS)}>
-                    <Button text="Cancel" onClick={this.props.onClose} />
-                    <Button intent="primary" loading={this.state.isLoading} text="Save" onClick={this.handleUpdate}/>
+                    <Button onClick={this.props.onClose} text="Cancel" />
+                    <Button intent="primary" loading={this.state.isLoading} onClick={this.handleUpdate} text="Save" />
                 </div>
             </Dialog>
         )
