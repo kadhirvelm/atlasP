@@ -27,7 +27,6 @@ interface IAddNewPersonProps {
 export interface IFinalPerson {
     name: string,
     gender: string,
-    age: string,
     location: string,
 }
 
@@ -38,7 +37,6 @@ export interface IAddNewPersonState {
 
 const EMPTY_STATE: IAddNewPersonState = {
     finalPerson: {
-        age: "",
         gender: "X",
         location: "",
         name: "",
@@ -62,7 +60,6 @@ export class PureAddNewPerson extends React.Component<
                     <FormGroup>
                         <InputGroup className="input-group" onChange={this.handleChange("name")} placeholder="Full name" />
                         <InputGroup className="input-group" onChange={this.handleChange("gender")} placeholder="Gender (M, F or X)" />
-                        <InputGroup className="input-group" onChange={this.handleChange("age")} placeholder="Age" />
                         <InputGroup className="input-group" onChange={this.handleChange("location")} placeholder="Location" />
                     </FormGroup>
                 </div>

@@ -38,8 +38,7 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
         1: ["person", "name"],
         2: ["phone", "contact"],
         3: ["key-escape", "gender"],
-        4: ["map-marker", "location"],
-        5: ["history", "age"],
+        4: ["map-marker", "location"]
     }
 
     public componentDidMount() {
@@ -121,7 +120,7 @@ class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProp
                 await this.props.updateUser(currentUser);
                 showToast(Intent.SUCCESS, "Successfully updated account details.");
                 this.props.onClose();
-            } catch (error) {
+            } finally {
                 this.setState({ isLoading: false });
             }
         });

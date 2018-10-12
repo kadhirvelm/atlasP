@@ -45,7 +45,7 @@ export class PureSinglePersonDataDialog extends React.Component<
                         <u className="flex-25">Date</u>
                         <u className="flex-25">Host</u>
                         <u className="flex-35">Description</u>
-                        <u className="flex-10">People</u>
+                        <u className="flex-15">People</u>
                     </div>
                     {this.renderInfoPersonContent()}
                 </div>
@@ -72,7 +72,7 @@ export class PureSinglePersonDataDialog extends React.Component<
         return (
             <div key={event.id} className="single-event-row">
                 <div className="flex-25">
-                    {event.date.toDateString()}
+                    {event.date.toLocaleDateString()}
                 </div>
                 <div className="flex-25">
                     {userData[event.host.id].name}
@@ -87,7 +87,7 @@ export class PureSinglePersonDataDialog extends React.Component<
 
     private renderPeoplePopover(event: IEvent) {
         return (
-            <div className="flex-10 flexbox-centered">
+            <div className="flex-15 flexbox-centered">
                     <Popover isOpen={this.state.openInformationPopover === event.id} position={Position.RIGHT}>
                         <Icon
                             onMouseEnter={this.openInformationHover(event.id)}

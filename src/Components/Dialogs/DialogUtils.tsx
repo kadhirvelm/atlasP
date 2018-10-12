@@ -49,7 +49,6 @@ export class DialogUtils {
 
     private isCompletePerson(finalPerson: IFinalPerson) {
         if (
-            parseInt(finalPerson.age, 10) !== undefined &&
             finalPerson.name.length > 0 &&
             finalPerson.location.length > 0 &&
             (finalPerson.gender === "F" || finalPerson.gender === "M" || finalPerson.gender === "X")) {

@@ -40,7 +40,6 @@ export class DatabaseDispatcher {
     public updateUser = async (newUserDetails: IUser) => {
         try {
             const finalUser = {
-                age: newUserDetails.age,
                 gender: newUserDetails.gender,
                 location: newUserDetails.location,
                 name: newUserDetails.name,
@@ -95,7 +94,7 @@ export class DatabaseDispatcher {
     public createNewUser = async (user: IFinalPerson) => {
         try {
             const response = await axios.post(this.retrieveURL("users/new-user"), { phoneNumber: "", ...user });
-            this.dispatch(UpdateUserData.create(new User(response.data.payload.newUserId, user.name, user.gender, parseInt(user.age, 10), user.location, "")))
+            this.dispatch(UpdateUserData.create(new User(response.data.payload.newUserId, user.name, user.gender, user.location, "")))
         } catch (error) {
             showToast(Intent.DANGER, `There was a problem creating this user. ${error.response.data.message.join(", ")}`);
             throw error;

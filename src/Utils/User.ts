@@ -5,7 +5,6 @@ export default class User implements IUser {
         public id: string,
         public name: string,
         public gender: string,
-        public age: number,
         public location: string,
         public contact: string,
         public redList?: string[],
