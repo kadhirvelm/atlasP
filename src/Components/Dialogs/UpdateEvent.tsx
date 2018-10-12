@@ -8,7 +8,6 @@ import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import IStoreState from "../../State/IStoreState";
 import { IEvent } from "../../Types/Events";
 import { IUserMap } from "../../Types/Users";
-import Event from "../../Utils/Event";
 import { Autocomplete } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
 import { IDialogProps } from "./DialogWrapper";
