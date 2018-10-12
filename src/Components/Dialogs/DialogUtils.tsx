@@ -49,7 +49,7 @@ export class DialogUtils {
                 callback("attendees", [item, ...selectedEvent.attendees]);
             } else {
                 const finalAttendees = selectedEvent.attendees.slice();
-                finalAttendees.splice(finalAttendees.map(a => a.id).indexOf(item.id), 1);
+                finalAttendees.splice(finalAttendees.findIndex(user => user.id === item.id), 1);
                 callback("attendees", finalAttendees);
             }
         }
