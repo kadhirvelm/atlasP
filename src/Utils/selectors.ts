@@ -114,7 +114,8 @@ export const selectInfoPersonSortedEvents = createSelector(
       mainPerson === undefined ||
       mainPerson.connections === undefined ||
       eventData === undefined ||
-      infoPerson === undefined
+      infoPerson === undefined ||
+      mainPerson.connections[infoPerson.id]
     ) {
       return undefined;
     }
