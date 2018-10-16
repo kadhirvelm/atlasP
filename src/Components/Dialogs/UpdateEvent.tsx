@@ -76,14 +76,6 @@ class PureUpdateEvent extends React.Component<IDialogProps & IUpdateEventStorePr
                     className="input-group"
                     dataSource={this.props.users}
                     displayKey="name"
-                    placeholderText="Search for host…"
-                    values={{[selectedEvent.host.id]: selectedEvent.host.name}}
-                    onSelection={this.editEvent(selectedEvent, "host")}
-                />
-                <Autocomplete
-                    className="input-group"
-                    dataSource={this.props.users}
-                    displayKey="name"
                     multiselection={true}
                     placeholderText="Search for users…"
                     values={this.getAttendees(selectedEvent)}
@@ -110,7 +102,7 @@ class PureUpdateEvent extends React.Component<IDialogProps & IUpdateEventStorePr
         };
     }
 
-    private editEvent(selectedEvent: IEvent, key: "description" | "host" | "attendees") {
+    private editEvent(selectedEvent: IEvent, key: "description" | "attendees") {
         return (newValue: any) => this.setState({ selectedEvent: { ...selectedEvent, [key]: newValue } });
     }
 

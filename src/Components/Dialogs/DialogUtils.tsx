@@ -6,7 +6,7 @@ import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import { IEvent } from "../../Types/Events";
 import { IUser } from "../../Types/Users";
 import { showToast } from "../../Utils/Toaster";
-import { IFinalEventChecked, IFinalEventEmpty } from "./AddNewEvent";
+import { ITemporaryEvent } from "./AddNewEvent";
 import { IFinalPerson } from "./AddNewUser";
 
 export class DialogUtils {
@@ -24,7 +24,8 @@ export class DialogUtils {
         }
     }
 
-    public async submitFinalEvent(finalEvent: IFinalEventEmpty) {
+    public async submitFinalEvent(temporaryEvent: ITemporaryEvent) {
+        const finalEvent: IEvent = { ...temporaryEvent, id: "", date: new Date(temporaryEvent.date) };
         return this.checkAndSubmitEvent(finalEvent, this.databaseDispatcher.createNewEvent);
     }
 
@@ -43,7 +44,7 @@ export class DialogUtils {
         )
     }
 
-    public handleAttendeeSelection(selectedEvent: IEvent | IFinalEventEmpty, callback: (key: string, value: any) => void) {
+    public handleAttendeeSelection(selectedEvent: ITemporaryEvent | IEvent, callback: (key: string, value: any) => void) {
         return (item: IUser) => {
             if (!selectedEvent.attendees.includes(item)) {
                 callback("attendees", [item, ...selectedEvent.attendees]);
@@ -55,9 +56,8 @@ export class DialogUtils {
         }
     }
 
-    private async checkAndSubmitEvent(finalEvent: IFinalEventEmpty | IEvent, callback: (event: IFinalEventChecked | IEvent) => void) {
+    private async checkAndSubmitEvent(finalEvent: IEvent, callback: (event: IEvent) => void) {
         if (this.isCompleteEvent(finalEvent)) {
-            finalEvent.attendees.push(finalEvent.host);
             await callback(finalEvent);
         } else {
             this.errorToast();
@@ -79,11 +79,10 @@ export class DialogUtils {
         return false;
     }
     
-    private isCompleteEvent(finalEvent: IEvent | IFinalEventEmpty): finalEvent is IFinalEventChecked {
+    private isCompleteEvent(finalEvent: IEvent) {
         return (
-            finalEvent.host !== undefined &&
             finalEvent.attendees.length > 0 &&
-            finalEvent.date !== "" &&
+            finalEvent.date !== undefined &&
             finalEvent.description !== ""
         );
     }
