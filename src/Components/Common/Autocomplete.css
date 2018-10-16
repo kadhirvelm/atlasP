@@ -5,11 +5,19 @@
     flex: 0 0 auto;
     color: white;
     background: #154360;
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 12px;
-    padding: 3px;
-    margin-right: 10px;
+    padding: 3px 5px;
+    margin: 5px 10px 0 0;
     animation: fade-in 200ms ease-in;
+    cursor: pointer;
+    align-items: center;
+}
+
+.autocomplete-remove {
+    padding-left: 2px;
+    margin-left: 6px;
+    box-shadow: -1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .autocomplete-row {
@@ -77,9 +85,7 @@
 
 .rendered-values-container {
     display: flex;
-    max-width: 75%;
-    overflow-x: auto;
-    align-items: center;
+    flex-wrap: wrap;
 }
 
 .rendered-values-container::-webkit-scrollbar {
@@ -88,12 +94,6 @@
 
 .total-container {
     position: relative;
-}
-
-.values-container {
-    display: flex;
-    flex-grow: 1;
-    align-items: baseline;
 }
 
 @keyframes fade-in {

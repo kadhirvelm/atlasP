@@ -71,9 +71,8 @@ class PureUpdateEvent extends React.Component<IDialogProps & IUpdateEventStorePr
         return (
             <div className="edit-event-fields">
                 <EditableText className={classNames("render-field-text", "edit-event-text")} onChange={this.editEvent(selectedEvent, "description")} value={selectedEvent.description} />
-                <EditableText className={classNames("render-field-text", "edit-event-text")} placeholder={`Eg. ${new Date().toLocaleDateString()}…`} onChange={this.editDate} onConfirm={this.editEventDate(selectedEvent)} value={this.state.newDate} />
                 <Autocomplete
-                    className="input-group"
+                    className={classNames("input-group", "autocomplete-attendees")}
                     dataSource={this.props.users}
                     displayKey="name"
                     multiselection={true}
@@ -81,6 +80,7 @@ class PureUpdateEvent extends React.Component<IDialogProps & IUpdateEventStorePr
                     values={this.getAttendees(selectedEvent)}
                     onSelection={this.props.dialogUtils.handleAttendeeSelection(selectedEvent, this.updateAttendees(selectedEvent))}
                 />
+                <EditableText className={classNames("render-field-text", "edit-event-text")} placeholder={`Eg. ${new Date().toLocaleDateString()}…`} onChange={this.editDate} onConfirm={this.editEventDate(selectedEvent)} value={this.state.newDate} />
             </div>
         )
     }
