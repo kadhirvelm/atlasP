@@ -74,9 +74,6 @@ export class PureSinglePersonDataDialog extends React.Component<
                 <div className="flex-25">
                     {event.date.toLocaleDateString()}
                 </div>
-                <div className="flex-25">
-                    {userData[event.host.id].name}
-                </div>
                 <div className="flex-35">
                     {event.description}
                 </div>

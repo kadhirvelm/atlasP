@@ -6,14 +6,15 @@ import { handleStringChange } from "@blueprintjs/docs-theme";
 
 import IStoreState from "../../State/IStoreState";
 import { IUser, IUserMap } from "../../Types/Users";
+import { showToast } from "../../Utils/Toaster";
 import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
 import { IDialogProps } from "./DialogWrapper";
 
-import { showToast } from "../../Utils/Toaster";
 import "./AddNewEvent.css";
 
 export interface IAddNewEventStateProps {
+    currentUser: IUser | undefined;
     users: IUserMap | undefined;
 }
 
@@ -21,35 +22,28 @@ export interface IAddNewEventDispatchProps {
     dialogUtils: DialogUtils;
 }
 
-export interface IFinalEventEmpty {
+export interface ITemporaryEvent {
     attendees: IUser[];
     date: string;
     description: string;
-    host: IUser | undefined;
-}
-
-export interface IFinalEventChecked extends IFinalEventEmpty {
-    host: IUser;
 }
 
 export interface IAddNewEventState {
-    finalEvent: IFinalEventEmpty | IFinalEventChecked;
+    temporaryEvent: ITemporaryEvent;
     isSubmitting: boolean;
-}
-
-const EMPTY_STATE: IAddNewEventState = {
-    finalEvent: {
-        attendees: [],
-        date: new Date().toLocaleDateString(),
-        description: "",
-        host: undefined,
-    },
-    isSubmitting: false,
 }
 
 export class PureAddNewEvent extends React.Component<
     IDialogProps & IAddNewEventStateProps & IAddNewEventDispatchProps, IAddNewEventState> {
-    public state: IAddNewEventState = EMPTY_STATE;
+    public EMPTY_STATE: IAddNewEventState = {
+        isSubmitting: false,
+        temporaryEvent: {
+            attendees: this.props.currentUser === undefined ? [] : [this.props.currentUser],
+            date: new Date().toLocaleDateString(),
+            description: "",
+        }
+    }
+    public state: IAddNewEventState = this.EMPTY_STATE;
 
     public render() {
         return(
@@ -62,24 +56,16 @@ export class PureAddNewEvent extends React.Component<
             >
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup>
-                        <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder={`Date, eg. ${new Date().toLocaleDateString()}`} value={this.state.finalEvent.date} />
-                        <InputGroup className="input-group" onChange={this.handleChange("description")} placeholder="Description" value={this.state.finalEvent.description} />
-                        <Autocomplete
-                            className="input-group"
-                            dataSource={this.props.users}
-                            displayKey="name"
-                            placeholderText="Search for host…"
-                            values={this.finalEventValue("host")}
-                            onSelection={this.handleHostSelection}
-                        />
+                        <InputGroup autoFocus={true} className="input-group" onChange={this.handleChange("description")} placeholder="Description" value={this.state.temporaryEvent.description} />
+                        <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder={`Date, eg. ${new Date().toLocaleDateString()}`} value={this.state.temporaryEvent.date} />
                         <Autocomplete
                             className="input-group"
                             dataSource={this.props.users}
                             displayKey="name"
                             multiselection={true}
                             placeholderText="Search for users…"
-                            values={this.finalEventValue("attendees")}
-                            onSelection={this.props.dialogUtils.handleAttendeeSelection(this.state.finalEvent, this.adjustFinalEvent)}
+                            values={this.getAttendees()}
+                            onSelection={this.props.dialogUtils.handleAttendeeSelection(this.state.temporaryEvent, this.adjustFinalEvent)}
                         />
                     </FormGroup>
                 </div>
@@ -89,7 +75,7 @@ export class PureAddNewEvent extends React.Component<
     }
 
     private resetStateAndClose = () => {
-        this.setState(EMPTY_STATE, () => {
+        this.setState(this.EMPTY_STATE, () => {
             this.props.onClose();
         });
     }
@@ -97,8 +83,7 @@ export class PureAddNewEvent extends React.Component<
     private handleSubmit = () => {
         this.setState({ isSubmitting: true }, async () => {
             try {
-                const { finalEvent } = this.state;
-                await this.props.dialogUtils.submitFinalEvent(finalEvent);
+                await this.props.dialogUtils.submitFinalEvent(this.state.temporaryEvent);
                 showToast(Intent.SUCCESS, "Successfully added a new event.");
                 this.resetStateAndClose();
             } catch (error) {
@@ -107,28 +92,12 @@ export class PureAddNewEvent extends React.Component<
         })
     }
 
-    private isUser = (object: IUser | undefined): object is IUser => {
-        return object != null && object.name != null;
-    }
-
-    private finalEventValue = (key: string) => {
-        const finalValue = this.state.finalEvent[key];
-        if (finalValue == null) {
-            return;
-        } else if(this.isUser(finalValue)) {
-            return {[finalValue.id]: finalValue.name};
-        } else if (this.isUser(finalValue[0])) {
-            return finalValue.map((user: IUser) => {
-                return {[user.id]: user.name}
-            }).reduce((a: IAutcompleteValuesProps, b: IAutcompleteValuesProps) => {
-                return {...b, ...a}
-            }, {});
-        }
-        return finalValue
-    }
-
-    private handleHostSelection = (item: IUser) => {
-        this.adjustFinalEvent("host", item);
+    private getAttendees = () => {
+        return this.state.temporaryEvent.attendees.map((user: IUser) => {
+            return {[user.id]: user.name}
+        }).reduce((a: IAutcompleteValuesProps, b: IAutcompleteValuesProps) => {
+            return {...b, ...a}
+        }, {});
     }
 
     private handleChange = (key: string) => {
@@ -139,12 +108,13 @@ export class PureAddNewEvent extends React.Component<
     }
     
     private adjustFinalEvent = (key: string, newValue: any) => {
-        this.setState({ finalEvent: {...this.state.finalEvent, [key]: newValue } });
+        this.setState({ temporaryEvent: {...this.state.temporaryEvent, [key]: newValue } });
     }
 }
 
 function mapStateToProps(state: IStoreState): IAddNewEventStateProps {
     return {
+        currentUser: state.DatabaseReducer.currentUser,
         users: state.DatabaseReducer.userData,
     };
 }
