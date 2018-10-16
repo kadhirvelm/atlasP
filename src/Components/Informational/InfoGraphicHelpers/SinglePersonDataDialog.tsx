@@ -7,7 +7,7 @@ import IStoreState from "../../../State/IStoreState";
 import { IEvent, IEventMap } from "../../../Types/Events";
 import { IUser, IUserMap } from "../../../Types/Users";
 
-import "./GlobalInfoGraphicHelpers.css";
+import "./SinglePersonDataDialog.css";
 
 export interface ISinglePersonDataDialogProps {
     events: string[] | undefined;
@@ -43,7 +43,6 @@ export class PureSinglePersonDataDialog extends React.Component<
                 <div className="flexbox-column">
                     <div className="flexbox-row">
                         <u className="flex-25">Date</u>
-                        <u className="flex-25">Host</u>
                         <u className="flex-35">Description</u>
                         <u className="flex-15">People</u>
                     </div>
