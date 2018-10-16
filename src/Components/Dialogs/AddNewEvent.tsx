@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 
@@ -57,9 +58,8 @@ export class PureAddNewEvent extends React.Component<
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup>
                         <InputGroup autoFocus={true} className="input-group" onChange={this.handleChange("description")} placeholder="Description" value={this.state.temporaryEvent.description} />
-                        <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder={`Date, eg. ${new Date().toLocaleDateString()}`} value={this.state.temporaryEvent.date} />
                         <Autocomplete
-                            className="input-group"
+                            className={classNames("input-group", "autocomplete-attendees")}
                             dataSource={this.props.users}
                             displayKey="name"
                             multiselection={true}
@@ -67,6 +67,7 @@ export class PureAddNewEvent extends React.Component<
                             values={this.getAttendees()}
                             onSelection={this.props.dialogUtils.handleAttendeeSelection(this.state.temporaryEvent, this.adjustFinalEvent)}
                         />
+                        <InputGroup className="input-group" onChange={this.handleChange("date")} placeholder={`Date, eg. ${new Date().toLocaleDateString()}`} value={this.state.temporaryEvent.date} />
                     </FormGroup>
                 </div>
                 {this.props.dialogUtils.returnFooterActions(this.props.onClose, this.handleSubmit, this.state.isSubmitting)}

@@ -1,7 +1,7 @@
 import * as classNames from "classnames";
 import * as React from "react";
 
-import { InputGroup } from "@blueprintjs/core";
+import { Icon, InputGroup } from "@blueprintjs/core";
 import { handleStringChange } from "@blueprintjs/docs-theme";
 
 import "./Autocomplete.css";
@@ -44,24 +44,22 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
     public render() {
         return(
             <div id={this.id()} className={classNames(this.props.className, "total-container")}>
-                <div className="values-container">
-                    <div className="rendered-values-container">
-                        {this.maybeRenderValues()}
-                    </div>
-                    <InputGroup
-                        autoComplete="off"
-                        type="text"
-                        className="autofill-input"
-                        leftIcon="search"
-                        onChange={this.handleChange()}
-                        onClick={this.openAutofill}
-                        onFocus={this.openAutofill}
-                        placeholder={this.props.placeholderText}
-                        spellCheck={false}
-                        value={this.state.searchText}
-                    />
-                </div>
+                <InputGroup
+                    autoComplete="off"
+                    type="text"
+                    className="autofill-input"
+                    leftIcon="search"
+                    onChange={this.handleChange()}
+                    onClick={this.openAutofill}
+                    onFocus={this.openAutofill}
+                    placeholder={this.props.placeholderText}
+                    spellCheck={false}
+                    value={this.state.searchText}
+                />
                 {this.maybeRenderAutofill()}
+                <div className="rendered-values-container">
+                    {this.maybeRenderValues()}
+                </div>
             </div>
         );
     }
@@ -69,12 +67,14 @@ export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompl
     private id = () => "Autocomplete#" + this.props.displayKey + this.props.placeholderText;
 
     private maybeRenderValues() {
-        if (this.props.values == null) {
+        const { values } = this.props;
+        if (values == null) {
             return null;
         }
-        return Object.values(this.props.values).reverse().map( (value, index) => (
+        return Object.keys(values).map((key, index) => (
             <div className="autocomplete-tag" key={index}>
-                {value}
+                {values[key]}
+                <Icon className="autocomplete-remove" icon="cross" onClick={this.handleSelection(key)} />
             </div>
         ));
     }
