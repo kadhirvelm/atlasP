@@ -3,11 +3,14 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { Button } from "@blueprintjs/core";
+
 import IStoreState from "../../State/IStoreState";
 import { SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
 import { IUser, IUserMap } from "../../Types/Users";
-import { IDateMap, ILink, IPeopleGraph, selectMainPersonGraph } from "../../Utils/selectors";
+import { IPeopleGraph, selectMainPersonGraph } from "../../Utils/selectors";
 import { Autocomplete } from "../Common/Autocomplete";
+import { maybeApplyLinkForce, returnBoundRectangle, returnDragDrop, returnLinkElements, returnNames, returnNodeElements, returnSimulation, zoomByScale, zoomToNode } from "./DisplayGraphUtils";
 
 import "./DisplayGraph.css";
 
@@ -23,23 +26,7 @@ export interface IDisplayGraphDispatchProps {
     setInfoPerson(infoPerson: IUser): void;
 }
 
-const GREEN_DAYS = 30;
-const YELLOW_DAYS = 90;
-
-const GRAY = "#839192";
-const RED = "#F1948A";
-const YELLOW = "#F7DC6F";
-const GREEN = "#7DCEA0";
-
-const CHARGE_STRENGTH = -200;
-
-const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
-
-const DEFAULT_RADIUS = 12;
-const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
-
-const GRAPH_ID = "BOUNDING_RECTANGLE";
-const INITIAL_ZOOM_DELAY = 500;
+const INITIAL_ZOOM_DELAY = 250;
 
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     private hasRenderedGraph = false;
@@ -53,6 +40,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     public componentWillReceiveProps(nextProps: IDisplayGraphStoreProps & IDisplayGraphDispatchProps) {
         if (nextProps.graphRef !== null) {
             this.renderD3Graph(nextProps.graphRef.clientWidth, nextProps.graphRef.clientHeight, nextProps.peopleGraph);
+            this.zoomToCurrentUser();
         }
     }
 
@@ -63,138 +51,72 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                 ref={this.setRef}
                 className="d3-graph-container"
             >
-                <Autocomplete
-                    className="find-user"
-                    dataSource={this.props.userMap}
-                    displayKey="name"
-                    placeholderText="Search for user…"
-                    onSelection={this.zoomToNode}
-                />
+                <div className="graph-helpers">
+                    <Autocomplete
+                        className="find-user-autocomplete"
+                        dataSource={this.props.userMap}
+                        displayKey="name"
+                        placeholderText="Search for user…"
+                        onSelection={this.zoomToNode}
+                    />
+                    <div className="graph-assistant-buttons">
+                        <Button
+                            className="zoom-in-button"
+                            icon="zoom-in"
+                            onClick={this.zoomIn}
+                        />
+                        <Button
+                            className="zoom-in-button"
+                            icon="zoom-out"
+                            onClick={this.zoomOut}
+                        />
+                        <Button
+                            className="reset-graph-button"
+                            icon="refresh"
+                            onClick={this.resetGraph}
+                        />
+                    </div>
+                </div>
                 <svg id="graph" className="d3-graph" />
             </div>
         );
     }
 
-    private zoomToNode = (node: IUser, zoomAmount?: number) => {
+    private zoomIn = () => zoomByScale(1.25);
+    private zoomOut = () => zoomByScale(0.75);
+
+    private resetGraph = () => {
+        const { graphRef } = this.props;
+        if (graphRef === null) {
+            return;
+        }
+        this.hasRenderedGraph = false;
+        this.renderD3Graph(graphRef.clientWidth, graphRef.clientHeight, this.props.peopleGraph);
+    }
+
+    private zoomToCurrentUser() {
+        const { currentUser } = this.props;
+        if (currentUser === undefined) {
+            return;
+        }
+        setTimeout(() => {
+            this.zoomToNode(currentUser, 0.5);
+        }, INITIAL_ZOOM_DELAY);
+    }
+
+    private zoomToNode = (node: IUser, zoomAmount: number = 2.5) => {
         if (!this.hasRenderedGraph) {
             return;
         }
-        const selectedNode = d3.select(`[id="${node.id}"]`)
-        d3.select(`#${GRAPH_ID}`)
-            .call(d3.zoom().translateTo, parseInt(selectedNode.attr("cx"), 10), parseInt(selectedNode.attr("cy"), 10))
-            .call(d3.zoom().scaleTo, zoomAmount || 2.5)
-            .dispatch("executeZoomToPerson", {
-                detail: {
-                    transform: d3.zoomTransform(d3.select(`#${GRAPH_ID}`).node() as any)
-                }
-            } as any);
+        zoomToNode(node.id, zoomAmount);
         this.props.setInfoPerson(node);
     }
 
-    private handleClick = (node: IUser) => {
-        this.props.setInfoPerson(node)
-    }
-
-    private returnFill(id: string, map: IDateMap) {
-        const lastTime = map[id];
-        if (lastTime === undefined) {
-            return GRAY;
-        }
-
-        const totalDifference = (new Date().getTime() - new Date(lastTime).getTime()) / MILLISECONDS_PER_DAY;
-        if (totalDifference < GREEN_DAYS) {
-            return GREEN;
-        } else if (totalDifference < YELLOW_DAYS) {
-            return YELLOW;
-        } else {
-            return RED;
-        }
-    }
-
-    private returnSimulation(width: number, height: number) {
-        const simulation = d3.forceSimulation()
-            .force("charge", d3.forceManyBody().strength(CHARGE_STRENGTH))
-            .force("center", d3.forceCenter(width / 2, height / 2));
-        simulation.force("link", d3.forceLink().id((link: any) => link.id).strength((link: ILink) => link.strength).distance((link: ILink) => link.distance));
-        return simulation;
-    }
-    
-    private returnBoundRectangle(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, zoomed: () => void) {
-        const handleZoom = d3.zoom().scaleExtent([ 1 / 5, 1 ]).on("zoom", zoomed);
-        const width = (svg.node() as any).getBoundingClientRect().width;
-        const height = (svg.node() as any).getBoundingClientRect().height;
-
-        return svg.append("rect")
-            .attr("id", GRAPH_ID)
-            .attr("width", width)
-            .attr("height", height)
-            .style("fill", "none")
-            /* For zooming and panning */
-            .style("pointer-events", "all")
-            .call(handleZoom)
-            .on("executeZoomToPerson", zoomed);
-    }
-
-    private returnLinkElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, links: ILink[]) {
-        return svg.append("g")
-            .selectAll("line")
-            .exit().remove()
-            .data(links)
-            .enter().append("line")
-                .attr("class", "connection-line")
-    }
-
-    private returnNodeElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[], lastEvents: IDateMap) {
-        const { currentUser } = this.props;
-        if (currentUser === undefined) {
-            throw new Error("Tried to fetch an undefined current user in graph");
-        }
-        return svg.append("g")
-            .selectAll("circle")
-            .exit().remove()
-            .data(nodes)
-            .enter().append("circle")
-                .attr("r", (node: IUser) => node.id === currentUser.id ? MAIN_PERSON_RADIUS : DEFAULT_RADIUS)
-                .attr("fill", (node: IUser) => this.returnFill(node.id, lastEvents))
-                .on("click", this.handleClick)
-                .attr("class", "node")
-                .attr("id", (node: IUser) => node.id);
-    }
-
-    private returnNames(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[]) {
-        return svg.append("g")
-            .selectAll("text")
-            .exit().remove()
-            .data(nodes)
-            .enter().append("text")
-                .text(node => {
-                    const name = node.name.split(" ");
-                    return name.length > 1 ? `${name[0]} ${name[1][0]}` : name[0];
-                })
-                .attr("dx", (node) => -((node.name.split(" ")[0]).length + 2) * 3.5)
-                .attr("dy", 5)
-                .on("click", this.handleClick)
-                .attr("class", "name")
-    }
-
-    private returnDragDrop(simulation: d3.Simulation<{}, undefined>) {
-        return d3.drag()
-            .on("start", (node: any) => { node.fx = node.x; node.fy = node.y })
-            .on("drag", (node: any) => { simulation.alphaTarget(0.7).restart(); node.fx = d3.event.x; node.fy = d3.event.y })
-            .on("end", (node: any) => { if (!d3.event.active){ simulation.alphaTarget(0) }; node.fx = null; node.fy = null } );
-    }
-
-    private maybeApplyLinkForce(simulation: d3.Simulation<{}, undefined>, links: ILink[]) {
-        const linkForce: any = simulation.force("link");
-        if (linkForce === undefined) {
-            return;
-        }
-        linkForce.links(links);
-    }
+    private handleClick = (node: IUser) => this.props.setInfoPerson(node);
 
     private runSimulation(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, peopleGraph: IPeopleGraph, simulation: d3.Simulation<{}, undefined>) {
-        const linkElements = this.returnLinkElements(svg, peopleGraph.links);
-        this.returnBoundRectangle(svg, () => {
+        const linkElements = returnLinkElements(svg, peopleGraph.links);
+        returnBoundRectangle(svg, () => {
             const zoomToPersonTransform = d3.event.detail && d3.event.detail.transform
             if (zoomToPersonTransform === undefined) {
                 linkElements.attr("transform", d3.event.transform);
@@ -206,8 +128,8 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             nodeElements.transition().duration(500).attr("transform", zoomToPersonTransform);
             names.transition().duration(500).attr("transform", zoomToPersonTransform);
         });
-        const nodeElements = this.returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents);
-        const names = this.returnNames(svg, peopleGraph.nodes);
+        const nodeElements = returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents, this.props.currentUser, this.handleClick);
+        const names = returnNames(svg, peopleGraph.nodes, this.handleClick);
         
         simulation.nodes(peopleGraph.nodes).on("tick", () => {
             nodeElements
@@ -223,33 +145,24 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                 .attr('y2', (link: any) => link.target.y);
         });
 
-        nodeElements.call(this.returnDragDrop(simulation) as any);
-        names.call(this.returnDragDrop(simulation) as any);
+        nodeElements.call(returnDragDrop(simulation) as any);
+        names.call(returnDragDrop(simulation) as any);
 
-        this.maybeApplyLinkForce(simulation, peopleGraph.links);
+        maybeApplyLinkForce(simulation, peopleGraph.links);
     }
 
-    private zoomToCurrentUser() {
-        const { currentUser } = this.props;
-        if (currentUser === undefined) {
-            return;
-        }
-        setTimeout(() => {
-            this.zoomToNode(currentUser, 0.2);
-        }, INITIAL_ZOOM_DELAY);
-    }
-
-    private renderD3Graph(width: number, height: number, peopleGraph: IPeopleGraph | undefined ) {
+    private renderD3Graph(width: number, height: number, peopleGraph: IPeopleGraph | undefined) {
         if (peopleGraph === undefined || this.hasRenderedGraph) {
             return;
         }
         this.hasRenderedGraph = true;
 
         const svg = d3.select("#graph").attr("width", width).attr("height", height);
-        const simulation = this.returnSimulation(width, height);
+        svg.selectAll("g").remove();
+        svg.select("rect").remove();
+        const simulation = returnSimulation(width, height);
 
         this.runSimulation(svg, peopleGraph, simulation);
-        this.zoomToCurrentUser();
     }
 }
 
