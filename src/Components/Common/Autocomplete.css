@@ -59,6 +59,7 @@
 .autofill-container {
     z-index: 10;
     position: absolute;
+    top: 30px;
     left: 0;
     right: 0;
 
