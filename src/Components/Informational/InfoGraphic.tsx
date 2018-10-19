@@ -6,7 +6,7 @@ import IStoreState from "../../State/IStoreState";
 import { SetInfoPerson } from "../../State/WebsiteActions";
 import { IEvent } from "../../Types/Events";
 import { IUser, IUserMap } from "../../Types/Users";
-import { selectSortedEvents } from "../../Utils/Selectors";
+import { selectSortedEvents } from "../../Utils/selectors";
 import User from "../../Utils/User";
 import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
 import { InfoPerson } from "./InfoPerson";

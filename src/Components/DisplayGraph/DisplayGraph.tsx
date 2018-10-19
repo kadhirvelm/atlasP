@@ -8,7 +8,7 @@ import { Button } from "@blueprintjs/core";
 import IStoreState from "../../State/IStoreState";
 import { SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
 import { IUser, IUserMap } from "../../Types/Users";
-import { IPeopleGraph, selectMainPersonGraph } from "../../Utils/Selectors";
+import { IPeopleGraph, selectMainPersonGraph } from "../../Utils/selectors";
 import { Autocomplete } from "../Common/Autocomplete";
 import { maybeApplyLinkForce, returnBoundRectangle, returnDragDrop, returnLinkElements, returnNames, returnNodeElements, returnSimulation, zoomByScale, zoomToNode } from "./DisplayGraphUtils";
 

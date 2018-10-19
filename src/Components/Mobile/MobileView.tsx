@@ -8,7 +8,7 @@ import { EmptyDatabaseCache } from "../../State/DatabaseActions";
 import IStoreState from "../../State/IStoreState";
 import { IEvent } from "../../Types/Events";
 import { IUser } from "../../Types/Users";
-import { selectSortedEvents } from "../../Utils/Selectors";
+import { selectSortedEvents } from "../../Utils/selectors";
 import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
