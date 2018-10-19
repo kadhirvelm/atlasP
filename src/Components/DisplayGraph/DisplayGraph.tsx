@@ -29,19 +29,19 @@ export interface IDisplayGraphDispatchProps {
 const INITIAL_ZOOM_DELAY = 250;
 
 class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
-    private hasRenderedGraph = false;
-
     public setRef = (ref: HTMLElement | null ) => {
-        if (this.props.graphRef == null && ref !== null) {
-            this.props.setGraphRef(ref);
+        if (this.props.graphRef != null || ref === null) {
+            return;
         }
+        this.props.setGraphRef(ref);
     }
     
     public componentWillReceiveProps(nextProps: IDisplayGraphStoreProps & IDisplayGraphDispatchProps) {
-        if (nextProps.graphRef !== null) {
-            this.renderD3Graph(nextProps.graphRef.clientWidth, nextProps.graphRef.clientHeight, nextProps.peopleGraph);
-            this.zoomToCurrentUser();
+        if (nextProps.graphRef === null || this.props.peopleGraph === nextProps.peopleGraph) {
+            return;
         }
+        this.renderD3Graph(nextProps.graphRef.clientWidth, nextProps.graphRef.clientHeight, nextProps.peopleGraph);
+        this.zoomToCurrentUser();
     }
 
     public render() {
@@ -72,7 +72,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                         />
                         <Button
                             className="reset-graph-button"
-                            icon="refresh"
+                            icon="locate"
                             onClick={this.resetGraph}
                         />
                     </div>
@@ -90,7 +90,6 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         if (graphRef === null) {
             return;
         }
-        this.hasRenderedGraph = false;
         this.renderD3Graph(graphRef.clientWidth, graphRef.clientHeight, this.props.peopleGraph);
     }
 
@@ -100,14 +99,11 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             return;
         }
         setTimeout(() => {
-            this.zoomToNode(currentUser, 0.5);
+            this.zoomToNode(currentUser, 0.7);
         }, INITIAL_ZOOM_DELAY);
     }
 
     private zoomToNode = (node: IUser, zoomAmount: number = 2.5) => {
-        if (!this.hasRenderedGraph) {
-            return;
-        }
         zoomToNode(node.id, zoomAmount);
         this.props.setInfoPerson(node);
     }
@@ -152,10 +148,9 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
     }
 
     private renderD3Graph(width: number, height: number, peopleGraph: IPeopleGraph | undefined) {
-        if (peopleGraph === undefined || this.hasRenderedGraph) {
+        if (peopleGraph === undefined) {
             return;
         }
-        this.hasRenderedGraph = true;
 
         const svg = d3.select("#graph").attr("width", width).attr("height", height);
         svg.selectAll("g").remove();

@@ -1,0 +1,47 @@
+.filters-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 5px;
+}
+
+.filters-last-seen {
+    display: flex;
+}
+
+.filters-date-tooltip {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.filters-date-checkboxes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.filters-date-checkboxes .bp3-control {
+    margin: 0;
+}
+
+.filters-box {
+    margin-right: 3px;
+    width: 15px;
+    height: 25px;
+    border-radius: 3px;
+    border: 1px black solid;
+}
+
+.filters-box.green {
+    background: #7DCEA0;
+}
+
+.filters-box.yellow {
+    background: #F7DC6F;
+}
+
+.filters-box.red {
+    background: #F1948A;
+}

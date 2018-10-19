@@ -16,6 +16,7 @@ import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
 import { UpdateUser } from "../Dialogs/UpdateUser";
+import { Filters } from "./NavbarComponents/Filters";
 import { NavbarRow } from "./NavbarRow";
 
 import "../Main.css";
@@ -24,7 +25,7 @@ import "./Navbar.css";
 const ICON_SIZE = 25;
 
 interface INavbarState {
-    hovering: boolean;
+    isHovering: boolean;
     handleHoverLeave(): void;
 }
 
@@ -41,8 +42,8 @@ export interface INavbarDispatchProps {
 class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDispatchProps, INavbarState> {
     public state = {
         // HACK: remove this once the navbar rows slide open
-        handleHoverLeave: () => this.setState({ hovering: false }),
-        hovering: false,
+        handleHoverLeave: () => this.setState({ isHovering: false }),
+        isHovering: false,
     };
     public customAttributes = {
         height: ICON_SIZE,
@@ -53,7 +54,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
     public render() {
         return(
             <div
-                className={classNames("atlas-navbar", "bp3-dark", { hover: this.state.hovering })}
+                className={classNames("atlas-navbar", "bp3-dark", { hover: this.state.isHovering })}
                 onMouseEnter={this.handleHoverStart}
                 onMouseLeave={this.handleHoverLeave}
                 style={{ zIndex: 10 }}
@@ -61,6 +62,8 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                 {this.renderLogo()}
                 <div className="navbar-separator" />
                 {this.renderAdditionItems()}
+                <div className="navbar-separator" />
+                {this.renderGraphItems()}
                 <div className="navbar-separator" />
                 {this.renderUserAccountItems()}
             </div>
@@ -71,26 +74,42 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
         return (
             <>
                 <NavbarRow
-                    className="navbar-atlas-logo"
                     handleHoverLeave={this.handleHoverLeave}
-                    hovering={this.state.hovering}
+                    isHovering={this.state.isHovering}
                     icon={
                         <AtlasPIcon
                             attributes={
                                 {
-                                    height: 40,
+                                    height: 30,
                                     style: {
                                         fill: "white",
-                                        minHeight: 40,
-                                        minWidth: 33,
+                                        minHeight: 30,
+                                        minWidth: 25,
                                     },
-                                    width: 33
+                                    width: 25
                                 }
                             }
                         />
                     }
                     text="AtlasP"
                 />
+            </>
+        )
+    }
+
+    private renderGraphItems() {
+        return (
+            <>
+                <NavbarRow
+                    className="navbar-filters"
+                    componentHeight={60}
+                    handleHoverLeave={this.handleHoverLeave}
+                    isHovering={this.state.isHovering}
+                    icon={<Icon icon="filter" iconSize={ICON_SIZE} />}
+                    text="Filters"
+                >
+                    <Filters />
+                </NavbarRow>
             </>
         )
     }
@@ -134,7 +153,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                 <div className="navbar-logout-separator" />
                 <NavbarRow
                     handleHoverLeave={this.handleHoverLeave}
-                    hovering={this.state.hovering}
+                    isHovering={this.state.isHovering}
                     icon={<Icon icon="log-out" iconSize={ICON_SIZE} />}
                     onClick={this.props.signOut}
                     text="Sign out"
@@ -143,8 +162,8 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
         )
     }
 
-    private handleHoverStart = () => this.setState({ hovering: true });
-    private handleHoverLeave = () => this.setState({ hovering: false });
+    private handleHoverStart = () => this.setState({ isHovering: true });
+    private handleHoverLeave = () => this.setState({ isHovering: false });
 }
 
 function mapStateToProps(state: IStoreState): INavbarStateProps {

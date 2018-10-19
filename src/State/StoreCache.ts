@@ -6,6 +6,7 @@ export const EMPTY_STATE: IStoreState = {
     isLoggedIn: false
   },
   WebsiteReducer: {
+    graphFilters: [],
     graphRef: null,
     selectedEvent: undefined,
   }
