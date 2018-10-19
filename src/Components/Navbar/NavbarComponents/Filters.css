@@ -19,6 +19,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 5px;
 }
 
 .filters-date-checkboxes .bp3-control {
@@ -28,8 +29,9 @@
 .filters-box {
     margin-right: 3px;
     width: 15px;
-    height: 15px;
+    height: 25px;
     border-radius: 3px;
+    border: 1px black solid;
 }
 
 .filters-box.green {

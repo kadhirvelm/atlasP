@@ -95,7 +95,7 @@ export class DatabaseDispatcher {
     public createNewUser = async (user: IFinalPerson) => {
         try {
             const response = await axios.post(this.retrieveURL("users/new-user"), { phoneNumber: "", ...user });
-            this.dispatch(UpdateUserData.create(new User(response.data.payload.newUserId, user.name, user.gender, user.location, "")))
+            this.dispatch(UpdateUserData.create(new User(response.data.payload.newUserId, user.name, user.gender, user.location, "")));
         } catch (error) {
             showToast(Intent.DANGER, `There was a problem creating this user. ${error.response.data.message.join(", ")}`);
             throw error;
