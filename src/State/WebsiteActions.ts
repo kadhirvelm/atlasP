@@ -1,12 +1,16 @@
 import { TypedAction } from "redoodle";
 
 import { IEvent } from "../Types/Events";
+import { IFilter } from "../Types/Graph";
 import { IUser } from "../Types/Users";
 
-export const SetInfoPerson = TypedAction.define("WebsiteReducer//SET_INFO_PERSON")<IUser>();
+export const SetInfoPerson = TypedAction.define("WebsiteAction//SET_INFO_PERSON")<IUser>();
 
-export const SelectEvent = TypedAction.define("WebsiteReducer//SELECT_EVENT")<IEvent | undefined>();
+export const SelectEvent = TypedAction.define("WebsiteAction//SELECT_EVENT")<IEvent | undefined>();
 
 export const SetGraphRef = TypedAction.define(
-  "WebsiteReducer//SET_GRAPH_REF"
+  "WebsiteAction//SET_GRAPH_REF"
 )<HTMLElement | null>();
+
+export const AddGraphFilter = TypedAction.define("WebsiteAction//ADD_GRAPH_FILTER")<IFilter>();
+export const RemoveGraphFilter = TypedAction.define("WebsiteAction//REMOVE_GRAPH_FILTER")<string>();

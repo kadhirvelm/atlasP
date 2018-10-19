@@ -1,20 +1,19 @@
 import * as d3 from "d3";
 
 import { IUser } from "../../Types/Users";
-import { IDateMap, ILink } from "../../Utils/selectors";
+import { IDateMap, ILink } from "../../Utils/Selectors";
+import { getDifferenceBetweenDates } from "../../Utils/Util";
 
 const CHARGE_STRENGTH = -200;
 const GRAPH_ID = "BOUNDING_RECTANGLE";
 
-const GREEN_DAYS = 30;
-const YELLOW_DAYS = 90;
+export const GREEN_DAYS = 30;
+export const RED_DAYS = 90;
 
 const GRAY = "#839192";
 const RED = "#F1948A";
 const YELLOW = "#F7DC6F";
 const GREEN = "#7DCEA0";
-
-const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
 const DEFAULT_RADIUS = 12;
 const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
@@ -67,10 +66,10 @@ export function returnFill(id: string, map: IDateMap) {
         return GRAY;
     }
 
-    const totalDifference = (new Date().getTime() - new Date(lastTime).getTime()) / MILLISECONDS_PER_DAY;
+    const totalDifference = getDifferenceBetweenDates(new Date(), new Date(lastTime));
     if (totalDifference < GREEN_DAYS) {
         return GREEN;
-    } else if (totalDifference < YELLOW_DAYS) {
+    } else if (totalDifference < RED_DAYS) {
         return YELLOW;
     } else {
         return RED;

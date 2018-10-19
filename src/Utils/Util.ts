@@ -36,3 +36,17 @@ export function isValidPhoneNumber(rawNumber: string) {
       return false;
   }
 }
+
+const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+
+export function getDifferenceBetweenDates(dateA: Date, dateB: Date) {
+  if (dateA === undefined || dateB === undefined) {
+    return 0;
+  }
+  return (dateA.getTime() - dateB.getTime()) / MILLISECONDS_PER_DAY;
+}
+
+export function distinctArray(array: any[]) {
+  const selfIndex = (value: any, index: number, self: any[]) => self.indexOf(value) === index;
+  return array.filter(selfIndex);
+}

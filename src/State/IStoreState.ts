@@ -1,4 +1,5 @@
 import { IEvent, IEventMap } from "../Types/Events";
+import { IFilter } from "../Types/Graph";
 import { IForceUpdate } from "../Types/Other";
 import { IUser, IUserMap } from "../Types/Users";
 
@@ -13,6 +14,7 @@ export default interface IStoreState {
     };
     WebsiteReducer: {
         infoPerson?: IUser;
+        graphFilters: IFilter[];
         graphRef: HTMLElement | null;
         selectedEvent: IEvent | undefined;
     };

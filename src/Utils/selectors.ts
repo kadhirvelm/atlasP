@@ -2,6 +2,7 @@ import { createSelector } from "reselect";
 
 import IStoreState from "../State/IStoreState";
 import { IEventMap } from "../Types/Events";
+import { IFilter } from "../Types/Graph";
 import { IConnections, IUser, IUserMap } from "../Types/Users";
 import Event from "./Event";
 
@@ -16,10 +17,16 @@ export interface IDateMap {
   [id: string]: Date;
 }
 
+export interface IFilteredNodes {
+  nodes: IUser[];
+  lastEvents: IDateMap;
+  connectionCopy: IConnections;
+}
+
 export interface IPeopleGraph {
   nodes: IUser[];
-  links: ILink[];
   lastEvents: IDateMap;
+  links: ILink[];
 }
 
 const STRENGTH_DIVIDER = 100;
@@ -52,24 +59,22 @@ function returnNormalizedLinks(
 
 function returnLastEvent(connectionCopy: IConnections, allEvents: IEventMap) {
   const lastEvents = {};
-  for (const key in connectionCopy) {
-    if (connectionCopy.hasOwnProperty(key)) {
+  Object.keys(connectionCopy).forEach((key) => {
       const eventId = connectionCopy[key].slice(-1)[0];
       lastEvents[key] = eventId === undefined ? undefined : allEvents[eventId].date;
-    }
-  }
+  });
   return lastEvents;
 }
 
-export const selectMainPersonGraph = createSelector(
+export const selectConnectionsAndDates = createSelector(
   (state: IStoreState) => state.DatabaseReducer.currentUser,
   (state: IStoreState) => state.DatabaseReducer.userData,
   (state: IStoreState) => state.DatabaseReducer.eventData,
   (
     mainPerson: IUser | undefined,
     allUsers: IUserMap | undefined,
-    allEvents: IEventMap | undefined
-  ): IPeopleGraph | undefined => {
+    allEvents: IEventMap | undefined,
+  ): IFilteredNodes | undefined => {
     if (
       mainPerson === undefined ||
       mainPerson.connections === undefined ||
@@ -82,10 +87,59 @@ export const selectMainPersonGraph = createSelector(
     const connectionCopy = { ...mainPerson.connections };
     delete connectionCopy[mainPerson.id];
 
-    const links = returnNormalizedLinks(mainPerson.id, connectionCopy);
-    const lastEvents = returnLastEvent(connectionCopy, allEvents);
+    return {
+      connectionCopy,
+      lastEvents: returnLastEvent(connectionCopy, allEvents),
+      nodes: Object.values(allUsers),
+    };
+  }
+);
 
-    return { nodes: Object.values(allUsers), links, lastEvents };
+export const selectFilteredConnections = createSelector(
+  selectConnectionsAndDates,
+  (state: IStoreState) => state.WebsiteReducer.graphFilters,
+  (
+    filteredNodes: IFilteredNodes | undefined,
+    graphFilter: IFilter[] | undefined,
+  ): IFilteredNodes | undefined => {
+    if (filteredNodes === undefined || graphFilter === undefined) {
+      return filteredNodes;
+    }
+
+    const filteredNodesCopy = { ...filteredNodes };
+    const connectionCopy = { ...filteredNodes.connectionCopy };
+  
+    graphFilter.forEach((filter) => {
+      filteredNodesCopy.nodes = filteredNodesCopy.nodes.filter((user) => {
+        const check = filter.type === "date" ? filteredNodesCopy.lastEvents[user.id] : user;
+        if (check === undefined) {
+          return true;
+        }
+        const shouldKeep = filter.shouldRemove(check);
+        if (!shouldKeep) {
+          delete connectionCopy[user.id];
+        }
+        return shouldKeep;
+      });
+    });
+
+    return { ...filteredNodesCopy, connectionCopy };
+  }
+);
+
+export const selectMainPersonGraph = createSelector(
+  selectFilteredConnections,
+  (state: IStoreState) => state.DatabaseReducer.currentUser,
+  (filteredNodes: IFilteredNodes, mainPerson: IUser | undefined): IPeopleGraph | undefined => {
+    if (filteredNodes === undefined || mainPerson === undefined) {
+      return undefined;
+    }
+
+    return {
+      lastEvents: filteredNodes.lastEvents,
+      links: returnNormalizedLinks(mainPerson.id, filteredNodes.connectionCopy),
+      nodes: filteredNodes.nodes,
+    };
   }
 );
 
