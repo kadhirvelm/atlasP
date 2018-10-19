@@ -45,18 +45,18 @@ class PureFilters extends React.PureComponent<IFiltersStoreProps & IFilterDispat
         return (
             <div className="filters-date-checkboxes">
                 <div className="filters-box green" />
-                <Checkbox checked={this.containsFilter(GREEN_FILTER_ID)} onChange={this.changeFilter(GREEN_FILTER_ID)} />
+                <Checkbox checked={this.doesNotContainFilter(GREEN_FILTER_ID)} onChange={this.changeFilter(GREEN_FILTER_ID)} />
                 <div className="filters-box yellow" />
-                <Checkbox checked={this.containsFilter(YELLOW_FILTER_ID)} onChange={this.changeFilter(YELLOW_FILTER_ID)} />
+                <Checkbox checked={this.doesNotContainFilter(YELLOW_FILTER_ID)} onChange={this.changeFilter(YELLOW_FILTER_ID)} />
                 <div className="filters-box red" />
-                <Checkbox checked={this.containsFilter(RED_FILTER_ID)} onChange={this.changeFilter(RED_FILTER_ID)} />
+                <Checkbox checked={this.doesNotContainFilter(RED_FILTER_ID)} onChange={this.changeFilter(RED_FILTER_ID)} />
             </div>
         )
     }
 
     private changeFilter = (id: string) => {
         return () => {
-            if (this.containsFilter(id)) {
+            if (!this.doesNotContainFilter(id)) {
                 this.props.removeFilter(id);
                 return;
             }
@@ -80,8 +80,8 @@ class PureFilters extends React.PureComponent<IFiltersStoreProps & IFilterDispat
         return undefined;
     }
 
-    private containsFilter(id: string) {
-        return this.props.currentFilters.find((filter) => filter.id === id) !== undefined;
+    private doesNotContainFilter(id: string) {
+        return this.props.currentFilters.find((filter) => filter.id === id) === undefined;
     }
 }
 
