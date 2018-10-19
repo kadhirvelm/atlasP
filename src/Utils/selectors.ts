@@ -164,7 +164,6 @@ export const selectInfoPersonSortedEvents = createSelector(
     eventData: IEventMap | undefined,
     infoPerson: IUser | undefined
   ) => {
-    console.log("NEW EVENTS", eventData, mainPerson, infoPerson);
     if (
       mainPerson === undefined ||
       mainPerson.connections === undefined ||

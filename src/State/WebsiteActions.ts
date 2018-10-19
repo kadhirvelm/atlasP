@@ -13,4 +13,5 @@ export const SetGraphRef = TypedAction.define(
 )<HTMLElement | null>();
 
 export const AddGraphFilter = TypedAction.define("WebsiteAction//ADD_GRAPH_FILTER")<IFilter>();
+
 export const RemoveGraphFilter = TypedAction.define("WebsiteAction//REMOVE_GRAPH_FILTER")<string>();
