@@ -15,6 +15,7 @@ const GRAY = "#839192";
 const RED = "#F1948A";
 const YELLOW = "#F7DC6F";
 const GREEN = "#7DCEA0";
+const BLUE = "#7FB3D5";
 
 const DEFAULT_RADIUS = 12;
 const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
@@ -68,7 +69,9 @@ export function returnFill(id: string, map: IDateMap) {
     }
 
     const totalDifference = getDifferenceBetweenDates(new Date(), new Date(lastTime));
-    if (totalDifference < GREEN_DAYS) {
+    if (totalDifference < 0) {
+        return BLUE;
+    } else if (totalDifference < GREEN_DAYS) {
         return GREEN;
     } else if (totalDifference < RED_DAYS) {
         return YELLOW;
