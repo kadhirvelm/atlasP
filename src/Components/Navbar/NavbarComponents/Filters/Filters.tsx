@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -7,7 +8,7 @@ import { Checkbox, Icon, Tooltip } from "@blueprintjs/core";
 import IStoreState from "../../../../State/IStoreState";
 import { AddGraphFilter, RemoveGraphFilter } from "../../../../State/WebsiteActions";
 import { IFilter } from "../../../../Types/Graph";
-import { GREEN_FILTER, GREEN_FILTER_ID, RED_FILTER, RED_FILTER_ID, YELLOW_FILTER, YELLOW_FILTER_ID } from "./FilterConstants";
+import { DATE_FILTERS } from "./FilterConstants";
 
 import "./Filters.css";
 
@@ -35,49 +36,83 @@ class PureFilters extends React.PureComponent<IFiltersStoreProps & IFilterDispat
 
     private renderHelperTooltip() {
         return (
-            <Tooltip className="filters-date-tooltip" content="Green - 30 days, Yellow - 30 to 90 days, Red - 90+ days">
+            <Tooltip className="filters-date-tooltip" content={this.getDateFiltersHelper()}>
                 <Icon icon="help" iconSize={12} />
             </Tooltip>
+        )
+    }
+
+    private getDateFiltersHelper() {
+        return (
+            <div className="filters-date-helper">
+                When was the last time you saw this person?
+                <div className="filters-date-helper-container">
+                    <div className="filters-date-helper-single-row">
+                        <div className="filters-date-helper-single-row-title">
+                            Blue
+                        </div>
+                        <div className="filters-date-line blue" />
+                        <div className="filters-date-helper-single-row-description">
+                            In an upcoming event
+                        </div>
+                    </div>
+                    <div className="filters-date-helper-single-row">
+                        <div className="filters-date-helper-single-row-title">
+                            Green
+                        </div>
+                        <div className="filters-date-line green" />
+                        <div className="filters-date-helper-single-row-description">
+                            Less than 30 days
+                        </div>
+                    </div>
+                    <div className="filters-date-helper-single-row">
+                        <div className="filters-date-helper-single-row-title">
+                            Yellow
+                        </div>
+                        <div className="filters-date-line green yellow" />
+                        <div className="filters-date-helper-single-row-description">
+                            Between 30 and 90 days
+                        </div>
+                    </div>
+                    <div className="filters-date-helper-single-row">
+                        <div className="filters-date-helper-single-row-title">
+                            Red
+                        </div>
+                        <div className="filters-date-line green red" />
+                        <div className="filters-date-helper-single-row-description">
+                            More than 90 days
+                        </div>
+                    </div>
+                </div>
+            </div>
         )
     }
 
     private renderDateFilterButtons() {
         return (
             <div className="filters-date-checkboxes">
-                <div className="filters-box green" />
-                <Checkbox checked={this.doesNotContainFilter(GREEN_FILTER_ID)} onChange={this.changeFilter(GREEN_FILTER_ID)} />
-                <div className="filters-box yellow" />
-                <Checkbox checked={this.doesNotContainFilter(YELLOW_FILTER_ID)} onChange={this.changeFilter(YELLOW_FILTER_ID)} />
-                <div className="filters-box red" />
-                <Checkbox checked={this.doesNotContainFilter(RED_FILTER_ID)} onChange={this.changeFilter(RED_FILTER_ID)} />
+                {DATE_FILTERS.map(this.renderSingleDateFilter)}
             </div>
         )
     }
 
-    private changeFilter = (id: string) => {
-        return () => {
-            if (!this.doesNotContainFilter(id)) {
-                this.props.removeFilter(id);
-                return;
-            }
-            const finalFilter = this.getFilter(id);
-            if (finalFilter === undefined) {
-                return;
-            }
-            this.props.addFilter(finalFilter);
-        }
+    private renderSingleDateFilter = (filter: IFilter) => {
+        return (
+            <div className="filters-date-single" key={filter.id}>
+                <div className={classNames("filters-box", filter.id)} />
+                <Checkbox checked={this.doesNotContainFilter(filter.id)} onChange={this.changeFilter(filter)} />
+            </div>
+        )
     }
 
-    private getFilter(id: string) {
-        switch (id) {
-            case GREEN_FILTER_ID:
-                return GREEN_FILTER;
-            case YELLOW_FILTER_ID:
-                return YELLOW_FILTER;
-            case RED_FILTER_ID:
-                return RED_FILTER;
+    private changeFilter = (filter: IFilter) => {
+        return () => {
+            if (!this.doesNotContainFilter(filter.id)) {
+                this.props.removeFilter(filter.id);
+                return;
+            }
+            this.props.addFilter(filter);
         }
-        return undefined;
     }
 
     private doesNotContainFilter(id: string) {
