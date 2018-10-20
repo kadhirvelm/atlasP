@@ -34,3 +34,4 @@ export const EMPTY_STATE: IStoreState = {
       selectedEvent: undefined,
     }
   };
+  

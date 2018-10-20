@@ -6,6 +6,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { Icon } from "@blueprintjs/core";
 
 import { AtlasPIcon } from "../../icons/atlaspLogoIcon";
+import { GraphIcon } from "../../icons/graphIcon";
 import { NewEventIcon } from "../../icons/newEventIcon";
 import { NewPersonIcon } from "../../icons/newPersonIcon";
 import { EmptyDatabaseCache } from "../../State/DatabaseActions";
@@ -20,7 +21,6 @@ import { Filters } from "./NavbarComponents/Filters/Filters";
 import { GraphType } from "./NavbarComponents/GraphType/GraphType";
 import { NavbarRow } from "./NavbarRow";
 
-import { GraphIcon } from "../../icons/graphIcon";
 import "../Main.css";
 import "./Navbar.css";
 

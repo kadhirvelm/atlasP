@@ -5,7 +5,7 @@ import { IEvent, IEventMap } from "../Types/Events";
 import { IFilter, IGraphType, ILink } from "../Types/Graph";
 import { IUser, IUserMap } from "../Types/Users";
 import Event from "./Event";
-import { getDifferenceBetweenDates } from "./Util";
+import { getLatestEventDate } from "./Util";
 
 export interface IDateMap {
   [id: string]: Date;
@@ -27,11 +27,11 @@ export interface IPeopleGraph {
   links: ILink[];
 }
 
-function returnLastEvent(connectionCopy: IConnectionEvents) {
+function returnLastEvents(connectionCopy: IConnectionEvents) {
   const lastEvents = {};
   Object.keys(connectionCopy).forEach((key) => {
       const events = connectionCopy[key];
-      lastEvents[key] = events.length === 0 ? undefined : events.sort((a, b) => getDifferenceBetweenDates(a.date, b.date)).slice(-1)[0].date;
+      lastEvents[key] = events.length === 0 ? undefined : getLatestEventDate(events).date;
   });
   return lastEvents;
 }
@@ -64,7 +64,7 @@ export const selectConnectionsAndDates = createSelector(
 
     return {
       connectionEvents,
-      lastEvents: returnLastEvent(connectionEvents),
+      lastEvents: returnLastEvents(connectionEvents),
       nodes: Object.values(allUsers),
     };
   }

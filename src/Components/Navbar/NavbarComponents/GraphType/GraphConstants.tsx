@@ -4,7 +4,7 @@ import { DriftGraphIcon } from "../../../../icons/driftGraphIcon";
 import { RelativeGraphIcon } from "../../../../icons/relativeGraphIcon";
 import { IGraphType } from "../../../../Types/Graph";
 import { IConnectionEvents } from "../../../../Utils/selectors";
-import { getDifferenceBetweenDates } from "../../../../Utils/Util";
+import { getDifferenceBetweenDates, getLatestEventDate } from "../../../../Utils/Util";
 
 const ICON_ATTRIBUTES = {
     height: 55,
@@ -23,8 +23,7 @@ const DRIFT_NORMALIZER = (totalDaysSinceEvent: number) => (Math.log(totalDaysSin
 export const DRIFT_GRAPH: IGraphType = {
     generateLinks: (source: string, connections: IConnectionEvents) => {
         const links = Object.entries(connections).map(userAndEvents => {
-            const lastEventDate = userAndEvents[1].sort((a, b) => getDifferenceBetweenDates(a.date, b.date)).slice(-1)[0];
-            const totalDaysSinceEvent = Math.max(Math.round(getDifferenceBetweenDates(new Date(), lastEventDate.date)), 1);
+            const totalDaysSinceEvent = Math.max(Math.round(getDifferenceBetweenDates(new Date(), getLatestEventDate(userAndEvents[1]).date)), 1);
             return {
                 distance: DRIFT_NORMALIZER(totalDaysSinceEvent),
                 source,

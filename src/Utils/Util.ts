@@ -50,3 +50,5 @@ export function distinctArray(array: any[]) {
   const selfIndex = (value: any, index: number, self: any[]) => self.indexOf(value) === index;
   return array.filter(selfIndex);
 }
+
+export const getLatestEventDate = (events: IEvent[]) => events.sort((a, b) => getDifferenceBetweenDates(a.date, b.date)).slice(-1)[0];
