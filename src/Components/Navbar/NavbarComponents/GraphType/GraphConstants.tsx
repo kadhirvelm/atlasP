@@ -23,7 +23,8 @@ const DRIFT_NORMALIZER = (totalDaysSinceEvent: number) => (Math.log(totalDaysSin
 export const DRIFT_GRAPH: IGraphType = {
     generateLinks: (source: string, connections: IConnectionEvents) => {
         const links = Object.entries(connections).map(userAndEvents => {
-            const totalDaysSinceEvent = Math.max(Math.round(getDifferenceBetweenDates(new Date(), getLatestEventDate(userAndEvents[1]).date)), 1);
+            const lastEvent = getLatestEventDate(userAndEvents[1]);
+            const totalDaysSinceEvent = lastEvent === undefined ? 80 : Math.max(Math.round(getDifferenceBetweenDates(new Date(), lastEvent.date)), 1);
             return {
                 distance: DRIFT_NORMALIZER(totalDaysSinceEvent),
                 source,
