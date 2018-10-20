@@ -14,6 +14,8 @@ export interface IFilter {
 }
 
 export interface IGraphType {
+  icon: JSX.Element;
   id: string;
   generateLinks: (id: string, connections: IConnectionEvents) => ILink[];
+  tooltip: string | JSX.Element;
 }

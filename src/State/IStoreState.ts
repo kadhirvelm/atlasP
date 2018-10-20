@@ -1,4 +1,4 @@
-import { ONE_ON_ONE_GRAPH } from "../Components/Navbar/NavbarComponents/GraphType/GraphConstants";
+import { DRIFT_GRAPH } from "../Components/Navbar/NavbarComponents/GraphType/GraphConstants";
 import { IEvent, IEventMap } from "../Types/Events";
 import { IFilter, IGraphType } from "../Types/Graph";
 import { IForceUpdate } from "../Types/Other";
@@ -30,7 +30,7 @@ export const EMPTY_STATE: IStoreState = {
     WebsiteReducer: {
       graphFilters: [],
       graphRef: null,
-      graphType: ONE_ON_ONE_GRAPH,
+      graphType: DRIFT_GRAPH,
       selectedEvent: undefined,
     }
   };

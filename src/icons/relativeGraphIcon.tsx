@@ -2,11 +2,10 @@ import * as React from "react";
 
 import { IIconProps } from "./icon";
 
-export class OneOnOneGraphIcon extends React.Component<IIconProps> {
+export class RelativeGraphIcon extends React.Component<IIconProps> {
     public render() {
         return (
             <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 55" {...this.props.attributes}>
-                <title>1-on-1</title>
                 <line x1="15.76" y1="27.46" x2="47" y2="39"/>
                 <line x1="15.76" y1="27.46" x2="127" y2="31"/>
                 <line x1="15.76" y1="27.46" x2="87" y2="14"/>

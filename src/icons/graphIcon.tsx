@@ -6,6 +6,9 @@ export class GraphIcon extends React.Component<IIconProps> {
     public render() {
         return (
             <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 63 63" {...this.props.attributes}>
+                {/* <defs>
+                <style>.cls-1,.cls-2,.cls-3{fill:none;stroke:#000;stroke-miterlimit:10;}.cls-2{stroke-width:2px;}.cls-3{stroke-width:3px;}</style>
+                </defs> */}
                 <title>graph</title>
                 <circle cx="6.19" cy="57.42" r="5.11"/>
                 <circle cx="14.84" cy="17.33" r="6.17"/>

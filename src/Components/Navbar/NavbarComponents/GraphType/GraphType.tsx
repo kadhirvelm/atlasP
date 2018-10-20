@@ -1,13 +1,14 @@
+import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Button } from "@blueprintjs/core";
+import { Tooltip } from "@blueprintjs/core";
 
 import IStoreState from "../../../../State/IStoreState";
 import { ChangeGraphType } from "../../../../State/WebsiteActions";
 import { IGraphType } from "../../../../Types/Graph";
-import { DRIFT_GRAPH, ONE_ON_ONE_GRAPH } from "./GraphConstants";
+import { GRAPHS } from "./GraphConstants";
 
 import "./GraphType.css";
 
@@ -23,8 +24,17 @@ class PureGraphType extends React.PureComponent<IGraphTypeStoreProps & IGraphTyp
     public render() {
         return (
             <div className="graph-type-container">
-                <Button text="One-on-One" onClick={this.change(ONE_ON_ONE_GRAPH) } />
-                <Button text="Drift" onClick={this.change(DRIFT_GRAPH) } />
+                {GRAPHS.map(this.renderSingleGraph)}
+            </div>
+        )
+    }
+
+    private renderSingleGraph = (graph: IGraphType, index: number) => {
+        return (
+            <div className={classNames("graph-type", { "graph-type-selected": this.props.currentGraph.id === graph.id })} key={index} onClick={this.change(graph)}>
+                <Tooltip content={graph.tooltip} hoverOpenDelay={1000}>
+                    {graph.icon}
+                </Tooltip>
             </div>
         )
     }

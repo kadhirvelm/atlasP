@@ -5,8 +5,7 @@ import { IIconProps } from "./icon";
 export class DriftGraphIcon extends React.Component<IIconProps> {
     public render() {
         return (
-            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 55">
-                <title>Drift</title>
+            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 55" {...this.props.attributes}>
                 <path d="M46.39,31.09A10.47,10.47,0,1,1,35.93,41.55,10.48,10.48,0,0,1,46.39,31.09m0-1A11.47,11.47,0,1,0,57.85,41.55,11.46,11.46,0,0,0,46.39,30.09Z"/>
                 <line x1="26.09" y1="16.1" x2="72.5" y2="27.5"/>
                 <line x1="56.03" y1="36.37" x2="72.5" y2="27.5"/>

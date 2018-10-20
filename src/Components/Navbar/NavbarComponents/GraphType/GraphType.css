@@ -3,11 +3,57 @@
     flex-direction: column;
 }
 
-.graph-type-single {
-    display: flex;
-    flex: 1;
+.graph-type {
+    position: relative;
+    padding: 0 12.5px;
 }
 
-.graph-type-single.selected {
-    background: white;
+.graph-type-selected {
+    background: #7D6608;
+    animation: change-background 400ms ease-in;
+}
+
+@keyframes change-background {
+    0% {
+        background: #283747;
+    }
+    30% {
+        background: #283747;
+    }
+    100% {
+        background: #7D6608;
+    }
+}
+
+.graph-helper-tooltip {
+    display: flex;
+    flex-direction: column;
+    max-width: 250px;
+}
+
+.graph-helper-math-box {
+    margin-top: 10px;
+    padding: 5px;
+    background: gray;
+    border-radius: 3px;
+    color: white;
+    font-size: 10px;
+}
+
+.graph-helper-title {
+    font-size: 15px;
+    font-weight: bold; 
+    animation: fade-in-delay 500ms ease-in-out;
+}
+
+@keyframes fade-in-delay {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }

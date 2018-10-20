@@ -49,7 +49,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
     };
     public customAttributes = {
         height: ICON_SIZE,
-        style: { fill: "white", minHeight: ICON_SIZE, minWidth: ICON_SIZE },
+        style: { fill: "white", minHeight: ICON_SIZE, minWidth: ICON_SIZE, stroke: "white", },
         width: ICON_SIZE,
     };
 
@@ -103,7 +103,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
         return (
             <>
                 <NavbarRow
-                    componentHeight={100}
+                    componentHeight={125}
                     handleHoverLeave={this.handleHoverLeave}
                     isHovering={this.state.isHovering}
                     icon={<GraphIcon attributes={this.customAttributes} />}
