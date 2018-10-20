@@ -2,8 +2,7 @@ import { setWith, TypedReducer } from "redoodle";
 
 import { convertArrayToObject, convertPayloadToUser } from "../Utils/Util";
 import { ClearForceUpdate, EmptyDatabaseCache, ForceUpdate, Login, UpdateEventData, UpdateGraph, UpdateUser, UpdateUserData } from "./DatabaseActions";
-import IStoreState from "./IStoreState";
-import { EMPTY_STATE } from "./StoreCache";
+import IStoreState, { EMPTY_STATE } from "./IStoreState";
 
 export const DatabaseReducer = TypedReducer.builder<IStoreState["DatabaseReducer"]>()
     .withHandler(Login.TYPE, (state, payload) => {

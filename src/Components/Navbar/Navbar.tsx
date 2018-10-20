@@ -16,9 +16,11 @@ import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
 import { UpdateUser } from "../Dialogs/UpdateUser";
-import { Filters } from "./NavbarComponents/Filters";
+import { Filters } from "./NavbarComponents/Filters/Filters";
+import { GraphType } from "./NavbarComponents/GraphType/GraphType";
 import { NavbarRow } from "./NavbarRow";
 
+import { GraphIcon } from "../../icons/graphIcon";
 import "../Main.css";
 import "./Navbar.css";
 
@@ -101,7 +103,15 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
         return (
             <>
                 <NavbarRow
-                    className="navbar-filters"
+                    componentHeight={100}
+                    handleHoverLeave={this.handleHoverLeave}
+                    isHovering={this.state.isHovering}
+                    icon={<GraphIcon attributes={this.customAttributes} />}
+                    text="Graph Type"
+                >
+                    <GraphType />
+                </NavbarRow>
+                <NavbarRow
                     componentHeight={60}
                     handleHoverLeave={this.handleHoverLeave}
                     isHovering={this.state.isHovering}

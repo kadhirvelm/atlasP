@@ -1,0 +1,13 @@
+.graph-type-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.graph-type-single {
+    display: flex;
+    flex: 1;
+}
+
+.graph-type-single.selected {
+    background: white;
+}

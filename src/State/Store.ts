@@ -2,8 +2,7 @@ import { createStore, loggingMiddleware, reduceCompoundActions, StoreEnhancer } 
 import { applyMiddleware, Store } from "redux";
 
 import { RootReducer } from "./CombineReducers";
-import IStoreState from "./IStoreState";
-import { EMPTY_STATE } from "./StoreCache";
+import IStoreState, { EMPTY_STATE } from "./IStoreState";
 
 export default function configureStore(savedState: IStoreState): Store<IStoreState> {
   const logging = applyMiddleware(loggingMiddleware()) as StoreEnhancer;
