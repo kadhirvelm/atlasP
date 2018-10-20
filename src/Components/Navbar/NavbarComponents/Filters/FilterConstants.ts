@@ -4,13 +4,13 @@ import { GREEN_DAYS, RED_DAYS } from "../../../DisplayGraph/DisplayGraphUtils";
 
 export const BLUE_FILTER: IFilter = {
     id: "blue",
-    shouldRemove: (date: Date) => getDifferenceBetweenDates(new Date(), date) > 0,
+    shouldKeep: (date: Date) => getDifferenceBetweenDates(new Date(), date) > 0,
     type: "date",
 }
 
 export const GREEN_FILTER: IFilter = {
     id: "green",
-    shouldRemove: (date: Date) => {
+    shouldKeep: (date: Date) => {
         const days = getDifferenceBetweenDates(new Date(), date);
         return days < 0 || days > GREEN_DAYS;
     },
@@ -19,7 +19,7 @@ export const GREEN_FILTER: IFilter = {
 
 export const YELLOW_FILTER: IFilter = {
     id: "yellow",
-    shouldRemove: (date: Date) => {
+    shouldKeep: (date: Date) => {
         const days = getDifferenceBetweenDates(new Date(), date);
         return days < GREEN_DAYS || days > RED_DAYS;
     },
@@ -28,7 +28,7 @@ export const YELLOW_FILTER: IFilter = {
 
 export const RED_FILTER: IFilter = {
     id: "red",
-    shouldRemove: (date: Date) => getDifferenceBetweenDates(new Date(), date) < RED_DAYS,
+    shouldKeep: (date: Date) => getDifferenceBetweenDates(new Date(), date) < RED_DAYS,
     type: "date",
 };
 

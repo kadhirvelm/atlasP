@@ -90,7 +90,7 @@ export const selectFilteredConnections = createSelector(
         if (check === undefined) {
           return true;
         }
-        const shouldKeep = filter.shouldRemove(check);
+        const shouldKeep = filter.shouldKeep(check);
         if (!shouldKeep) {
           delete connectionEvents[user.id];
         }

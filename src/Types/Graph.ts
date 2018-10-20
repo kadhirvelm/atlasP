@@ -10,7 +10,7 @@ export interface ILink {
 export interface IFilter {
   id: string;
   type: "date" | "user";
-  shouldRemove: (value: any) => boolean;
+  shouldKeep: (value: any) => boolean;
 }
 
 export interface IGraphType {
