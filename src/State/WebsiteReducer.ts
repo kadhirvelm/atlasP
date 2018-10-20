@@ -1,7 +1,7 @@
 import { setWith, TypedReducer } from "redoodle";
 
 import IStoreState from "./IStoreState";
-import { AddGraphFilter, RemoveGraphFilter, SelectEvent, SetGraphRef, SetInfoPerson } from "./WebsiteActions";
+import { AddGraphFilter, ChangeGraphType, RemoveGraphFilter, SelectEvent, SetGraphRef, SetInfoPerson } from "./WebsiteActions";
 
 export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]>()
   .withHandler(SetInfoPerson.TYPE, (state, payload) => {
@@ -36,6 +36,11 @@ export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]
     graphFiltersCopy.splice(index, 1);
     return setWith(state, {
       graphFilters: graphFiltersCopy,
+    })
+  })
+  .withHandler(ChangeGraphType.TYPE, (state, payload) => {
+    return setWith(state, {
+      graphType: payload,
     })
   })
   .build();

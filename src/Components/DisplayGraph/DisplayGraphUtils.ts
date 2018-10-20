@@ -1,7 +1,8 @@
 import * as d3 from "d3";
 
+import { ILink } from "../../Types/Graph";
 import { IUser } from "../../Types/Users";
-import { IDateMap, ILink } from "../../Utils/selectors";
+import { IDateMap } from "../../Utils/selectors";
 import { getDifferenceBetweenDates } from "../../Utils/Util";
 
 const CHARGE_STRENGTH = -200;

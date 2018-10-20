@@ -6,6 +6,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { Icon } from "@blueprintjs/core";
 
 import { AtlasPIcon } from "../../icons/atlaspLogoIcon";
+import { GraphIcon } from "../../icons/graphIcon";
 import { NewEventIcon } from "../../icons/newEventIcon";
 import { NewPersonIcon } from "../../icons/newPersonIcon";
 import { EmptyDatabaseCache } from "../../State/DatabaseActions";
@@ -16,7 +17,8 @@ import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
 import { UpdateUser } from "../Dialogs/UpdateUser";
-import { Filters } from "./NavbarComponents/Filters";
+import { Filters } from "./NavbarComponents/Filters/Filters";
+import { GraphType } from "./NavbarComponents/GraphType/GraphType";
 import { NavbarRow } from "./NavbarRow";
 
 import "../Main.css";
@@ -47,7 +49,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
     };
     public customAttributes = {
         height: ICON_SIZE,
-        style: { fill: "white", minHeight: ICON_SIZE, minWidth: ICON_SIZE },
+        style: { fill: "white", minHeight: ICON_SIZE, minWidth: ICON_SIZE, stroke: "white", },
         width: ICON_SIZE,
     };
 
@@ -101,7 +103,15 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
         return (
             <>
                 <NavbarRow
-                    className="navbar-filters"
+                    componentHeight={125}
+                    handleHoverLeave={this.handleHoverLeave}
+                    isHovering={this.state.isHovering}
+                    icon={<GraphIcon attributes={this.customAttributes} />}
+                    text="Graph Type"
+                >
+                    <GraphType />
+                </NavbarRow>
+                <NavbarRow
                     componentHeight={60}
                     handleHoverLeave={this.handleHoverLeave}
                     isHovering={this.state.isHovering}

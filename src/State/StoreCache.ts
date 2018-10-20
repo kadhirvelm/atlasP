@@ -1,16 +1,4 @@
-import IStoreState from "./IStoreState";
-
-export const EMPTY_STATE: IStoreState = {
-  DatabaseReducer: {
-    isFetching: false,
-    isLoggedIn: false
-  },
-  WebsiteReducer: {
-    graphFilters: [],
-    graphRef: null,
-    selectedEvent: undefined,
-  }
-};
+import IStoreState, { EMPTY_STATE } from "./IStoreState";
 
 export const loadState = (): IStoreState => {
   try {

@@ -4,9 +4,9 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { Checkbox, Icon, Tooltip } from "@blueprintjs/core";
 
-import IStoreState from "../../../State/IStoreState";
-import { AddGraphFilter, RemoveGraphFilter } from "../../../State/WebsiteActions";
-import { IFilter } from "../../../Types/Graph";
+import IStoreState from "../../../../State/IStoreState";
+import { AddGraphFilter, RemoveGraphFilter } from "../../../../State/WebsiteActions";
+import { IFilter } from "../../../../Types/Graph";
 import { GREEN_FILTER, GREEN_FILTER_ID, RED_FILTER, RED_FILTER_ID, YELLOW_FILTER, YELLOW_FILTER_ID } from "./FilterConstants";
 
 import "./Filters.css";
