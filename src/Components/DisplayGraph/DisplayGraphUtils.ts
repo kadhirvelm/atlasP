@@ -58,7 +58,7 @@ export function returnSimulation(width: number, height: number) {
     const simulation = d3.forceSimulation()
         .force("charge", d3.forceManyBody().strength(CHARGE_STRENGTH))
         .force("center", d3.forceCenter(width / 2, height / 2));
-    simulation.force("link", d3.forceLink().id((link: any) => link.id).strength((link: ILink) => link.strength).distance((link: ILink) => link.distance));
+    simulation.force("link", d3.forceLink().id((link: any) => link.id).strength((link: ILink) => link.strength).distance((link: ILink) => link.distance).iterations(2));
     return simulation;
 }
 
