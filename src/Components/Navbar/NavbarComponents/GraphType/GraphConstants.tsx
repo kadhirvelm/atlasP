@@ -40,7 +40,7 @@ export const DRIFT_GRAPH: IGraphType = {
     tooltip: (
         <div className="graph-helper-tooltip">
             <div className="graph-helper-title">Drift</div>
-            The longer it's been since you've seen a friend, the farther they will drift from you.
+            The longer it's been since you've seen a friend, the farther they will drift away from you.
             <div className="graph-helper-math-box">
                 Distance = Math.log(# days since last event)
             </div>
@@ -126,9 +126,9 @@ export const GROUPS_GRAPH: IGraphType = {
     tooltip: (
         <div className="graph-helper-tooltip">
             <div className="graph-helper-title">Groups</div>
-            Clusters your friend groups together. Whenever one person sees another, the graph bring them closer together.
+            Whenever one person sees another, the graph will bring them closer together.
             <div className="graph-helper-math-box">
-                Strength = #(selected user events)
+                Strength = #(selected user events) / (Maximum # events)
             </div>
         </div>
     ),
