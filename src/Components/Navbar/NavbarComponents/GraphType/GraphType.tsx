@@ -32,7 +32,7 @@ class PureGraphType extends React.PureComponent<IGraphTypeStoreProps & IGraphTyp
     private renderSingleGraph = (graph: IGraphType, index: number) => {
         return (
             <div className={classNames("graph-type", { "graph-type-selected": this.props.currentGraph.id === graph.id })} key={index} onClick={this.change(graph)}>
-                <Tooltip content={graph.tooltip} hoverOpenDelay={1000}>
+                <Tooltip content={graph.tooltip} hoverOpenDelay={400}>
                     {graph.icon}
                 </Tooltip>
             </div>

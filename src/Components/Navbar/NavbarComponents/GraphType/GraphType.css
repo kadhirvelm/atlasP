@@ -43,14 +43,14 @@
 .graph-helper-title {
     font-size: 15px;
     font-weight: bold; 
-    animation: fade-in-delay 500ms ease-in-out;
+    animation: fade-in-delay 750ms ease-in-out;
 }
 
 @keyframes fade-in-delay {
     0% {
         opacity: 0;
     }
-    50% {
+    66% {
         opacity: 0;
     }
     100% {
