@@ -155,6 +155,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         const svg = d3.select("#graph").attr("width", width).attr("height", height);
         svg.selectAll("*").remove();
         const simulation = returnSimulation(width, height);
+        simulation.restart();
 
         this.runSimulation(svg, peopleGraph, simulation);
     }
