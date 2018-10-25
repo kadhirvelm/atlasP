@@ -6,13 +6,25 @@ import { bindActionCreators, Dispatch } from "redux";
 import { Button } from "@blueprintjs/core";
 
 import IStoreState from "../../State/IStoreState";
-import { SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
+import { SetContextMenuNode, SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
 import { IUser, IUserMap } from "../../Types/Users";
 import { IPeopleGraph, selectMainPersonGraph } from "../../Utils/selectors";
 import { Autocomplete } from "../Common/Autocomplete";
-import { maybeApplyLinkForce, returnBoundRectangle, returnDragDrop, returnLinkElements, returnNames, returnNodeElements, returnSimulation, zoomByScale, zoomToNode } from "./DisplayGraphUtils";
+import { GraphContextMenu } from "./ContextMenu";
+import {
+    maybeApplyLinkForce,
+    returnBoundRectangle,
+    returnDragDrop,
+    returnLinkElements,
+    returnNames,
+    returnNodeElements,
+    returnSimulation,
+    zoomByScale,
+    zoomToNode
+} from "./DisplayGraphUtils";
 
 import "./DisplayGraph.css";
+
 
 export interface IDisplayGraphStoreProps {
     currentUser: IUser | undefined;
@@ -22,8 +34,16 @@ export interface IDisplayGraphStoreProps {
 }
 
 export interface IDisplayGraphDispatchProps {
+    setContextNode(node: IUser | undefined): void;
     setGraphRef(ref: HTMLElement | null): void;
     setInfoPerson(infoPerson: IUser): void;
+}
+
+export interface IGraphUser extends IUser {
+    vx: number;
+    vy: number;
+    x: number;
+    y: number;
 }
 
 const INITIAL_ZOOM_DELAY = 250;
@@ -78,6 +98,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                     </div>
                 </div>
                 <svg id="graph" className="d3-graph" />
+                <GraphContextMenu />
             </div>
         );
     }
@@ -108,7 +129,13 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
         this.props.setInfoPerson(node);
     }
 
-    private handleClick = (node: IUser) => this.props.setInfoPerson(node);
+    private handleClick = (node: IUser) => {
+        this.props.setInfoPerson(node);
+    }
+
+    private handleContextMenu = (node: IGraphUser) => {
+        this.props.setContextNode(node);
+    }
 
     private runSimulation(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, peopleGraph: IPeopleGraph, simulation: d3.Simulation<{}, undefined>) {
         const linkElements = returnLinkElements(svg, peopleGraph.links);
@@ -125,7 +152,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             names.transition().duration(500).attr("transform", zoomToPersonTransform);
         });
         const nodeElements = returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents, this.props.currentUser, this.handleClick);
-        const names = returnNames(svg, peopleGraph.nodes, this.handleClick);
+        const names = returnNames(svg, peopleGraph.nodes, this.handleClick, this.handleContextMenu);
         
         simulation.nodes(peopleGraph.nodes).on("tick", () => {
             nodeElements
@@ -172,6 +199,7 @@ function mapStateToProps(state: IStoreState): IDisplayGraphStoreProps {
 
 function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {
     return bindActionCreators({
+            setContextNode: SetContextMenuNode.create,
             setGraphRef: SetGraphRef.create,
             setInfoPerson: SetInfoPerson.create,
         }, dispatch)

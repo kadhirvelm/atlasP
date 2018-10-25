@@ -1,5 +1,6 @@
 import { TypedAction } from "redoodle";
 
+import { IGraphUser } from "../Components/DisplayGraph/DisplayGraph";
 import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType } from "../Types/Graph";
 import { IUser } from "../Types/Users";
@@ -17,3 +18,5 @@ export const AddGraphFilter = TypedAction.define("WebsiteAction//ADD_GRAPH_FILTE
 export const RemoveGraphFilter = TypedAction.define("WebsiteAction//REMOVE_GRAPH_FILTER")<string>();
 
 export const ChangeGraphType = TypedAction.define("WebsiteAction//CHANGE_GRAPH_TYPE")<IGraphType>();
+
+export const SetContextMenuNode = TypedAction.define("WebsiteAction//SET_CONTEXT_MENU_NODE")<IGraphUser | undefined>();

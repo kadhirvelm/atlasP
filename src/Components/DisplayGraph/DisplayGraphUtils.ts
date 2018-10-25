@@ -4,6 +4,7 @@ import { ILink } from "../../Types/Graph";
 import { IUser } from "../../Types/Users";
 import { IDateMap } from "../../Utils/selectors";
 import { getDifferenceBetweenDates } from "../../Utils/Util";
+import { IGraphUser } from "./DisplayGraph";
 
 const CHARGE_STRENGTH = -200;
 const GRAPH_ID = "BOUNDING_RECTANGLE";
@@ -104,7 +105,7 @@ export function returnNodeElements(svg: d3.Selection<d3.BaseType, {}, HTMLElemen
             .attr("id", (node: IUser) => node.id);
 }
 
-export function returnNames(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[], handleClick: (node: IUser) => void) {
+export function returnNames(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[], handleClick: (node: IUser) => void, handleContextMenu: (node: IUser) => void) {
     return svg.append("g")
         .selectAll("text")
         .exit().remove()
@@ -117,6 +118,10 @@ export function returnNames(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>
             .attr("dx", (node) => -((node.name.split(" ")[0]).length + 2) * 3.5)
             .attr("dy", 5)
             .on("click", handleClick)
+            .on("contextmenu", (node: IGraphUser) => {
+                d3.event.preventDefault();
+                handleContextMenu(node);
+            })
             .attr("class", "name")
 }
 

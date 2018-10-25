@@ -1,0 +1,37 @@
+.context-menu-container {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    z-index: 10;
+    background: rgba(28,37,47, 0.90);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 3px;
+    width: 150px;
+    animation: fade-in 200ms ease-in;
+    padding-bottom: 5px;
+}
+
+.context-menu-node-name {
+    position: relative;
+    font-size: 16px;
+    padding: 5px;
+}
+
+.context-menu-option {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.35);
+    margin: 0 5px;
+    transition: background-color 200ms ease-in;
+    cursor: pointer;
+}
+
+.context-menu-option:hover {
+    background-color: #7D6608;
+}
+
+.context-menu-icon {
+    margin: 0 10px;
+}
