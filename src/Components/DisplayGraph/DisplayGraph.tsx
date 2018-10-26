@@ -3,14 +3,12 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Button } from "@blueprintjs/core";
-
 import IStoreState from "../../State/IStoreState";
 import { SetContextMenuNode, SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
-import { IUser, IUserMap } from "../../Types/Users";
+import { IUser } from "../../Types/Users";
 import { IPeopleGraph, selectMainPersonGraph } from "../../Utils/selectors";
-import { Autocomplete } from "../Common/Autocomplete";
 import { GraphContextMenu } from "./ContextMenu";
+import { DisplayGraphHelpers } from "./DisplayGraphHelpers";
 import {
     maybeApplyLinkForce,
     returnBoundRectangle,
@@ -19,18 +17,15 @@ import {
     returnNames,
     returnNodeElements,
     returnSimulation,
-    zoomByScale,
     zoomToNode
 } from "./DisplayGraphUtils";
 
 import "./DisplayGraph.css";
 
-
 export interface IDisplayGraphStoreProps {
     currentUser: IUser | undefined;
     graphRef: HTMLElement | null;
     peopleGraph: IPeopleGraph | undefined;
-    userMap: IUserMap | undefined;
 }
 
 export interface IDisplayGraphDispatchProps {
@@ -71,47 +66,11 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                 ref={this.setRef}
                 className="d3-graph-container"
             >
-                <div className="graph-helpers">
-                    <Autocomplete
-                        className="find-user-autocomplete"
-                        dataSource={this.props.userMap}
-                        displayKey="name"
-                        placeholderText="Search for user…"
-                        onSelection={this.zoomToNode}
-                    />
-                    <div className="graph-assistant-buttons">
-                        <Button
-                            className="zoom-in-button"
-                            icon="zoom-in"
-                            onClick={this.zoomIn}
-                        />
-                        <Button
-                            className="zoom-in-button"
-                            icon="zoom-out"
-                            onClick={this.zoomOut}
-                        />
-                        <Button
-                            className="reset-graph-button"
-                            icon="locate"
-                            onClick={this.resetGraph}
-                        />
-                    </div>
-                </div>
+                <DisplayGraphHelpers zoomToNode={this.zoomToNode} />
+                <GraphContextMenu onZoomClick={this.zoomToNode} />
                 <svg id="graph" className="d3-graph" />
-                <GraphContextMenu />
             </div>
         );
-    }
-
-    private zoomIn = () => zoomByScale(1.25);
-    private zoomOut = () => zoomByScale(0.75);
-
-    private resetGraph = () => {
-        const { graphRef } = this.props;
-        if (graphRef === null) {
-            return;
-        }
-        this.renderD3Graph(graphRef.clientWidth, graphRef.clientHeight, this.props.peopleGraph);
     }
 
     private zoomToCurrentUser() {
@@ -120,22 +79,17 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             return;
         }
         setTimeout(() => {
-            this.zoomToNode(currentUser, 0.7);
+            this.zoomToNode(currentUser, 0.5);
         }, INITIAL_ZOOM_DELAY);
     }
 
-    private zoomToNode = (node: IUser, zoomAmount: number = 2.5) => {
+    private zoomToNode = (node: IUser | IGraphUser, zoomAmount: number = 2.5) => {
         zoomToNode(node.id, zoomAmount);
         this.props.setInfoPerson(node);
     }
 
-    private handleClick = (node: IUser) => {
-        this.props.setInfoPerson(node);
-    }
-
-    private handleContextMenu = (node: IGraphUser) => {
-        this.props.setContextNode(node);
-    }
+    private handleClick = (node: IGraphUser) => this.props.setInfoPerson(node);
+    private handleContextMenu = (node: IGraphUser) => this.props.setContextNode(node);
 
     private runSimulation(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, peopleGraph: IPeopleGraph, simulation: d3.Simulation<{}, undefined>) {
         const linkElements = returnLinkElements(svg, peopleGraph.links);
@@ -193,7 +147,6 @@ function mapStateToProps(state: IStoreState): IDisplayGraphStoreProps {
         currentUser: state.DatabaseReducer.currentUser,
         graphRef: state.WebsiteReducer.graphRef,
         peopleGraph: selectMainPersonGraph(state),
-        userMap: state.DatabaseReducer.userData,
     };
 }
 

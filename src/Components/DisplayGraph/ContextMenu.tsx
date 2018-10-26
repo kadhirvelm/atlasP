@@ -2,12 +2,17 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { Icon } from "@blueprintjs/core";
+
 import IStoreState from "../../State/IStoreState";
 import { SetContextMenuNode } from "../../State/WebsiteActions";
 import { IGraphUser } from "./DisplayGraph";
 
-import { Icon } from "@blueprintjs/core";
 import "./ContextMenu.css";
+
+export interface IGraphContextMenuProps {
+    onZoomClick(node: IGraphUser): void;
+}
 
 export interface IGraphContextMenuStoreProps {
     currentContextNode: IGraphUser | undefined;
@@ -22,7 +27,7 @@ export interface IGraphContextMenuState {
     screenY: number;
 }
 
-class PureGraphContextMenu extends React.PureComponent<IGraphContextMenuStoreProps & IGraphContextMenuDispatchProps, IGraphContextMenuState> {
+class PureGraphContextMenu extends React.PureComponent<IGraphContextMenuStoreProps & IGraphContextMenuProps & IGraphContextMenuDispatchProps, IGraphContextMenuState> {
     public state = {
         screenX: 0,
         screenY: 0,
@@ -50,34 +55,41 @@ class PureGraphContextMenu extends React.PureComponent<IGraphContextMenuStorePro
         return(
             <div className="context-menu-container" ref={this.setRef.div} style={ { top: this.state.screenY, left: this.state.screenX }}>
                 <div className="context-menu-node-name">{currentContextNode.name}</div>
-                <div className="context-menu-option">
-                    <Icon className="context-menu-icon" icon="highlight" /> Highlight connections
-                </div>
-                <div className="context-menu-option">
-                    <Icon className="context-menu-icon" icon="zoom-in" /> Zoom to friend
+                <div className="context-menu-option" onClick={this.handleZoomClick}>
+                    <Icon className="context-menu-icon" icon="zoom-in" /> Zoom
                 </div>
             </div>
         )
     }
 
-    public setMouseCoordinates = (event: any) => {
-        this.setState({ screenX: event.clientX, screenY: event.clientY });
+    private setMouseCoordinates = (event: any) => this.setState({ screenX: event.clientX, screenY: event.clientY });
+
+    private handleZoomClick = () => {
+        const { currentContextNode } = this.props;
+        if (currentContextNode === undefined) {
+            return;
+        }
+        this.props.onZoomClick(currentContextNode);
+        this.close();
     }
 
     private checkForOutsideClick = (event: any) => {
-        if (this.ref === null) {
+        if (
+            this.ref === null ||
+            (this.isInConstraint(event.clientX, this.state.screenX, this.ref.clientWidth) &&
+            this.isInConstraint(event.clientY, this.state.screenY, this.ref.clientHeight))
+            ) {
             return;
         }
-        if (this.isInConstraint(event.clientX, this.state.screenX, this.ref.clientWidth) && this.isInConstraint(event.clientY, this.state.screenY, this.ref.clientHeight)) {
-            return;
-        }
-        this.props.setContextMenuNode(undefined);
+        this.close();
     }
 
     private isInConstraint(click: number, window: number, size: number) {
         const totalSize = click - window;
         return totalSize > 0 && totalSize < size;
     }
+
+    private close = () => this.props.setContextMenuNode(undefined);
 }
 
 function mapStateToProps(state: IStoreState): IGraphContextMenuStoreProps {
