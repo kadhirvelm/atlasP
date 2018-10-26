@@ -25,7 +25,7 @@ export interface IMainDispatchProps {
   getLatestGraph(user: IUser): void;
 };
 
-export class PureMain extends React.Component<IMainStoreProps & IMainDispatchProps> {
+export class PureMain extends React.PureComponent<IMainStoreProps & IMainDispatchProps> {
 
   public constructor(props: any) {
     super(props);

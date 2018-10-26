@@ -34,7 +34,7 @@ export interface IAddNewEventState {
     isSubmitting: boolean;
 }
 
-export class PureAddNewEvent extends React.Component<
+export class PureAddNewEvent extends React.PureComponent<
     IDialogProps & IAddNewEventStateProps & IAddNewEventDispatchProps, IAddNewEventState> {
     public EMPTY_STATE: IAddNewEventState = {
         isSubmitting: false,

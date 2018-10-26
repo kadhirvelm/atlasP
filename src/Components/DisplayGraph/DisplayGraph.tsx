@@ -43,7 +43,7 @@ export interface IGraphUser extends IUser {
 
 const INITIAL_ZOOM_DELAY = 250;
 
-class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
+class PureDispayGraph extends React.PureComponent<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     public setRef = (ref: HTMLElement | null ) => {
         if (this.props.graphRef != null || ref === null) {
             return;

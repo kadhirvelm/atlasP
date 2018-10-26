@@ -31,7 +31,7 @@ export interface IUpdateEventState {
     selectedEvent?: IEvent;
 }
 
-class PureUpdateEvent extends React.Component<IDialogProps & IUpdateEventStoreProps & IUpdateEventDispatchProps, IUpdateEventState> {
+class PureUpdateEvent extends React.PureComponent<IDialogProps & IUpdateEventStoreProps & IUpdateEventDispatchProps, IUpdateEventState> {
     public state = {
         isLoading: false,
         newDate: "",

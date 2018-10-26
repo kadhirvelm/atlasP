@@ -25,7 +25,7 @@ export interface ISinglePersonDataDialogState {
     openInformationPopover: string | undefined;
 }
 
-export class PureSinglePersonDataDialog extends React.Component<
+export class PureSinglePersonDataDialog extends React.PureComponent<
     ISinglePersonDataDialogProps & ISinglePersonDataDialogStoreProps,
     ISinglePersonDataDialogState> {
     public state = {

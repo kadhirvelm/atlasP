@@ -29,7 +29,7 @@ interface IStateProps {
     openInformationPopover: boolean;
 }
 
-class PureInfoGraphic extends React.Component<IInfoGraphicProps & IInfoGraphDispatchProps, IStateProps> {
+class PureInfoGraphic extends React.PureComponent<IInfoGraphicProps & IInfoGraphDispatchProps, IStateProps> {
     public state = {
         openDialog: false,
         openInformationPopover: false,
