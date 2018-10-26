@@ -25,7 +25,7 @@ interface IAutocompleteState {
     openAutofill: boolean;
 }
 
-export class Autocomplete extends React.Component<IAutocompleteProps, IAutocompleteState> {
+export class Autocomplete extends React.PureComponent<IAutocompleteProps, IAutocompleteState> {
     public state = {
         openAutofill: false,
         searchText: "",

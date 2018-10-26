@@ -3,14 +3,22 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Button } from "@blueprintjs/core";
-
 import IStoreState from "../../State/IStoreState";
-import { SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
-import { IUser, IUserMap } from "../../Types/Users";
+import { SetContextMenuNode, SetGraphRef, SetInfoPerson } from "../../State/WebsiteActions";
+import { IUser } from "../../Types/Users";
 import { IPeopleGraph, selectMainPersonGraph } from "../../Utils/selectors";
-import { Autocomplete } from "../Common/Autocomplete";
-import { maybeApplyLinkForce, returnBoundRectangle, returnDragDrop, returnLinkElements, returnNames, returnNodeElements, returnSimulation, zoomByScale, zoomToNode } from "./DisplayGraphUtils";
+import { GraphContextMenu } from "./ContextMenu";
+import { DisplayGraphHelpers } from "./DisplayGraphHelpers";
+import {
+    maybeApplyLinkForce,
+    returnBoundRectangle,
+    returnDragDrop,
+    returnLinkElements,
+    returnNames,
+    returnNodeElements,
+    returnSimulation,
+    zoomToNode
+} from "./DisplayGraphUtils";
 
 import "./DisplayGraph.css";
 
@@ -18,17 +26,24 @@ export interface IDisplayGraphStoreProps {
     currentUser: IUser | undefined;
     graphRef: HTMLElement | null;
     peopleGraph: IPeopleGraph | undefined;
-    userMap: IUserMap | undefined;
 }
 
 export interface IDisplayGraphDispatchProps {
+    setContextNode(node: IUser | undefined): void;
     setGraphRef(ref: HTMLElement | null): void;
     setInfoPerson(infoPerson: IUser): void;
 }
 
+export interface IGraphUser extends IUser {
+    vx: number;
+    vy: number;
+    x: number;
+    y: number;
+}
+
 const INITIAL_ZOOM_DELAY = 250;
 
-class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
+class PureDispayGraph extends React.PureComponent<IDisplayGraphStoreProps & IDisplayGraphDispatchProps> {
     public setRef = (ref: HTMLElement | null ) => {
         if (this.props.graphRef != null || ref === null) {
             return;
@@ -51,46 +66,11 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
                 ref={this.setRef}
                 className="d3-graph-container"
             >
-                <div className="graph-helpers">
-                    <Autocomplete
-                        className="find-user-autocomplete"
-                        dataSource={this.props.userMap}
-                        displayKey="name"
-                        placeholderText="Search for user…"
-                        onSelection={this.zoomToNode}
-                    />
-                    <div className="graph-assistant-buttons">
-                        <Button
-                            className="zoom-in-button"
-                            icon="zoom-in"
-                            onClick={this.zoomIn}
-                        />
-                        <Button
-                            className="zoom-in-button"
-                            icon="zoom-out"
-                            onClick={this.zoomOut}
-                        />
-                        <Button
-                            className="reset-graph-button"
-                            icon="locate"
-                            onClick={this.resetGraph}
-                        />
-                    </div>
-                </div>
+                <DisplayGraphHelpers zoomToNode={this.zoomToNode} />
+                <GraphContextMenu onZoomClick={this.zoomToNode} />
                 <svg id="graph" className="d3-graph" />
             </div>
         );
-    }
-
-    private zoomIn = () => zoomByScale(1.25);
-    private zoomOut = () => zoomByScale(0.75);
-
-    private resetGraph = () => {
-        const { graphRef } = this.props;
-        if (graphRef === null) {
-            return;
-        }
-        this.renderD3Graph(graphRef.clientWidth, graphRef.clientHeight, this.props.peopleGraph);
     }
 
     private zoomToCurrentUser() {
@@ -99,16 +79,17 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             return;
         }
         setTimeout(() => {
-            this.zoomToNode(currentUser, 0.7);
+            this.zoomToNode(currentUser, 0.5);
         }, INITIAL_ZOOM_DELAY);
     }
 
-    private zoomToNode = (node: IUser, zoomAmount: number = 2.5) => {
+    private zoomToNode = (node: IUser | IGraphUser, zoomAmount: number = 2.5) => {
         zoomToNode(node.id, zoomAmount);
         this.props.setInfoPerson(node);
     }
 
-    private handleClick = (node: IUser) => this.props.setInfoPerson(node);
+    private handleClick = (node: IGraphUser) => this.props.setInfoPerson(node);
+    private handleContextMenu = (node: IGraphUser) => this.props.setContextNode(node);
 
     private runSimulation(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, peopleGraph: IPeopleGraph, simulation: d3.Simulation<{}, undefined>) {
         const linkElements = returnLinkElements(svg, peopleGraph.links);
@@ -125,7 +106,7 @@ class PureDispayGraph extends React.Component<IDisplayGraphStoreProps & IDisplay
             names.transition().duration(500).attr("transform", zoomToPersonTransform);
         });
         const nodeElements = returnNodeElements(svg, peopleGraph.nodes, peopleGraph.lastEvents, this.props.currentUser, this.handleClick);
-        const names = returnNames(svg, peopleGraph.nodes, this.handleClick);
+        const names = returnNames(svg, peopleGraph.nodes, this.handleClick, this.handleContextMenu);
         
         simulation.nodes(peopleGraph.nodes).on("tick", () => {
             nodeElements
@@ -166,12 +147,12 @@ function mapStateToProps(state: IStoreState): IDisplayGraphStoreProps {
         currentUser: state.DatabaseReducer.currentUser,
         graphRef: state.WebsiteReducer.graphRef,
         peopleGraph: selectMainPersonGraph(state),
-        userMap: state.DatabaseReducer.userData,
     };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphDispatchProps {
     return bindActionCreators({
+            setContextNode: SetContextMenuNode.create,
             setGraphRef: SetGraphRef.create,
             setInfoPerson: SetInfoPerson.create,
         }, dispatch)

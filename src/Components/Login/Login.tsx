@@ -21,7 +21,7 @@ export interface ILoginComponentState {
     phoneNumber: string;
 }
 
-class PureLoginComponent extends React.Component<ILoginComponentDispatchProps, ILoginComponentState> {
+class PureLoginComponent extends React.PureComponent<ILoginComponentDispatchProps, ILoginComponentState> {
     public state: ILoginComponentState = {
         claimNumber: "",
         password: "",

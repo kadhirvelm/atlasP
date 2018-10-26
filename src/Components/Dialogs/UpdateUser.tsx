@@ -29,7 +29,7 @@ export interface IUpdateUserState {
     isLoading: boolean;
 }
 
-class PureUpdateUser extends React.Component<IDialogProps & IUpdateUserStoreProps & IUpdateUserDispatchProps> {
+class PureUpdateUser extends React.PureComponent<IDialogProps & IUpdateUserStoreProps & IUpdateUserDispatchProps> {
     public state = {
         currentUser: this.props.currentUser,
         isLoading: false,

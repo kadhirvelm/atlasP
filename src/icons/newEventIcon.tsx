@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { IIconProps } from "./icon";
 
-export class NewEventIcon extends React.Component<IIconProps> {
+export class NewEventIcon extends React.PureComponent<IIconProps> {
     public render() {
         return (
             <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 63 63" {...this.props.attributes}>

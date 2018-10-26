@@ -29,29 +29,3 @@
 .name:hover {
     opacity: 1;
 }
-
-.graph-helpers {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 2;
-    width: 250px;
-    border-radius: 3px;
-}
-
-.graph-assistant-buttons {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 5px;
-}
-
-.find-user-autocomplete {
-    display: flex;
-    flex: 1;
-}
-
-.reset-graph-button {
-    margin-left: 5px;
-}

@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { IIconProps } from "./icon";
 
-export class GroupsGraphIcon extends React.Component<IIconProps> {
+export class GroupsGraphIcon extends React.PureComponent<IIconProps> {
     public render() {
         return (
             <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 55" {...this.props.attributes}>

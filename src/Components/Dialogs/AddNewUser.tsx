@@ -44,7 +44,7 @@ const EMPTY_STATE: IAddNewPersonState = {
     isLoading: false,
 }
 
-export class PureAddNewPerson extends React.Component<
+export class PureAddNewPerson extends React.PureComponent<
     IAddNewPersonProps & IAddNewPersonStateProps & IAddNewPersonDispatchProps, IAddNewPersonState> {
     public state: IAddNewPersonState = EMPTY_STATE;
 

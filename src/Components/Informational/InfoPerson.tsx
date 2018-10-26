@@ -21,7 +21,7 @@ export interface IInfoPersonStoreProps {
     events: IEvent[] | undefined;
 }
 
-export class PureInfoPerson extends React.Component<IPersonInformationProps & IInfoPersonStoreProps> {
+export class PureInfoPerson extends React.PureComponent<IPersonInformationProps & IInfoPersonStoreProps> {
     public render() {
         if (this.props.person === undefined) {
             return this.renderNoPerson();

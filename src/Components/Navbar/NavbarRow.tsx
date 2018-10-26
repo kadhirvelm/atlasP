@@ -18,7 +18,7 @@ export interface INavbarRowState {
 
 const HEADER_HEIGHT = 50;
 
-export class NavbarRow extends React.Component<INavbarRowProps, INavbarRowState> {
+export class NavbarRow extends React.PureComponent<INavbarRowProps, INavbarRowState> {
     public state = {
         isOpen: false,
     };

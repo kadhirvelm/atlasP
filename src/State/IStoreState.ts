@@ -1,3 +1,4 @@
+import { IGraphUser } from "../Components/DisplayGraph/DisplayGraph";
 import { DRIFT_GRAPH } from "../Components/Navbar/NavbarComponents/GraphType/GraphConstants";
 import { IEvent, IEventMap } from "../Types/Events";
 import { IFilter, IGraphType } from "../Types/Graph";
@@ -14,6 +15,7 @@ export default interface IStoreState {
         userData?: IUserMap;
     };
     WebsiteReducer: {
+        contextMenuNode: IGraphUser | undefined;
         infoPerson?: IUser;
         graphFilters: IFilter[];
         graphRef: HTMLElement | null;
@@ -28,6 +30,7 @@ export const EMPTY_STATE: IStoreState = {
       isLoggedIn: false
     },
     WebsiteReducer: {
+      contextMenuNode: undefined,
       graphFilters: [],
       graphRef: null,
       graphType: DRIFT_GRAPH,
