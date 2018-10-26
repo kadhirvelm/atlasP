@@ -35,7 +35,7 @@ export const EMPTY_STATE: IStoreState = {
       graphFilters: [],
       graphRef: null,
       graphType: DRIFT_GRAPH,
-      highlightConnections: new Set,
+      highlightConnections: new Set(),
       selectedEvent: undefined,
     }
   };

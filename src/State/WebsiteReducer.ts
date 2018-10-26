@@ -65,7 +65,7 @@ export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]
   .withHandler(RemoveAllHighlights.TYPE, (state) => {
     return {
       ...state,
-      highlightConnections: new Set,
+      highlightConnections: new Set(),
     };
   })
   .build();
