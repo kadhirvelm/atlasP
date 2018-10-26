@@ -20,3 +20,9 @@ export const RemoveGraphFilter = TypedAction.define("WebsiteAction//REMOVE_GRAPH
 export const ChangeGraphType = TypedAction.define("WebsiteAction//CHANGE_GRAPH_TYPE")<IGraphType>();
 
 export const SetContextMenuNode = TypedAction.define("WebsiteAction//SET_CONTEXT_MENU_NODE")<IGraphUser | undefined>();
+
+export const AddHighlightConnection = TypedAction.define("WebsiteAction//ADD_HIGHLIGHT_CONNECTION")<string>();
+
+export const RemoveHighlightConnection = TypedAction.define("WebsiteAction//REMOVE_HIGHLIGHT_CONNECTION")<string>();
+
+export const RemoveAllHighlights = TypedAction.defineWithoutPayload("WebsiteAction//REMOVE_ALL_HIGHLIGHTS")();

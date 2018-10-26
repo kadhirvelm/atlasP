@@ -5,7 +5,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { Icon } from "@blueprintjs/core";
 
 import IStoreState from "../../State/IStoreState";
-import { SetContextMenuNode } from "../../State/WebsiteActions";
+import { AddHighlightConnection, RemoveHighlightConnection, SetContextMenuNode } from "../../State/WebsiteActions";
 import { IGraphUser } from "./DisplayGraph";
 
 import "./ContextMenu.css";
@@ -16,10 +16,13 @@ export interface IGraphContextMenuProps {
 
 export interface IGraphContextMenuStoreProps {
     currentContextNode: IGraphUser | undefined;
+    highlightConnections: Set<string>;
 }
 
 export interface IGraphContextMenuDispatchProps {
-    setContextMenuNode: (node: IGraphUser | undefined) => void;
+    addHighlight(id: string): void;
+    removeHighlight(id: string): void;
+    setContextMenuNode(node: IGraphUser | undefined): void;
 }
 
 export interface IGraphContextMenuState {
@@ -58,8 +61,33 @@ class PureGraphContextMenu extends React.PureComponent<IGraphContextMenuStorePro
                 <div className="context-menu-option" onClick={this.handleZoomClick}>
                     <Icon className="context-menu-icon" icon="zoom-in" /> Zoom
                 </div>
+                {this.renderHighlightConnections(currentContextNode)}
             </div>
         )
+    }
+
+    private renderHighlightConnections(currentContextNode: IGraphUser) {
+        if (this.props.highlightConnections.has(currentContextNode.id)) {
+            return (
+                <div className="context-menu-option" onClick={this.handleRemoveHighlight(currentContextNode.id)}>
+                    <Icon className="context-menu-icon" icon="delete" /> Remove highlight
+                </div>
+            )
+        }
+        return (
+            <div className="context-menu-option" onClick={this.handleAddHighlight(currentContextNode.id)}>
+                <Icon className="context-menu-icon" icon="highlight" /> Highlight
+            </div>
+        );
+    }
+
+    private handleAddHighlight = (id: string) => () => {
+        this.props.addHighlight(id);
+        this.close();
+    }
+    private handleRemoveHighlight = (id: string) => () => {
+        this.props.removeHighlight(id);
+        this.close();
     }
 
     private setMouseCoordinates = (event: any) => this.setState({ screenX: event.clientX, screenY: event.clientY });
@@ -95,11 +123,14 @@ class PureGraphContextMenu extends React.PureComponent<IGraphContextMenuStorePro
 function mapStateToProps(state: IStoreState): IGraphContextMenuStoreProps {
     return {
         currentContextNode: state.WebsiteReducer.contextMenuNode,
+        highlightConnections: state.WebsiteReducer.highlightConnections,
     }
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IGraphContextMenuDispatchProps {
     return bindActionCreators({
+        addHighlight: AddHighlightConnection.create,
+        removeHighlight: RemoveHighlightConnection.create,
         setContextMenuNode: SetContextMenuNode.create,
     }, dispatch);
 }

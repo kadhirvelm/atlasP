@@ -6,7 +6,7 @@ import { IDateMap } from "../../Utils/selectors";
 import { getDifferenceBetweenDates } from "../../Utils/Util";
 import { IGraphUser } from "./DisplayGraph";
 
-const CHARGE_STRENGTH = -200;
+const CHARGE_STRENGTH = -400;
 const GRAPH_ID = "BOUNDING_RECTANGLE";
 
 export const GREEN_DAYS = 30;
@@ -52,7 +52,10 @@ export function returnLinkElements(svg: d3.Selection<d3.BaseType, {}, HTMLElemen
         .exit().remove()
         .data(links)
         .enter().append("line")
-            .attr("class", "connection-line")
+            .attr("class", "link")
+            .attr("stroke", (link: ILink) => link.color || "black")
+            .attr("opacity", (link: ILink) => link.opacity || 0.1)
+            .attr("stroke-width", (link: ILink) => link.strokeWidth || 1);
 }
 
 export function returnSimulation(width: number, height: number) {

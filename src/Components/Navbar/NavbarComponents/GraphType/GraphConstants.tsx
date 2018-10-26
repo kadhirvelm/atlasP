@@ -92,13 +92,13 @@ export const RELATIVE_GRAPH: IGraphType = {
 const generateUniqueKey = (idA: string, idB: string) => idA.localeCompare(idB) === 1 ? `${idB}_${idA}` : `${idA}_${idB}`;
 
 export const GROUPS_GRAPH: IGraphType = {
-    generateLinks: (_: string, connections: IConnectionEvents) => {
+    generateLinks: (mainPerson: string, connections: IConnectionEvents) => {
         const personToPersonMapping = {};
         let maximumNormalization = 0;
         Object.entries(connections).forEach(userAndEvents => {
             userAndEvents[1].forEach((event) => {
                 event.attendees.forEach((user) => {
-                    if (user.id === userAndEvents[0] || connections[user.id] === undefined) {
+                    if (user.id === userAndEvents[0] || (connections[user.id] === undefined && user.id !== mainPerson)) {
                         return;
                     }
                     const id = generateUniqueKey(user.id.toString(), userAndEvents[0].toString());
@@ -110,7 +110,7 @@ export const GROUPS_GRAPH: IGraphType = {
         return Object.entries(personToPersonMapping).map((usersAndEvents) => {
             const users = usersAndEvents[0].split("_");
             return {
-                distance: 200,
+                distance: 500,
                 source: users[0],
                 strength: (usersAndEvents[1] as number) / maximumNormalization,
                 target: users[1],

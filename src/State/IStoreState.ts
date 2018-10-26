@@ -20,6 +20,7 @@ export default interface IStoreState {
         graphFilters: IFilter[];
         graphRef: HTMLElement | null;
         graphType: IGraphType;
+        highlightConnections: Set<string>;
         selectedEvent: IEvent | undefined;
     };
 }
@@ -34,6 +35,7 @@ export const EMPTY_STATE: IStoreState = {
       graphFilters: [],
       graphRef: null,
       graphType: DRIFT_GRAPH,
+      highlightConnections: new Set(),
       selectedEvent: undefined,
     }
   };

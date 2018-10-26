@@ -68,10 +68,12 @@ class PureDispayGraph extends React.PureComponent<IDisplayGraphStoreProps & IDis
             >
                 <DisplayGraphHelpers zoomToNode={this.zoomToNode} />
                 <GraphContextMenu onZoomClick={this.zoomToNode} />
-                <svg id="graph" className="d3-graph" />
+                <svg id="graph" className="d3-graph" onContextMenu={this.disableContextMenu}/>
             </div>
         );
     }
+
+    private disableContextMenu = (event: React.MouseEvent<SVGElement>) => event.preventDefault();
 
     private zoomToCurrentUser() {
         const { currentUser } = this.props;
