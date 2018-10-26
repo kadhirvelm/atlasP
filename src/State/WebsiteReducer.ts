@@ -1,7 +1,7 @@
 import { setWith, TypedReducer } from "redoodle";
 
 import IStoreState from "./IStoreState";
-import { AddGraphFilter, ChangeGraphType, RemoveGraphFilter, SelectEvent, SetContextMenuNode, SetGraphRef, SetInfoPerson } from "./WebsiteActions";
+import { AddGraphFilter, AddHighlightConnection, ChangeGraphType, RemoveAllHighlights, RemoveGraphFilter, RemoveHighlightConnection, SelectEvent, SetContextMenuNode, SetGraphRef, SetInfoPerson } from "./WebsiteActions";
 
 export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]>()
   .withHandler(SetInfoPerson.TYPE, (state, payload) => {
@@ -47,5 +47,25 @@ export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]
     return setWith(state, {
       contextMenuNode: payload,
     })
+  })
+  .withHandler(AddHighlightConnection.TYPE, (state, payload) => {
+    const highlightConnections = new Set(state.highlightConnections);
+    highlightConnections.add(payload);
+    return setWith(state, {
+      highlightConnections,
+    })
+  })
+  .withHandler(RemoveHighlightConnection.TYPE, (state, payload) => {
+    const highlightConnections = new Set(state.highlightConnections);
+    highlightConnections.delete(payload);
+    return setWith(state, {
+      highlightConnections,
+    })
+  })
+  .withHandler(RemoveAllHighlights.TYPE, (state) => {
+    return {
+      ...state,
+      highlightConnections: new Set,
+    };
   })
   .build();

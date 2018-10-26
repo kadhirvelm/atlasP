@@ -102,7 +102,7 @@ export const selectFilteredConnections = createSelector(
   }
 );
 
-export const selectMainPersonGraph = createSelector(
+export const selectLinkedConnections = createSelector(
   selectFilteredConnections,
   (state: IStoreState) => state.DatabaseReducer.currentUser,
   (state: IStoreState) => state.WebsiteReducer.graphType,
@@ -114,6 +114,46 @@ export const selectMainPersonGraph = createSelector(
       lastEvents: filteredNodes.lastEvents,
       links: graphType.generateLinks(mainPerson.id, filteredNodes.connectionEvents),
       nodes: filteredNodes.nodes,
+    };
+  }
+);
+
+const resetLink = (link: ILink) => {
+  link.color = "black";
+  link.opacity = 0.1;
+  link.strokeWidth = 1;
+}
+
+const setLink = (link: ILink, totalHits: number) => {
+  link.color = totalHits === 1 ? "#7D6608" : "#6E2C00";
+  link.opacity = totalHits === 1 ? 0.5 : 1;
+  link.strokeWidth = totalHits === 1 ? 2 : 4;
+}
+
+const hasHighlight = (link: any, highlights: Set<string>) => (highlights.has(link) || highlights.has(link.id)) ? 1 : 0;
+
+export const selectMainPersonGraph = createSelector(
+  selectLinkedConnections,
+  (state: IStoreState) => state.WebsiteReducer.highlightConnections,
+  (linkedGraph: IPeopleGraph | undefined, highlightConnections: Set<string>): IPeopleGraph | undefined => {
+    if (linkedGraph === undefined) {
+      return undefined;
+    }
+
+    const resetLinks = linkedGraph.links.map((link) => ({ ...link, color: undefined, opacity: undefined, strokeWidth: undefined }));
+
+    return {
+      ...linkedGraph,
+      links: resetLinks.map((link) => {
+        const targetHasHighlight = hasHighlight(link.target, highlightConnections);
+        const sourceHasHighlight = hasHighlight(link.source, highlightConnections);
+        if (!targetHasHighlight && !sourceHasHighlight) {
+          resetLink(link);
+        } else {
+          setLink(link, targetHasHighlight + sourceHasHighlight);
+        }
+        return link;
+      }),
     };
   }
 );

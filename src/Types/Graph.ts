@@ -1,10 +1,13 @@
 import { IConnectionEvents } from "../Utils/selectors";
 
 export interface ILink {
+  color?: string;
   distance: number;
+  opacity?: number;
   source: string;
-  target: string;
   strength: number;
+  strokeWidth?: number;
+  target: string;
 }
 
 export interface IFilter {
