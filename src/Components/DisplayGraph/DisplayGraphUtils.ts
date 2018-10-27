@@ -2,7 +2,6 @@ import * as d3 from "d3";
 
 import { ILink } from "../../Types/Graph";
 import { IUser } from "../../Types/Users";
-import { IDateMap } from "../../Utils/selectors";
 import { getDifferenceBetweenDates } from "../../Utils/Util";
 import { IGraphUser } from "./DisplayGraph";
 
@@ -66,8 +65,8 @@ export function returnSimulation(width: number, height: number) {
     return simulation;
 }
 
-export function returnFill(id: string, map: IDateMap) {
-    const lastTime = map[id];
+export function returnFill(id: string, map: Map<string, Date>) {
+    const lastTime = map.get(id);
     if (lastTime === undefined) {
         return GRAY;
     }
@@ -92,7 +91,7 @@ export function maybeApplyLinkForce(simulation: d3.Simulation<{}, undefined>, li
     linkForce.links(links);
 }
 
-export function returnNodeElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[], lastEvents: IDateMap, currentUser: IUser | undefined, handleClick: (node: IUser) => void) {
+export function returnNodeElements(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, nodes: IUser[], lastEvents: Map<string, Date>, currentUser: IUser | undefined, handleClick: (node: IUser) => void) {
     if (currentUser === undefined) {
         throw new Error("Tried to fetch an undefined current user in graph");
     }
@@ -130,6 +129,10 @@ export function returnNames(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>
 
 export function zoomToNode(id: string, zoomAmount: number) {
     const selectedNode = d3.select(`[id="${id}"]`)
+    if (selectedNode == null || selectedNode.size() === 0) {
+        return;
+    }
+
     d3.select(`#${GRAPH_ID}`)
         .call(d3.zoom().translateTo, parseInt(selectedNode.attr("cx"), 10), parseInt(selectedNode.attr("cy"), 10))
         .call(d3.zoom().scaleTo, zoomAmount)

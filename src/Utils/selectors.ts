@@ -1,38 +1,31 @@
 import { createSelector } from "reselect";
 
 import IStoreState from "../State/IStoreState";
-import { IEvent, IEventMap } from "../Types/Events";
+import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType, ILink } from "../Types/Graph";
-import { IUser, IUserMap } from "../Types/Users";
+import { IUser } from "../Types/Users";
 import Event from "./Event";
 import { getLatestEventDate } from "./Util";
 
-export interface IDateMap {
-  [id: string]: Date;
-}
-
-export interface IConnectionEvents {
-  [key: string]: IEvent[];
-}
-
 export interface IFilteredNodes {
   nodes: IUser[];
-  lastEvents: IDateMap;
-  connectionEvents: IConnectionEvents;
+  lastEvents: Map<string, Date>;
+  connectionEvents: Map<string, IEvent[]>;
 }
 
 export interface IPeopleGraph {
   nodes: IUser[];
-  lastEvents: IDateMap;
+  lastEvents: Map<string, Date>;
   links: ILink[];
 }
 
-function returnLastEvents(connectionCopy: IConnectionEvents) {
-  const lastEvents = {};
-  Object.keys(connectionCopy).forEach((key) => {
-      const events = connectionCopy[key];
-      lastEvents[key] = events.length === 0 ? undefined : getLatestEventDate(events).date;
-  });
+function returnLastEvents(connectionCopy: Map<string, IEvent[]>) {
+  const lastEvents = new Map;
+  Array.from(connectionCopy.keys()).forEach((id) => {
+      const events = connectionCopy.get(id) as IEvent[];
+      const lastEvent = events.length === 0 ? undefined : getLatestEventDate(events).date;
+      lastEvents.set(id, lastEvent);
+  })
   return lastEvents;
 }
 
@@ -42,8 +35,8 @@ export const selectConnectionsAndDates = createSelector(
   (state: IStoreState) => state.DatabaseReducer.eventData,
   (
     mainPerson: IUser | undefined,
-    allUsers: IUserMap | undefined,
-    allEvents: IEventMap | undefined,
+    allUsers: Map<string, IUser> | undefined,
+    allEvents: Map<string, IEvent> | undefined,
   ): IFilteredNodes | undefined => {
     if (
       mainPerson === undefined ||
@@ -57,15 +50,15 @@ export const selectConnectionsAndDates = createSelector(
     const connectionCopy = { ...mainPerson.connections };
     delete connectionCopy[mainPerson.id];
 
-    const connectionEvents: IConnectionEvents = {};
+    const connectionEvents: Map<string, IEvent[]> = new Map();
     for (const key of Object.keys(connectionCopy)) {
-      connectionEvents[key] = connectionCopy[key].map((id) => allEvents[id]);
+      connectionEvents.set(key, connectionCopy[key].map((id) => allEvents.get(id) as IEvent));
     }
-
+  
     return {
       connectionEvents,
       lastEvents: returnLastEvents(connectionEvents),
-      nodes: Object.values(allUsers),
+      nodes: Array.from(allUsers.values()),
     };
   }
 );
@@ -82,17 +75,17 @@ export const selectFilteredConnections = createSelector(
     }
 
     const filteredNodesCopy = { ...filteredNodes };
-    const connectionEvents = { ...filteredNodes.connectionEvents };
+    const connectionEvents = new Map(filteredNodes.connectionEvents);
   
     graphFilter.forEach((filter) => {
       filteredNodesCopy.nodes = filteredNodesCopy.nodes.filter((user) => {
-        const check = filter.type === "date" ? filteredNodesCopy.lastEvents[user.id] : user;
+        const check = filter.type === "date" ? filteredNodesCopy.lastEvents.get(user.id) : user;
         if (check === undefined) {
           return true;
         }
         const shouldKeep = filter.shouldKeep(check);
         if (!shouldKeep) {
-          delete connectionEvents[user.id];
+          connectionEvents.delete(user.id);
         }
         return shouldKeep;
       });
@@ -162,11 +155,11 @@ const sortDate = (a: Event, b: Event) => new Date(b.date).getTime() - new Date(a
 
 export const selectSortedEvents = createSelector(
   (state: IStoreState) => state.DatabaseReducer.eventData,
-  (eventData: IEventMap | undefined) => {
+  (eventData: Map<string, IEvent> | undefined) => {
     if (eventData === undefined) {
       return [];
     }
-    return Object.values(eventData).sort(sortDate);
+    return Array.from(eventData.values()).sort(sortDate);
   }
 );
 
@@ -176,7 +169,7 @@ export const selectInfoPersonSortedEvents = createSelector(
   (state: IStoreState) => state.WebsiteReducer.infoPerson,
   (
     mainPerson: IUser | undefined,
-    eventData: IEventMap | undefined,
+    eventData: Map<string, IEvent> | undefined,
     infoPerson: IUser | undefined
   ) => {
     if (
@@ -188,6 +181,6 @@ export const selectInfoPersonSortedEvents = createSelector(
     ) {
       return undefined;
     }
-    return mainPerson.connections[infoPerson.id].map(id => eventData[id]).sort(sortDate);
+    return mainPerson.connections[infoPerson.id].map(id => eventData.get(id) as IEvent).sort(sortDate);
   }
 );

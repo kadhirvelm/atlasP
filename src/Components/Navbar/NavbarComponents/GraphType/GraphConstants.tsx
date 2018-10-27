@@ -1,10 +1,10 @@
 import * as React from "react";
 
-import { DriftGraphIcon } from "../../../../icons/driftGraphIcon";
-import { GroupsGraphIcon } from "../../../../icons/groupsGraphIcon";
-import { RelativeGraphIcon } from "../../../../icons/relativeGraphIcon";
+import { DriftGraphIcon } from "../../../../Icons/driftGraphIcon";
+import { GroupsGraphIcon } from "../../../../Icons/groupsGraphIcon";
+import { RelativeGraphIcon } from "../../../../Icons/relativeGraphIcon";
+import { IEvent } from "../../../../Types/Events";
 import { IGraphType } from "../../../../Types/Graph";
-import { IConnectionEvents } from "../../../../Utils/selectors";
 import { getDifferenceBetweenDates, getLatestEventDate } from "../../../../Utils/Util";
 
 const ICON_ATTRIBUTES = {
@@ -22,8 +22,8 @@ const LOG_MULTIPLIER_DRIFT = 3;
 
 const DRIFT_NORMALIZER = (totalDaysSinceEvent: number) => (Math.log(totalDaysSinceEvent) * LOG_MULTIPLIER_DRIFT + 1) * DISTANCE_MULTIPLIER_DRIFT;
 export const DRIFT_GRAPH: IGraphType = {
-    generateLinks: (source: string, connections: IConnectionEvents) => {
-        const links = Object.entries(connections).map(userAndEvents => {
+    generateLinks: (source: string, connections: Map<string, IEvent[]>) => {
+        const links = Array.from(connections.entries()).map(userAndEvents => {
             const lastEvent = getLatestEventDate(userAndEvents[1]);
             const totalDaysSinceEvent = lastEvent === undefined ? 80 : Math.max(Math.round(getDifferenceBetweenDates(new Date(), lastEvent.date)), 1);
             return {
@@ -55,9 +55,9 @@ export const DRIFT_GRAPH: IGraphType = {
 const DISTANCE_MULTIPLIER_RELATIVE_GRAPH = 100;
 
 export const RELATIVE_GRAPH: IGraphType = {
-    generateLinks: (source: string, connections: IConnectionEvents) => {
+    generateLinks: (source: string, connections: Map<string, IEvent[]>) => {
         let maximum = 0;
-        const links = Object.entries(connections).map(userAndEvents => {
+        const links = Array.from(connections.entries()).map(userAndEvents => {
             maximum = Math.max(maximum, userAndEvents[1].length);
             return {
                 distance: userAndEvents[1].length,
@@ -92,13 +92,13 @@ export const RELATIVE_GRAPH: IGraphType = {
 const generateUniqueKey = (idA: string, idB: string) => idA.localeCompare(idB) === 1 ? `${idB}_${idA}` : `${idA}_${idB}`;
 
 export const GROUPS_GRAPH: IGraphType = {
-    generateLinks: (mainPerson: string, connections: IConnectionEvents) => {
+    generateLinks: (mainPerson: string, connections: Map<string, IEvent[]>) => {
         const personToPersonMapping = {};
         let maximumNormalization = 0;
-        Object.entries(connections).forEach(userAndEvents => {
+        Array.from(connections.entries()).forEach(userAndEvents => {
             userAndEvents[1].forEach((event) => {
                 event.attendees.forEach((user) => {
-                    if (user.id === userAndEvents[0] || (connections[user.id] === undefined && user.id !== mainPerson)) {
+                    if (user.id === userAndEvents[0] || (connections.get(user.id) === undefined && user.id !== mainPerson)) {
                         return;
                     }
                     const id = generateUniqueKey(user.id.toString(), userAndEvents[0].toString());

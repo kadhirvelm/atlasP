@@ -13,7 +13,7 @@ import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
 import { UpdateUser } from "../Dialogs/UpdateUser";
-import { EventList } from "../Informational/EventList";
+import { EventList } from "../Informational/InfoGraphicHelpers/EventList";
 
 import "./MobileView.css";
 

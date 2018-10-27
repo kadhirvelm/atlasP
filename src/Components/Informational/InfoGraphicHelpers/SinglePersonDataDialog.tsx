@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import { Dialog, Icon, Popover, Position } from "@blueprintjs/core";
 
 import IStoreState from "../../../State/IStoreState";
-import { IEvent, IEventMap } from "../../../Types/Events";
-import { IUser, IUserMap } from "../../../Types/Users";
+import { IEvent } from "../../../Types/Events";
+import { IUser } from "../../../Types/Users";
 
 import "./SinglePersonDataDialog.css";
 
@@ -17,8 +17,7 @@ export interface ISinglePersonDataDialogProps {
 }
 
 export interface ISinglePersonDataDialogStoreProps {
-    eventData?: IEvent[];
-    userData?: IUserMap;
+    eventData: IEvent[] | undefined;
 }
 
 export interface ISinglePersonDataDialogState {
@@ -64,10 +63,6 @@ export class PureSinglePersonDataDialog extends React.PureComponent<
     private closeInformationHover = () => this.setState({ openInformationPopover: undefined });
 
     private renderEventDetails(event: IEvent) {
-        const { userData } = this.props;
-        if (userData === undefined) {
-            return null;
-        }
         return (
             <div key={event.id} className="single-event-row">
                 <div className="flex-25">
@@ -108,17 +103,22 @@ export class PureSinglePersonDataDialog extends React.PureComponent<
     }
 }
 
-function mapAndSortEvents(events: string[] | undefined, eventData?: IEventMap) {
+function mapAndSortEvents(events: string[] | undefined, eventData?: Map<string, IEvent>): IEvent[] | undefined {
     if (events === undefined || eventData === undefined) {
         return undefined;
     }
-    return events.map(id => eventData[id]).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return events.map(id => eventData.get(id) as IEvent)
+    .sort((a, b) => {
+        if (a === undefined || b === undefined) {
+            return 0;
+        }
+        return new Date(b.date).getTime() - new Date(a.date).getTime()
+    });
 }
 
-function mapStateToProps(state: IStoreState, ownProps: ISinglePersonDataDialogProps & ISinglePersonDataDialogStoreProps): ISinglePersonDataDialogStoreProps {
+function mapStateToProps(state: IStoreState, ownProps: ISinglePersonDataDialogProps): ISinglePersonDataDialogStoreProps {
     return {
         eventData: mapAndSortEvents(ownProps.events, state.DatabaseReducer.eventData),
-        userData: state.DatabaseReducer.userData,
     };
 }
 

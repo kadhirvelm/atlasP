@@ -6,7 +6,3 @@ export interface IEvent {
   date: Date;
   description: string;
 }
-
-export interface IEventMap {
-  [id: string]: IEvent;
-}

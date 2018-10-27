@@ -3,10 +3,9 @@ import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 
 import { Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
-import { handleStringChange } from "@blueprintjs/docs-theme";
 
 import IStoreState from "../../State/IStoreState";
-import { IUser, IUserMap } from "../../Types/Users";
+import { IUser } from "../../Types/Users";
 import { showToast } from "../../Utils/Toaster";
 import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
@@ -16,7 +15,7 @@ import "./AddNewEvent.css";
 
 export interface IAddNewEventStateProps {
     currentUser: IUser | undefined;
-    users: IUserMap | undefined;
+    users: Map<string, IUser> | undefined;
 }
 
 export interface IAddNewEventDispatchProps {
@@ -102,10 +101,9 @@ export class PureAddNewEvent extends React.PureComponent<
     }
 
     private handleChange = (key: string) => {
-        return handleStringChange(
-            (newValue) => {
-                this.adjustFinalEvent(key, newValue);
-        });
+        return (event: React.FormEvent<HTMLElement>) => {
+            this.adjustFinalEvent(key, (event.target as any).value);
+        }
     }
     
     private adjustFinalEvent = (key: string, newValue: any) => {

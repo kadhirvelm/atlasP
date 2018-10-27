@@ -2,18 +2,11 @@ import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 
 import { Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
-import { handleStringChange } from "@blueprintjs/docs-theme";
 
-import IStoreState from "../../State/IStoreState";
-import { IUserMap } from "../../Types/Users";
 import { DialogUtils } from "./DialogUtils";
 
 import { showToast } from "../../Utils/Toaster";
 import "./AddNewEvent.css";
-
-export interface IAddNewPersonStateProps {
-    users: IUserMap | undefined;
-}
 
 export interface IAddNewPersonDispatchProps {
     dialogUtils: DialogUtils;
@@ -45,7 +38,7 @@ const EMPTY_STATE: IAddNewPersonState = {
 }
 
 export class PureAddNewPerson extends React.PureComponent<
-    IAddNewPersonProps & IAddNewPersonStateProps & IAddNewPersonDispatchProps, IAddNewPersonState> {
+    IAddNewPersonProps & IAddNewPersonDispatchProps, IAddNewPersonState> {
     public state: IAddNewPersonState = EMPTY_STATE;
 
     public render() {
@@ -88,21 +81,14 @@ export class PureAddNewPerson extends React.PureComponent<
     }
 
     private handleChange = (key: string) => {
-        return handleStringChange(
-            (newValue) => {
-                this.adjustFinalPerson(key, newValue);
-        });
+        return (event: React.FormEvent<HTMLElement>) => {
+            this.adjustFinalPerson(key, (event.target as any).value);
+        }
     }
     
     private adjustFinalPerson = (key: string, newValue: any) => {
         this.setState({ finalPerson: {...this.state.finalPerson, [key]: newValue } });
     }
-}
-
-function mapStateToProps(state: IStoreState): IAddNewPersonStateProps {
-    return {
-        users: state.DatabaseReducer.userData,
-    };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IAddNewPersonDispatchProps {
@@ -111,4 +97,4 @@ function mapDispatchToProps(dispatch: Dispatch): IAddNewPersonDispatchProps {
     };
 }
 
-export const AddNewPerson = connect(mapStateToProps, mapDispatchToProps)(PureAddNewPerson);
+export const AddNewPerson = connect(undefined, mapDispatchToProps)(PureAddNewPerson);

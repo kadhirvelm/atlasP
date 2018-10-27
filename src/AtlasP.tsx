@@ -75,7 +75,7 @@ class PureAtlasP extends React.PureComponent<IAppStoreProps & IAppDispatchProps,
 
   private handleErroredOut() {
     this.props.emptyCache();
-    return <div className="centered">Rats, look like you found a bug. We've emptied the cache - try refreshing the page?</div>
+    return;
   }
 }
 

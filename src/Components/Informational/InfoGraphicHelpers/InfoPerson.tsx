@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 
 import { NonIdealState, Text } from "@blueprintjs/core";
 
-import IStoreState from "../../State/IStoreState";
-import { IEvent } from "../../Types/Events";
-import { IUser } from "../../Types/Users";
-import { selectInfoPersonSortedEvents } from "../../Utils/selectors";
+import IStoreState from "../../../State/IStoreState";
+import { IEvent } from "../../../Types/Events";
+import { IUser } from "../../../Types/Users";
+import { selectInfoPersonSortedEvents } from "../../../Utils/selectors";
 import { EventList } from "./EventList";
 
 import "./InfoPerson.css";
