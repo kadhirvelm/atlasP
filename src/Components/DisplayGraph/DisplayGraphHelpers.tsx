@@ -6,7 +6,7 @@ import { Button } from "@blueprintjs/core";
 
 import IStoreState from "../../State/IStoreState";
 import { RemoveAllHighlights } from "../../State/WebsiteActions";
-import { IUser, IUserMap } from "../../Types/Users";
+import { IUser } from "../../Types/Users";
 import { Autocomplete } from "../Common/Autocomplete";
 import { zoomByScale } from "./DisplayGraphUtils";
 
@@ -21,7 +21,7 @@ export interface IDisplayGraphHelpersDispatchProps {
 }
 
 export interface IDisplayGraphHelpersStoreProps {
-    userMap: IUserMap | undefined;
+    userMap: Map<string, IUser> | undefined;
 }
 
 class PureDisplayGraphHelpers extends React.PureComponent<IDisplayGraphHelpersProps & IDisplayGraphHelpersDispatchProps & IDisplayGraphHelpersStoreProps> {

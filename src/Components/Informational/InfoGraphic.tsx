@@ -5,11 +5,11 @@ import { bindActionCreators, Dispatch } from "redux";
 import IStoreState from "../../State/IStoreState";
 import { SetInfoPerson } from "../../State/WebsiteActions";
 import { IEvent } from "../../Types/Events";
-import { IUser, IUserMap } from "../../Types/Users";
+import { IUser } from "../../Types/Users";
 import { selectSortedEvents } from "../../Utils/selectors";
 import User from "../../Utils/User";
+import { InfoPerson } from "./InfoGraphicHelpers/InfoPerson";
 import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
-import { InfoPerson } from "./InfoPerson";
 
 import "./InfoGraphic.css";
 
@@ -17,7 +17,6 @@ interface IInfoGraphicProps {
     currentUser: IUser | undefined;
     events: IEvent[] | undefined;
     infoPerson: IUser | undefined;
-    userData: IUserMap | undefined;
 }
 
 export interface IInfoGraphDispatchProps {
@@ -75,7 +74,6 @@ function mapStateToProps(state: IStoreState): IInfoGraphicProps {
     currentUser: state.DatabaseReducer.currentUser,
     events: selectSortedEvents(state),
     infoPerson: state.WebsiteReducer.infoPerson,
-    userData: state.DatabaseReducer.userData,
   };
 }
 

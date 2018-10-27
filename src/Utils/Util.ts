@@ -1,10 +1,27 @@
-import { PhoneNumberUtil } from "google-libphonenumber";
+import PhoneNumber from "awesome-phonenumber";
 
 import { IEvent } from "../Types/Events";
 import { IUser } from "../Types/Users";
 import User from "./User";
 
-const phoneUtils = new PhoneNumberUtil();
+export function debounce(func: () => void, delay: number) {
+  let inDebounce: NodeJS.Timer;
+  return () => {
+    clearTimeout(inDebounce);
+    inDebounce = setTimeout(() => func(), delay);
+  };
+}
+
+export function throttle(func: () => void, limit: number) {
+  let inThrottle: boolean;
+  return () => {
+    if (!inThrottle) {
+      func();
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit)
+    }
+  }
+}
 
 export function convertObjectToMap(object: {} | undefined): Map<string, {}> {
   const finalMap = new Map();
@@ -18,8 +35,15 @@ export function convertObjectToMap(object: {} | undefined): Map<string, {}> {
   return finalMap;
 }
 
-export function convertArrayToObject<T extends IUser | IEvent>(itemArray: T[]) {
-  return itemArray.map(item => ({ [item.id]: item })).reduce((previous, next) => ({ ...previous, ...next }), {})
+export function convertArrayToMap<T extends IUser | IEvent>(itemArray: T[]): Map<string, T> {
+  const iteratable: Array<[string, T]> = itemArray.map((item): [string, T] => [item.id, item]);
+  return new Map(iteratable);
+}
+
+export function addToMap<T extends IUser | IEvent>(map: Map<string, T>, newValue: T) {
+  const newMapping = new Map(map);
+  newMapping.set(newValue.id, newValue);
+  return newMapping;
 }
 
 export function convertPayloadToUser(rawUser: any) {
@@ -31,7 +55,7 @@ export function convertPayloadToUser(rawUser: any) {
 
 export function isValidPhoneNumber(rawNumber: string) {
   try {
-      return phoneUtils.isValidNumber(phoneUtils.parse(rawNumber, "US"));
+      return new PhoneNumber(rawNumber, "US").isValid();
   } catch (e) {
       return false;
   }

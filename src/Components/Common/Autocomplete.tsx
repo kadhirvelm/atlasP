@@ -2,7 +2,6 @@ import * as classNames from "classnames";
 import * as React from "react";
 
 import { Icon, InputGroup } from "@blueprintjs/core";
-import { handleStringChange } from "@blueprintjs/docs-theme";
 
 import "./Autocomplete.css";
 
@@ -12,7 +11,7 @@ export interface IAutcompleteValuesProps {
 
 export interface IAutocompleteProps {
     className?: string;
-    dataSource?: {[key: string]: any};
+    dataSource?: Map<string, any>;
     displayKey?: string;
     multiselection?: boolean;
     placeholderText?: string;
@@ -49,7 +48,7 @@ export class Autocomplete extends React.PureComponent<IAutocompleteProps, IAutoc
                     type="text"
                     className="autofill-input"
                     leftIcon="search"
-                    onChange={this.handleChange()}
+                    onChange={this.handleChange}
                     onClick={this.openAutofill}
                     onFocus={this.openAutofill}
                     placeholder={this.props.placeholderText}
@@ -99,11 +98,11 @@ export class Autocomplete extends React.PureComponent<IAutocompleteProps, IAutoc
         return (
             <div className="autofill-container">
                 {
-                    Object.keys(dataSource)
+                    Array.from(dataSource.keys())
                     .filter((key) => {
                         const searchText = this.state.searchText.toLowerCase();
                         return key.toLowerCase().includes(searchText) ||
-                            dataSource[key][display].toLowerCase().includes(searchText);
+                            dataSource.get(key)[display].toLowerCase().includes(searchText);
                     })
                     .map((key, index) => (
                         <div
@@ -116,7 +115,7 @@ export class Autocomplete extends React.PureComponent<IAutocompleteProps, IAutoc
                             key={index}
                             onClick={this.handleSelection(key)}
                         >
-                            <div className="value"> {dataSource[key][display]} </div>
+                            <div className="value"> {dataSource.get(key)[display]} </div>
                         </div>
                     ))
                 }
@@ -141,7 +140,7 @@ export class Autocomplete extends React.PureComponent<IAutocompleteProps, IAutoc
     private handleSelection(key: string) {
         return () => {
             if (this.props.onSelection != null && this.props.dataSource != null) {
-                this.props.onSelection(this.props.dataSource[key]);
+                this.props.onSelection(this.props.dataSource.get(key));
             }
             if (!this.props.multiselection) {
                 this.closeAutofill();
@@ -150,7 +149,5 @@ export class Autocomplete extends React.PureComponent<IAutocompleteProps, IAutoc
         };
     }
 
-    private handleChange = () => {
-        return handleStringChange((newValue) => this.setState({ searchText: newValue }));
-    }
+    private handleChange = (event: React.FormEvent<HTMLElement>) => this.setState({ searchText: (event.target as any).value });
 }

@@ -21,7 +21,3 @@ export interface IUser {
 }
 
 export interface IConnections { [key: string]: string[] }
-
-export interface IUserMap {
-  [id: string]: IUser;
-}

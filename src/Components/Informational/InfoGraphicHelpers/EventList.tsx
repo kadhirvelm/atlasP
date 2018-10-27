@@ -5,11 +5,11 @@ import { bindActionCreators } from "redux";
 
 import { Icon, NonIdealState, Text, Tooltip } from "@blueprintjs/core";
 
-import IStoreState from "../../State/IStoreState";
-import { SelectEvent } from "../../State/WebsiteActions";
-import { IEvent } from "../../Types/Events";
-import { IUser, IUserMap } from "../../Types/Users";
-import { UpdateEvent } from "../Dialogs/UpdateEvent";
+import IStoreState from "../../../State/IStoreState";
+import { SelectEvent } from "../../../State/WebsiteActions";
+import { IEvent } from "../../../Types/Events";
+import { IUser } from "../../../Types/Users";
+import { UpdateEvent } from "../../Dialogs/UpdateEvent";
 
 import "./EventList.css";
 
@@ -20,7 +20,6 @@ export interface IEventListProps {
 
 export interface IEventsListStoreProps {
     selectedEvent: IEvent | undefined;
-    usersMap: IUserMap | undefined;
 }
 
 export interface IEventListDispatchProps {
@@ -89,7 +88,6 @@ class PureEventList extends React.PureComponent<IEventListProps & IEventListProp
 function mapStateToProps(state: IStoreState): IEventsListStoreProps {
     return {
         selectedEvent: state.WebsiteReducer.selectedEvent,
-        usersMap: state.DatabaseReducer.userData,
     };
 }
 

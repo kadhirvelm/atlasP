@@ -1,4 +1,4 @@
-import { IConnectionEvents } from "../Utils/selectors";
+import { IEvent } from "./Events";
 
 export interface ILink {
   color?: string;
@@ -19,6 +19,6 @@ export interface IFilter {
 export interface IGraphType {
   icon: JSX.Element;
   id: string;
-  generateLinks: (id: string, connections: IConnectionEvents) => ILink[];
+  generateLinks: (id: string, connections: Map<string, IEvent[]>) => ILink[];
   tooltip: string | JSX.Element;
 }

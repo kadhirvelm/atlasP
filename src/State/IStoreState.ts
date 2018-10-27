@@ -1,18 +1,18 @@
 import { IGraphUser } from "../Components/DisplayGraph/DisplayGraph";
 import { DRIFT_GRAPH } from "../Components/Navbar/NavbarComponents/GraphType/GraphConstants";
-import { IEvent, IEventMap } from "../Types/Events";
+import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType } from "../Types/Graph";
 import { IForceUpdate } from "../Types/Other";
-import { IUser, IUserMap } from "../Types/Users";
+import { IUser } from "../Types/Users";
 
 export default interface IStoreState {
     DatabaseReducer: {
         currentUser?: IUser;
-        eventData?: IEventMap;
+        eventData?: Map<string, IEvent>;
         forceUpdate?: IForceUpdate;
         isFetching: boolean;
         isLoggedIn: boolean;
-        userData?: IUserMap;
+        userData?: Map<string, IUser>;
     };
     WebsiteReducer: {
         contextMenuNode: IGraphUser | undefined;

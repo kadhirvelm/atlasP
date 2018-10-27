@@ -1,6 +1,6 @@
 import { setWith, TypedReducer } from "redoodle";
 
-import { convertArrayToObject, convertPayloadToUser } from "../Utils/Util";
+import { addToMap, convertArrayToMap, convertPayloadToUser } from "../Utils/Util";
 import { ClearForceUpdate, EmptyDatabaseCache, ForceUpdate, Login, UpdateEventData, UpdateGraph, UpdateUser, UpdateUserData } from "./DatabaseActions";
 import IStoreState, { EMPTY_STATE } from "./IStoreState";
 
@@ -28,28 +28,38 @@ export const DatabaseReducer = TypedReducer.builder<IStoreState["DatabaseReducer
     })
     .withHandler(UpdateGraph.TYPE, (state, payload) => {
         return setWith(state, {
-            eventData: convertArrayToObject(payload.events),
-            userData: convertArrayToObject(payload.users),
+            eventData: convertArrayToMap(payload.events),
+            userData: convertArrayToMap(payload.users),
         });
     })
     .withHandler(UpdateUserData.TYPE, (state, payload) => {
-        const currentUser = state.currentUser;
+        const { currentUser, userData } = state;
+        if (userData === undefined) {
+            return state;
+        }
+
         if (currentUser !== undefined && currentUser.connections !== undefined) {
             currentUser.connections[payload.id] = [];
         }
+
         return setWith(state, {
             currentUser,
-            userData: { ...state.userData, [payload.id]: payload },
+            userData: addToMap(userData, payload),
         });
     })
     .withHandler(UpdateEventData.TYPE, (state, payload) => {
-        const currentUser = state.currentUser;
+        const { currentUser, eventData } = state;
+        if (eventData === undefined) {
+            return state;
+        }
+
         if (currentUser !== undefined && currentUser.connections !== undefined) {
             payload.attendees.forEach((user) => (currentUser.connections as any)[user.id].push(payload.id));
         }
+
         return setWith(state, {
             currentUser,
-            eventData: { ...state.eventData, [payload.id]: payload },
+            eventData: addToMap(eventData, payload),
         });
     })
     .withHandler(EmptyDatabaseCache.TYPE, () => {

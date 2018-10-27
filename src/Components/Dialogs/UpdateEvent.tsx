@@ -7,7 +7,7 @@ import { Button, Classes, Dialog, EditableText } from "@blueprintjs/core";
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import IStoreState from "../../State/IStoreState";
 import { IEvent } from "../../Types/Events";
-import { IUserMap } from "../../Types/Users";
+import { IUser } from "../../Types/Users";
 import { Autocomplete } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
 import { IDialogProps } from "./DialogWrapper";
@@ -17,7 +17,7 @@ import "./UpdateEvents.css";
 
 export interface IUpdateEventStoreProps {
     selectedEvent: IEvent | undefined;
-    users: IUserMap | undefined;
+    users: Map<string, IUser> | undefined;
 }
 
 export interface IUpdateEventDispatchProps {
