@@ -5,10 +5,10 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { Icon } from "@blueprintjs/core";
 
-import { AtlasPIcon } from "../../Icons/atlaspLogoIcon";
-import { GraphIcon } from "../../Icons/graphIcon";
-import { NewEventIcon } from "../../Icons/newEventIcon";
-import { NewPersonIcon } from "../../Icons/newPersonIcon";
+import { AtlasPIcon } from "../../icons/atlaspLogoIcon";
+import { GraphIcon } from "../../icons/graphIcon";
+import { NewEventIcon } from "../../icons/newEventIcon";
+import { NewPersonIcon } from "../../icons/newPersonIcon";
 import { EmptyDatabaseCache } from "../../State/DatabaseActions";
 import IStoreState from "../../State/IStoreState";
 import { IForceUpdate } from "../../Types/Other";

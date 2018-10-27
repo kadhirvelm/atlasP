@@ -20,7 +20,7 @@ export interface IPeopleGraph {
 }
 
 function returnLastEvents(connectionCopy: Map<string, IEvent[]>) {
-  const lastEvents = new Map;
+  const lastEvents = new Map();
   Array.from(connectionCopy.keys()).forEach((id) => {
       const events = connectionCopy.get(id) as IEvent[];
       const lastEvent = events.length === 0 ? undefined : getLatestEventDate(events).date;

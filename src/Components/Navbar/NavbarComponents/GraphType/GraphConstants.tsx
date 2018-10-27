@@ -1,8 +1,8 @@
 import * as React from "react";
 
-import { DriftGraphIcon } from "../../../../Icons/driftGraphIcon";
-import { GroupsGraphIcon } from "../../../../Icons/groupsGraphIcon";
-import { RelativeGraphIcon } from "../../../../Icons/relativeGraphIcon";
+import { DriftGraphIcon } from "../../../../icons/driftGraphIcon";
+import { GroupsGraphIcon } from "../../../../icons/groupsGraphIcon";
+import { RelativeGraphIcon } from "../../../../icons/relativeGraphIcon";
 import { IEvent } from "../../../../Types/Events";
 import { IGraphType } from "../../../../Types/Graph";
 import { getDifferenceBetweenDates, getLatestEventDate } from "../../../../Utils/Util";
