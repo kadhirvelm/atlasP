@@ -125,6 +125,16 @@ export class DatabaseDispatcher {
             throw error;
         }
     }
+    
+    public removeFromGraph = async (removeConnection: string) => {
+        try {
+            await axios.post(this.retrieveURL("users/remove-connection"), { removeConnection });
+            showToast(Intent.SUCCESS, "Sweet, we've removed this person. Refresh your page to see your graph update!");
+        } catch (error) {
+            showToast(Intent.DANGER, `We weren't able to remove this person from your graph: ${error.response.data.message[0]}`);
+            throw error;
+        }
+    }
 
     private formatEvent(event: IEvent) {
         return { ...event, attendees: event.attendees.map(user => user.id) };

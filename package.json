@@ -1,6 +1,6 @@
 {
   "name": "atlasp",
-  "version": "2.15.0",
+  "version": "2.16.0",
   "private": true,
   "dependencies": {
     "@blueprintjs/core": "^3.6.1",
