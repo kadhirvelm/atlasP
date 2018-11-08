@@ -27,37 +27,33 @@
     transition: background-color 200ms ease;
     padding: 10px;
     cursor: pointer;
-}
 
-.autocomplete-row {
     &.key {
         display: flex;
         flex: 1 0 30%;
     }
-}
 
-.autocomplete-row {
     &.value {
         display: flex;
         flex: 1 0 70%;
         justify-content: flex-start;
         text-overflow: ellipsis;
     }
-}
 
-.autocomplete-row:hover {
-    background-color: #85C1E9;
-    transition: background-color 200ms ease;
+    &:hover {
+        background-color: #85C1E9;
+        transition: background-color 200ms ease;
+    }
 }
 
 .autocomplete-row-selected {
     background-color: #7DCEA0;
     transition: background-color 200ms ease;
-}
 
-.autocomplete-row-selected:hover {
-    background-color: #F1948A;
-    transition: background-color 200ms ease;
+    &:hover {
+        background-color: #F1948A;
+        transition: background-color 200ms ease;
+    }
 }
 
 .autofill-container {
@@ -66,20 +62,18 @@
     top: 30px;
     left: 0;
     right: 0;
-
     padding: 10px;
     justify-content: center;
     background-color: white;
     border: 1px solid #1B4F72;
     border-radius: 2px 2px 15px 15px;
-
     height: 200px;
     overflow-y: auto;
     animation: fade-in 200ms ease-in;
-}
 
-.autofill-container::-webkit-scrollbar {
-    display: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .autofill-input {
@@ -91,10 +85,10 @@
 .rendered-values-container {
     display: flex;
     flex-wrap: wrap;
-}
 
-.rendered-values-container::-webkit-scrollbar {
-    background: transparent;
+    &::-webkit-scrollbar {
+        background: transparent;
+    }
 }
 
 .total-container {

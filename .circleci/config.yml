@@ -6,28 +6,15 @@ jobs:
       - image: circleci/node:chakracore-10.6.0-browsers
     steps:
       - checkout
-      - restore_cache:
-          name: Restore yarn package cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install dependencies
           command: yarn install --production=false
-      - save_cache:
-          name: Save yarn package cache
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
   test:
     working_directory: ~/atlasP
     docker:
       - image: circleci/node:chakracore-10.6.0-browsers
     steps:
       - checkout
-      - restore_cache:
-          name: Restore yarn package cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install dependencies
           command: yarn install --production=false
@@ -43,10 +30,6 @@ jobs:
       - image: circleci/node:chakracore-10.6.0-browsers
     steps:
       - checkout
-      - restore_cache:
-          name: Restore yarn package cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install dependencies
           command: yarn install --production=false
