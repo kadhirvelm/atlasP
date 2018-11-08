@@ -29,16 +29,20 @@
     cursor: pointer;
 }
 
-.autocomplete-row .key {
-    display: flex;
-    flex: 1 0 30%;
+.autocomplete-row {
+    &.key {
+        display: flex;
+        flex: 1 0 30%;
+    }
 }
 
-.autocomplete-row .value {
-    display: flex;
-    flex: 1 0 70%;
-    justify-content: flex-start;
-    text-overflow: ellipsis;
+.autocomplete-row {
+    &.value {
+        display: flex;
+        flex: 1 0 70%;
+        justify-content: flex-start;
+        text-overflow: ellipsis;
+    }
 }
 
 .autocomplete-row:hover {

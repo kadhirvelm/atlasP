@@ -20,7 +20,7 @@ import {
     zoomToNode
 } from "./DisplayGraphUtils";
 
-import "./DisplayGraph.css";
+import "./DisplayGraph.scss";
 
 export interface IDisplayGraphStoreProps {
     currentUser: IUser | undefined;
@@ -90,8 +90,8 @@ class PureDispayGraph extends React.PureComponent<IDisplayGraphStoreProps & IDis
         this.props.setInfoPerson(node);
     }
 
-    private handleClick = (node: IGraphUser) => this.props.setInfoPerson(node);
-    private handleContextMenu = (node: IGraphUser) => this.props.setContextNode(node);
+    private handleClick = (node: IUser) => this.props.setInfoPerson(node);
+    private handleContextMenu = (node: IUser) => this.props.setContextNode(node);
 
     private runSimulation(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, peopleGraph: IPeopleGraph, simulation: d3.Simulation<{}, undefined>) {
         const linkElements = returnLinkElements(svg, peopleGraph.links);

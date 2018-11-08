@@ -7,7 +7,7 @@ import IStoreState from "../../../State/IStoreState";
 import { IEvent } from "../../../Types/Events";
 import { IUser } from "../../../Types/Users";
 
-import "./SinglePersonDataDialog.css";
+import "./SinglePersonDataDialog.scss";
 
 export interface ISinglePersonDataDialogProps {
     events: string[] | undefined;

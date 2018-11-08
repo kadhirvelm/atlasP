@@ -12,7 +12,7 @@ import { InfoGraphic } from "./Informational/InfoGraphic";
 import { MobileView } from "./Mobile/MobileView";
 import { AtlaspNavbar } from "./Navbar/Navbar";
 
-import "./Main.css";
+import "./Main.scss";
 
 const Default = (props: any) => <Responsive {...props} minWidth={768} />;
 const Mobile = (props: any) => <Responsive {...props} maxWidth={767} />;

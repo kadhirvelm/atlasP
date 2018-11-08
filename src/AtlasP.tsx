@@ -8,7 +8,7 @@ import { EmptyDatabaseCache } from "./State/DatabaseActions";
 import IStoreState from "./State/IStoreState";
 import { setToast } from "./Utils/Toaster";
 
-import "./AtlasP.css";
+import "./AtlasP.scss";
 
 export interface IAppStoreProps {
   fetching: boolean;

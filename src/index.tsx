@@ -11,7 +11,7 @@ import configureStore from "./State/Store";
 import { loadState, saveState } from "./State/StoreCache";
 import { throttle } from "./Utils/Util";
 
-import "./index.css";
+import "./index.scss";
 
 const store = configureStore(loadState());
 

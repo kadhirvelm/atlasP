@@ -21,8 +21,8 @@ import { Filters } from "./NavbarComponents/Filters/Filters";
 import { GraphType } from "./NavbarComponents/GraphType/GraphType";
 import { NavbarRow } from "./NavbarRow";
 
-import "../Main.css";
-import "./Navbar.css";
+import "../Main.scss";
+import "./Navbar.scss";
 
 const ICON_SIZE = 25;
 

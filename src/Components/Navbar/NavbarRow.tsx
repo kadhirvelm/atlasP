@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import * as React from "react";
-import "./NavbarRow.css";
+
+import "./NavbarRow.scss";
 
 export interface INavbarRowProps {
     className?: string;

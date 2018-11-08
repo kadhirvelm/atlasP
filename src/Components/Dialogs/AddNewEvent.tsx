@@ -11,7 +11,7 @@ import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
 import { IDialogProps } from "./DialogWrapper";
 
-import "./AddNewEvent.css";
+import "./AddNewEvent.scss";
 
 export interface IAddNewEventStateProps {
     currentUser: IUser | undefined;

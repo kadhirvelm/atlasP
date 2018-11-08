@@ -10,7 +10,7 @@ import { AddGraphFilter, RemoveGraphFilter } from "../../../../State/WebsiteActi
 import { IFilter } from "../../../../Types/Graph";
 import { DATE_FILTERS } from "./FilterConstants";
 
-import "./Filters.css";
+import "./Filters.scss";
 
 export interface IFiltersStoreProps {
     currentFilters: IFilter[];

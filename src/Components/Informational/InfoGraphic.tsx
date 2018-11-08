@@ -11,7 +11,7 @@ import User from "../../Utils/User";
 import { InfoPerson } from "./InfoGraphicHelpers/InfoPerson";
 import { SinglePersonDataDialog } from "./InfoGraphicHelpers/SinglePersonDataDialog";
 
-import "./InfoGraphic.css";
+import "./InfoGraphic.scss";
 
 interface IInfoGraphicProps {
     currentUser: IUser | undefined;

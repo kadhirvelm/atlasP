@@ -15,7 +15,7 @@ import { DialogWrapper } from "../Dialogs/DialogWrapper";
 import { UpdateUser } from "../Dialogs/UpdateUser";
 import { EventList } from "../Informational/InfoGraphicHelpers/EventList";
 
-import "./MobileView.css";
+import "./MobileView.scss";
 
 export interface IMobileViewState {
     accountDetailsDialogOpen: boolean;
