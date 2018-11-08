@@ -9,10 +9,25 @@
     border-radius: 3px;
 }
 
+.graph-helpers-bottom-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+
+.graph-label {
+    display: flex;
+    color: white;
+    background-color: #154360;
+    border-radius: 3px;
+    padding: 5px 10px;
+    margin-right: 10px;
+}
+
 .graph-assistant-buttons {
     display: flex;
     justify-content: flex-end;
-    margin-top: 5px;
 }
 
 .find-user-autocomplete {

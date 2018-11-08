@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -21,6 +22,7 @@ export interface IDisplayGraphHelpersDispatchProps {
 }
 
 export interface IDisplayGraphHelpersStoreProps {
+    graphLabel: string;
     userMap: Map<string, IUser> | undefined;
 }
 
@@ -35,22 +37,27 @@ class PureDisplayGraphHelpers extends React.PureComponent<IDisplayGraphHelpersPr
                     placeholderText="Search for user…"
                     onSelection={this.props.zoomToNode}
                 />
-                <div className="graph-assistant-buttons">
-                    <Button
-                        title="Zoom in"
-                        icon="zoom-in"
-                        onClick={this.handleZoomIn}
-                    />
-                    <Button
-                        title="Zoom out"
-                        icon="zoom-out"
-                        onClick={this.handleZoomOut}
-                    />
-                    <Button
-                        title="Remove highlights"
-                        icon="delete"
-                        onClick={this.removeAllHighlights}
-                    />
+                <div className="graph-helpers-bottom-container">
+                    <div className={classNames("graph-label", "show-change")} key={this.props.graphLabel}>
+                        {this.props.graphLabel}
+                    </div>
+                    <div className="graph-assistant-buttons">
+                        <Button
+                            title="Zoom in"
+                            icon="zoom-in"
+                            onClick={this.handleZoomIn}
+                        />
+                        <Button
+                            title="Zoom out"
+                            icon="zoom-out"
+                            onClick={this.handleZoomOut}
+                        />
+                        <Button
+                            title="Remove highlights"
+                            icon="delete"
+                            onClick={this.removeAllHighlights}
+                        />
+                    </div>
                 </div>
             </div>
         )
@@ -64,6 +71,7 @@ class PureDisplayGraphHelpers extends React.PureComponent<IDisplayGraphHelpersPr
 
 function mapStoreToProps(state: IStoreState): IDisplayGraphHelpersStoreProps {
     return {
+        graphLabel: state.WebsiteReducer.graphType.id,
         userMap: state.DatabaseReducer.userData,
     }
 }

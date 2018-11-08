@@ -36,7 +36,7 @@ export const DRIFT_GRAPH: IGraphType = {
         return links;
     },
     icon: <DriftGraphIcon attributes={ICON_ATTRIBUTES} />,
-    id: "drift",
+    id: "Drift",
     tooltip: (
         <div className="graph-helper-tooltip">
             <div className="graph-helper-title">Drift</div>
