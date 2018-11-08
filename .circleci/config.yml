@@ -7,17 +7,17 @@ jobs:
     steps:
       - checkout
       - restore_cache:		
-           name: Restore yarn package cache		
-           keys:		
-             - yarn-packages-{{ checksum "yarn.lock" }}
+          name: Restore yarn package cache		
+          keys:		
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install dependencies
           command: yarn install --production=false
       - save_cache:		
-           name: Save yarn package cache		
-           key: yarn-packages-{{ checksum "yarn.lock" }}		
-           paths:		
-             - ~/.cache/yarn
+          name: Save yarn package cache		
+          key: yarn-packages-{{ checksum "yarn.lock" }}		
+          paths:		
+            - ~/.cache/yarn
   test:
     working_directory: ~/atlasP
     docker:
@@ -44,9 +44,9 @@ jobs:
     steps:
       - checkout
       - restore_cache:		
-           name: Restore yarn package cache		
-           keys:		
-             - yarn-packages-{{ checksum "yarn.lock" }}
+          name: Restore yarn package cache		
+          keys:		
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install dependencies
           command: yarn install --production=false
