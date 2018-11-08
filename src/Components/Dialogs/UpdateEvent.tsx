@@ -1,4 +1,4 @@
-import * as classNames from "classnames";
+import classNames from "classnames";
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 
@@ -12,8 +12,8 @@ import { Autocomplete } from "../Common/Autocomplete";
 import { DialogUtils } from "./DialogUtils";
 import { IDialogProps } from "./DialogWrapper";
 
-import "./Update.css";
-import "./UpdateEvents.css";
+import "./Update.scss";
+import "./UpdateEvents.scss";
 
 export interface IUpdateEventStoreProps {
     selectedEvent: IEvent | undefined;

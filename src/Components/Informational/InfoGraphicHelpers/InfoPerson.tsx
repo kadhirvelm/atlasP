@@ -10,7 +10,7 @@ import { IUser } from "../../../Types/Users";
 import { selectInfoPersonSortedEvents } from "../../../Utils/selectors";
 import { EventList } from "./EventList";
 
-import "./InfoPerson.css";
+import "./InfoPerson.scss";
 
 export interface IPersonInformationProps {
     person: IUser | undefined;

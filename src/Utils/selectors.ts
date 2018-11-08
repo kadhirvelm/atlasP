@@ -4,7 +4,6 @@ import IStoreState from "../State/IStoreState";
 import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType, ILink } from "../Types/Graph";
 import { IUser } from "../Types/Users";
-import Event from "./Event";
 import { getLatestEventDate } from "./Util";
 
 export interface IFilteredNodes {
@@ -99,7 +98,7 @@ export const selectLinkedConnections = createSelector(
   selectFilteredConnections,
   (state: IStoreState) => state.DatabaseReducer.currentUser,
   (state: IStoreState) => state.WebsiteReducer.graphType,
-  (filteredNodes: IFilteredNodes, mainPerson: IUser | undefined, graphType: IGraphType): IPeopleGraph | undefined => {
+  (filteredNodes: IFilteredNodes | undefined, mainPerson: IUser | undefined, graphType: IGraphType): IPeopleGraph | undefined => {
     if (filteredNodes === undefined || mainPerson === undefined) {
       return undefined;
     }
@@ -151,7 +150,7 @@ export const selectMainPersonGraph = createSelector(
   }
 );
 
-const sortDate = (a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime();
+const sortDate = (a: IEvent, b: IEvent) => new Date(b.date).getTime() - new Date(a.date).getTime();
 
 export const selectSortedEvents = createSelector(
   (state: IStoreState) => state.DatabaseReducer.eventData,

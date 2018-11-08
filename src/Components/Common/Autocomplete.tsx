@@ -1,9 +1,9 @@
-import * as classNames from "classnames";
+import classNames from "classnames";
 import * as React from "react";
 
 import { Icon, InputGroup } from "@blueprintjs/core";
 
-import "./Autocomplete.css";
+import "./Autocomplete.scss";
 
 export interface IAutcompleteValuesProps {
     [key: string]: string;

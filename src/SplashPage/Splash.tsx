@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { Button, Intent } from "@blueprintjs/core";
 
-import "./Splash.css";
+import "./Splash.scss";
 
 const image = require("./billy-pasco.jpg");
 

@@ -10,7 +10,7 @@ import { AddHighlightConnection, RemoveHighlightConnection, SetContextMenuNode }
 import { IUser } from "../../Types/Users";
 import { IGraphUser } from "./DisplayGraph";
 
-import "./ContextMenu.css";
+import "./ContextMenu.scss";
 
 export interface IGraphContextMenuProps {
     onZoomClick(node: IGraphUser): void;

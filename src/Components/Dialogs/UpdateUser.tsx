@@ -1,4 +1,4 @@
-import * as classNames from "classnames";
+import classNames from "classnames";
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 
@@ -12,8 +12,8 @@ import { showToast } from "../../Utils/Toaster";
 import { PasswordField } from "../Common/PasswordField";
 import { IDialogProps } from "./DialogWrapper";
 
-import "./Update.css";
-import "./UpdateUser.css";
+import "./Update.scss";
+import "./UpdateUser.scss";
 
 export interface IUpdateUserStoreProps {
     currentUser?: IUser;

@@ -10,7 +10,7 @@ import { ChangeGraphType } from "../../../../State/WebsiteActions";
 import { IGraphType } from "../../../../Types/Graph";
 import { GRAPHS } from "./GraphConstants";
 
-import "./GraphType.css";
+import "./GraphType.scss";
 
 export interface IGraphTypeStoreProps {
     currentGraph: IGraphType;

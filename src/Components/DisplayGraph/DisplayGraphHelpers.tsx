@@ -11,7 +11,7 @@ import { IUser } from "../../Types/Users";
 import { Autocomplete } from "../Common/Autocomplete";
 import { zoomByScale } from "./DisplayGraphUtils";
 
-import "./DisplayGraphHelpers.css";
+import "./DisplayGraphHelpers.scss";
 
 export interface IDisplayGraphHelpersProps {
     zoomToNode(node: IUser): void;

@@ -8,7 +8,7 @@ import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import { isValidPhoneNumber } from "../../Utils/Util";
 import { PasswordField } from "../Common/PasswordField";
 
-import "./Login.css";
+import "./Login.scss";
 
 export interface ILoginComponentDispatchProps {
     claim(phoneNumber: string): Promise<void>;
@@ -100,7 +100,7 @@ class PureLoginComponent extends React.PureComponent<ILoginComponentDispatchProp
     private handleLogin = () => this.props.login(this.state.phoneNumber, this.state.password);
 }
 
-function mapDispatchToProps(dispatch: Dispatch) {
+function mapDispatchToProps(dispatch: Dispatch): ILoginComponentDispatchProps {
     const databaseDispatcher = new DatabaseDispatcher(dispatch);
     return {
         claim: databaseDispatcher.claim,

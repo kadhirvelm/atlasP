@@ -6,7 +6,7 @@ import { Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/cor
 import { DialogUtils } from "./DialogUtils";
 
 import { showToast } from "../../Utils/Toaster";
-import "./AddNewEvent.css";
+import "./AddNewEvent.scss";
 
 export interface IAddNewPersonDispatchProps {
     dialogUtils: DialogUtils;

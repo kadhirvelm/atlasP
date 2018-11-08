@@ -44,7 +44,7 @@ export class DialogUtils {
         )
     }
 
-    public handleAttendeeSelection(selectedEvent: ITemporaryEvent | IEvent, callback: (key: string, value: any) => void) {
+    public handleAttendeeSelection(selectedEvent: ITemporaryEvent | IEvent, callback: (key: "attendees", value: any) => void) {
         return (item: IUser) => {
             if (!selectedEvent.attendees.includes(item)) {
                 callback("attendees", [item, ...selectedEvent.attendees]);

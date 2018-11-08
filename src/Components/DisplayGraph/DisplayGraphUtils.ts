@@ -3,7 +3,6 @@ import * as d3 from "d3";
 import { ILink } from "../../Types/Graph";
 import { IUser } from "../../Types/Users";
 import { getDifferenceBetweenDates } from "../../Utils/Util";
-import { IGraphUser } from "./DisplayGraph";
 
 const CHARGE_STRENGTH = -400;
 const GRAPH_ID = "BOUNDING_RECTANGLE";
@@ -34,7 +33,7 @@ export function returnBoundRectangle(svg: d3.Selection<d3.BaseType, {}, HTMLElem
         .style("fill", "none")
         /* For zooming and panning */
         .style("pointer-events", "all")
-        .call(handleZoom)
+        .call(handleZoom as any)
         .on(ZOOM_TO_PERSON, zoomed);
 }
 
@@ -61,7 +60,7 @@ export function returnSimulation(width: number, height: number) {
     const simulation = d3.forceSimulation()
         .force("charge", d3.forceManyBody().strength(CHARGE_STRENGTH))
         .force("center", d3.forceCenter(width / 2, height / 2));
-    simulation.force("link", d3.forceLink().id((link: any) => link.id).strength((link: ILink) => link.strength).distance((link: ILink) => link.distance).iterations(2));
+    simulation.force("link", d3.forceLink().id((link: any) => link.id).strength((link) => (link as ILink).strength).distance((link) => (link as ILink).distance).iterations(2));
     return simulation;
 }
 
@@ -120,7 +119,7 @@ export function returnNames(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>
             .attr("dx", (node) => -((node.name.split(" ")[0]).length + 2) * 3.5)
             .attr("dy", 5)
             .on("click", handleClick)
-            .on("contextmenu", (node: IGraphUser) => {
+            .on("contextmenu", (node: IUser) => {
                 d3.event.preventDefault();
                 handleContextMenu(node);
             })
@@ -134,8 +133,8 @@ export function zoomToNode(id: string, zoomAmount: number) {
     }
 
     d3.select(`#${GRAPH_ID}`)
-        .call(d3.zoom().translateTo, parseInt(selectedNode.attr("cx"), 10), parseInt(selectedNode.attr("cy"), 10))
-        .call(d3.zoom().scaleTo, zoomAmount)
+        .call(d3.zoom().translateTo as any, parseInt(selectedNode.attr("cx"), 10), parseInt(selectedNode.attr("cy"), 10))
+        .call(d3.zoom().scaleTo as any, zoomAmount)
         .dispatch(ZOOM_TO_PERSON, {
             detail: {
                 transform: d3.zoomTransform(d3.select(`#${GRAPH_ID}`).node() as any)
@@ -145,7 +144,7 @@ export function zoomToNode(id: string, zoomAmount: number) {
 
 export function zoomByScale(zoomPercentage: number) {
     d3.select(`#${GRAPH_ID}`)
-        .call(d3.zoom().scaleBy, zoomPercentage)
+        .call(d3.zoom().scaleBy as any, zoomPercentage)
         .dispatch(ZOOM_TO_PERSON, {
             detail: {
                 transform: d3.zoomTransform(d3.select(`#${GRAPH_ID}`).node() as any)

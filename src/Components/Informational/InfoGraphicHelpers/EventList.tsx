@@ -1,4 +1,4 @@
-import * as classNames from "classnames";
+import classNames from "classnames";
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -11,7 +11,7 @@ import { IEvent } from "../../../Types/Events";
 import { IUser } from "../../../Types/Users";
 import { UpdateEvent } from "../../Dialogs/UpdateEvent";
 
-import "./EventList.css";
+import "./EventList.scss";
 
 export interface IEventListProps {
     className?: string;
