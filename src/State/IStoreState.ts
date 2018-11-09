@@ -1,4 +1,5 @@
 import { IGraphUser } from "../Components/DisplayGraph/DisplayGraph";
+import { IGNORE_FILTER } from "../Components/Navbar/NavbarComponents/Filters/FilterConstants";
 import { DRIFT_GRAPH } from "../Components/Navbar/NavbarComponents/GraphType/GraphConstants";
 import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType } from "../Types/Graph";
@@ -32,7 +33,7 @@ export const EMPTY_STATE: IStoreState = {
     },
     WebsiteReducer: {
       contextMenuNode: undefined,
-      graphFilters: [],
+      graphFilters: [IGNORE_FILTER],
       graphRef: null,
       graphType: DRIFT_GRAPH,
       highlightConnections: new Set(),

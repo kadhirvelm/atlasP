@@ -8,7 +8,8 @@ import { Checkbox, Icon, Tooltip } from "@blueprintjs/core";
 import IStoreState from "../../../../State/IStoreState";
 import { AddGraphFilter, RemoveGraphFilter } from "../../../../State/WebsiteActions";
 import { IFilter } from "../../../../Types/Graph";
-import { DATE_FILTERS } from "./FilterConstants";
+import { DATE_FILTERS, IGNORE_FILTER } from "./FilterConstants";
+import { getDateFiltersHelper, getIgnoreListHelper } from "./FiltersUtils";
 
 import "./Filters.scss";
 
@@ -27,64 +28,23 @@ class PureFilters extends React.PureComponent<IFiltersStoreProps & IFilterDispat
             <div className="filters-container">
                 <div className="filters-last-seen">
                     Last Seen
-                    {this.renderHelperTooltip()}
+                    {this.renderLastSeenTooltip(getDateFiltersHelper)}
                 </div>
                 {this.renderDateFilterButtons()}
+                <div className="filters-people">
+                    Ignore List
+                    {this.renderLastSeenTooltip(getIgnoreListHelper)}
+                </div>
+                {this.renderIgnoreFilter()}
             </div>
         )
     }
 
-    private renderHelperTooltip() {
+    private renderLastSeenTooltip(content: JSX.Element) {
         return (
-            <Tooltip className="filters-date-tooltip" content={this.getDateFiltersHelper()}>
+            <Tooltip className="filters-date-tooltip" content={content}>
                 <Icon icon="help" iconSize={12} />
             </Tooltip>
-        )
-    }
-
-    private getDateFiltersHelper() {
-        return (
-            <div className="filters-date-helper">
-                When was the last time you saw this person?
-                <div className="filters-date-helper-container">
-                    <div className="filters-date-helper-single-row">
-                        <div className="filters-date-helper-single-row-title">
-                            Blue
-                        </div>
-                        <div className="filters-date-line blue" />
-                        <div className="filters-date-helper-single-row-description">
-                            In an upcoming event
-                        </div>
-                    </div>
-                    <div className="filters-date-helper-single-row">
-                        <div className="filters-date-helper-single-row-title">
-                            Green
-                        </div>
-                        <div className="filters-date-line green" />
-                        <div className="filters-date-helper-single-row-description">
-                            Less than 30 days
-                        </div>
-                    </div>
-                    <div className="filters-date-helper-single-row">
-                        <div className="filters-date-helper-single-row-title">
-                            Yellow
-                        </div>
-                        <div className="filters-date-line green yellow" />
-                        <div className="filters-date-helper-single-row-description">
-                            Between 30 and 90 days
-                        </div>
-                    </div>
-                    <div className="filters-date-helper-single-row">
-                        <div className="filters-date-helper-single-row-title">
-                            Red
-                        </div>
-                        <div className="filters-date-line green red" />
-                        <div className="filters-date-helper-single-row-description">
-                            More than 90 days
-                        </div>
-                    </div>
-                </div>
-            </div>
         )
     }
 
@@ -100,14 +60,23 @@ class PureFilters extends React.PureComponent<IFiltersStoreProps & IFilterDispat
         return (
             <div className="filters-date-single" key={filter.id}>
                 <div className={classNames("filters-box", filter.id)} />
-                <Checkbox checked={this.doesNotContainFilter(filter.id)} onChange={this.changeFilter(filter)} />
+                <Checkbox checked={!this.doesContainFilter(filter.id)} onChange={this.changeFilter(filter)} />
+            </div>
+        )
+    }
+
+    private renderIgnoreFilter() {
+        return (
+            <div className="filters-ignore-users" key={IGNORE_FILTER.id}>
+                <Icon className="filter-ignore-users-icon" icon="blocked-person" iconSize={25} />
+                <Checkbox checked={!this.doesContainFilter(IGNORE_FILTER.id)} onChange={this.changeFilter(IGNORE_FILTER)} />
             </div>
         )
     }
 
     private changeFilter = (filter: IFilter) => {
         return () => {
-            if (!this.doesNotContainFilter(filter.id)) {
+            if (this.doesContainFilter(filter.id)) {
                 this.props.removeFilter(filter.id);
                 return;
             }
@@ -115,8 +84,8 @@ class PureFilters extends React.PureComponent<IFiltersStoreProps & IFilterDispat
         }
     }
 
-    private doesNotContainFilter(id: string) {
-        return this.props.currentFilters.find((filter) => filter.id === id) === undefined;
+    private doesContainFilter(id: string) {
+        return this.props.currentFilters.find((filter) => filter.id === id) !== undefined;
     }
 }
 

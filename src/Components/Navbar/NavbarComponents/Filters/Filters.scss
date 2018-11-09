@@ -1,12 +1,24 @@
+$filter-width: 25px;
+$filter-height: 25px;
+
 .filters-container {
     display: flex;
     flex-direction: column;
     flex: 1;
     padding: 5px;
+
+    .bp3-control {
+        margin: 0;
+    }
 }
 
 .filters-last-seen {
     display: flex;
+}
+
+.filters-people {
+    display: flex;
+    margin-top: 10px;
 }
 
 .filters-date-tooltip {
@@ -20,7 +32,7 @@
     flex-direction: column;
 }
 
-.filters-date-helper-container {
+.filters-actionable-container {
     background: gray;
     border-radius: 3px;
     padding: 5px;
@@ -80,30 +92,47 @@
     margin: 5px;
 }
 
-.filters-date-checkboxes .bp3-control {
-    margin: 0;
-}
-
 .filters-box {
     margin-right: 3px;
-    width: 25px;
-    height: 25px;
+    width: $filter-width;
+    height: $filter-height;
     border-radius: 3px;
     border: 1px solid rgba(0, 0, 0, 0.5);
+    position: relative;
+    
+    &.blue {
+        background: #7FB3D5;
+    }
+    
+    &.green {
+        background: #7DCEA0;
+    }
+    
+    &.yellow {
+        background: #F7DC6F;
+    }
+    
+    &.red {
+        background: #F1948A;
+    }
 }
 
-.filters-box.blue {
-    background: #7FB3D5;
+.filters-ignore-users {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    margin-left: 9px;
 }
 
-.filters-box.green {
-    background: #7DCEA0;
+.filter-ignore-users-icon {
+    margin-right: 5px;
 }
 
-.filters-box.yellow {
-    background: #F7DC6F;
-}
+.filter-ignore-list-helper {
+    max-width: 250px;
 
-.filters-box.red {
-    background: #F1948A;
+    .filters-actionable-container {
+        color: white;
+        font-size: 12px;
+    }
 }

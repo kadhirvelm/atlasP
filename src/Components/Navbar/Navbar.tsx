@@ -112,7 +112,7 @@ class PureAtlaspNavbar extends React.PureComponent<INavbarStateProps & INavbarDi
                     <GraphType />
                 </NavbarRow>
                 <NavbarRow
-                    componentHeight={100}
+                    componentHeight={175}
                     handleHoverLeave={this.handleHoverLeave}
                     isHovering={this.state.isHovering}
                     icon={<Icon icon="filter" iconSize={ICON_SIZE} />}

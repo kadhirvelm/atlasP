@@ -42,12 +42,13 @@ export class DatabaseDispatcher {
         try {
             const finalUser = {
                 gender: newUserDetails.gender,
+                ignoreUsers: newUserDetails.ignoreUsers,
                 location: newUserDetails.location,
                 name: newUserDetails.name,
                 password: securePassword(newUserDetails.password),
                 phoneNumber: newUserDetails.contact,
             };
-            await axios.post(this.retrieveURL("users/update"), finalUser);
+            await axios.put(this.retrieveURL("users/update"), finalUser);
             this.dispatch(CompoundAction.create([ UpdateUser.create({ ...newUserDetails, password: "" }), ClearForceUpdate.create() ]));
         } catch (error) {
             showToast(Intent.DANGER, `Hum, something went wrong. ${error.response.data.message.join(", ")}.`);

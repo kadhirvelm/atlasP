@@ -64,9 +64,11 @@ export const selectConnectionsAndDates = createSelector(
 
 export const selectFilteredConnections = createSelector(
   selectConnectionsAndDates,
+  (state: IStoreState) => state.DatabaseReducer.currentUser,
   (state: IStoreState) => state.WebsiteReducer.graphFilters,
   (
     filteredNodes: IFilteredNodes | undefined,
+    currentUser: IUser | undefined,
     graphFilter: IFilter[] | undefined,
   ): IFilteredNodes | undefined => {
     if (filteredNodes === undefined || graphFilter === undefined) {
@@ -82,7 +84,7 @@ export const selectFilteredConnections = createSelector(
         if (check === undefined) {
           return true;
         }
-        const shouldKeep = filter.shouldKeep(check);
+        const shouldKeep = filter.shouldKeep(check, currentUser);
         if (!shouldKeep) {
           connectionEvents.delete(user.id);
         }
