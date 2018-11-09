@@ -84,7 +84,7 @@ class PureGraphContextMenu extends React.PureComponent<IGraphContextMenuStorePro
             return;
         }
         const isInIgnore = currentUser.ignoreUsers !== undefined && currentUser.ignoreUsers.includes(currentContextNode.id);
-        return isInIgnore ? 
+        return isInIgnore ?
             this.renderContextMenuOption(this.handleRemoveFromIgnore(currentContextNode.id, currentUser), "following", "Remove from ignore")
             :
             this.renderContextMenuOption(this.handleAddToIgnore(currentContextNode.id, currentUser), "blocked-person", "Add to ignore");
