@@ -4,6 +4,7 @@ export interface IRawUser {
   claimed: boolean;
   gender: string;
   location: string;
+  ignoreUsers?: string[];
   name: string;
   phoneNumber: string;
 }
@@ -12,12 +13,11 @@ export interface IUser {
   connections?: IConnections;
   contact: string;
   gender: string;
-  greenList?: string[];
   id: string;
+  ignoreUsers?: string[];
   location: string;
   name: string;
   password?: string;
-  redList?: string[];
 }
 
 export interface IConnections { [key: string]: string[] }

@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Icon } from "@blueprintjs/core";
+import { Icon, IconName } from "@blueprintjs/core";
 
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import IStoreState from "../../State/IStoreState";
@@ -27,6 +27,7 @@ export interface IGraphContextMenuDispatchProps {
     removeHighlight(id: string): void;
     removeFromGraph(id: string): void;
     setContextMenuNode(node: IGraphUser | undefined): void;
+    updateUser(newUser: IUser): void;
 }
 
 export interface IGraphContextMenuState {
@@ -62,10 +63,9 @@ class PureGraphContextMenu extends React.PureComponent<IGraphContextMenuStorePro
         return(
             <div className="context-menu-container" ref={this.setRef.div} style={ { top: this.state.screenY, left: this.state.screenX }}>
                 <div className="context-menu-node-name">{currentContextNode.name}</div>
-                <div className="context-menu-option" onClick={this.handleZoomClick}>
-                    <Icon className="context-menu-icon" icon="zoom-in" /> Zoom
-                </div>
+                {this.renderContextMenuOption(this.handleZoomClick, "zoom-in", "Zoom")}
                 {this.renderHighlightConnections(currentContextNode)}
+                {this.renderAddToIgnore(currentContextNode)}
                 {this.maybeRenderRemoveConnection(currentContextNode)}
             </div>
         )
@@ -73,17 +73,21 @@ class PureGraphContextMenu extends React.PureComponent<IGraphContextMenuStorePro
 
     private renderHighlightConnections(currentContextNode: IGraphUser) {
         if (this.props.highlightConnections.has(currentContextNode.id)) {
-            return (
-                <div className="context-menu-option" onClick={this.handleRemoveHighlight(currentContextNode.id)}>
-                    <Icon className="context-menu-icon" icon="delete" /> Remove highlight
-                </div>
-            )
+            return this.renderContextMenuOption(this.handleRemoveHighlight(currentContextNode.id), "delete", "Remove highlight");
         }
-        return (
-            <div className="context-menu-option" onClick={this.handleAddHighlight(currentContextNode.id)}>
-                <Icon className="context-menu-icon" icon="highlight" /> Highlight
-            </div>
-        );
+        return this.renderContextMenuOption(this.handleAddHighlight(currentContextNode.id), "highlight", "Highlight");
+    }
+
+    private renderAddToIgnore(currentContextNode: IGraphUser) {
+        const { currentUser } = this.props;
+        if (currentUser === undefined) {
+            return;
+        }
+        const isInIgnore = currentUser.ignoreUsers !== undefined && currentUser.ignoreUsers.includes(currentContextNode.id);
+        return isInIgnore ?
+            this.renderContextMenuOption(this.handleRemoveFromIgnore(currentContextNode.id, currentUser), "following", "Remove from ignore")
+            :
+            this.renderContextMenuOption(this.handleAddToIgnore(currentContextNode.id, currentUser), "blocked-person", "Add to ignore");
     }
 
     private maybeRenderRemoveConnection(currentContextNode: IGraphUser) {
@@ -91,9 +95,13 @@ class PureGraphContextMenu extends React.PureComponent<IGraphContextMenuStorePro
         if (currentUser === undefined || currentUser.connections === undefined || currentUser.connections[currentContextNode.id].length > 0) {
             return null;
         }
+        return this.renderContextMenuOption(this.handleRemoveFromGraph(currentContextNode.id), "remove", "Remove");
+    }
+
+    private renderContextMenuOption(onClick: () => void, icon: IconName, text: string) {
         return (
-            <div className="context-menu-option" onClick={this.handleRemoveFromGraph(currentContextNode.id)}>
-                <Icon className="context-menu-icon" icon="remove" />Remove
+            <div className="context-menu-option" onClick={onClick}>
+                <Icon className="context-menu-icon" icon={icon} />{text}
             </div>
         )
     }
@@ -139,6 +147,27 @@ class PureGraphContextMenu extends React.PureComponent<IGraphContextMenuStorePro
         return totalSize > 0 && totalSize < size;
     }
 
+    private handleRemoveFromIgnore = (currentContextNodeId: string, currentUser: IUser) => {
+        return () => {
+            const currentUserDetails = { ...currentUser };
+            if (currentUserDetails.ignoreUsers === undefined) {
+                return;
+            }
+            currentUserDetails.ignoreUsers.splice(currentUserDetails.ignoreUsers.indexOf(currentContextNodeId), 1);
+            this.props.updateUser(currentUserDetails);
+            this.close();
+        }
+    }
+
+    private handleAddToIgnore = (currentContextNodeId: string, currentUser: IUser) => {
+        return () => {
+            const currentUserDetails = { ...currentUser };
+            currentUserDetails.ignoreUsers = (currentUserDetails.ignoreUsers || []).concat([currentContextNodeId]);
+            this.props.updateUser(currentUserDetails);
+            this.close();
+        }
+    }
+
     private close = () => this.props.setContextMenuNode(undefined);
 }
 
@@ -151,13 +180,15 @@ function mapStateToProps(state: IStoreState): IGraphContextMenuStoreProps {
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IGraphContextMenuDispatchProps {
+    const databaseDispatcher = new DatabaseDispatcher(dispatch);
     return {
         ...bindActionCreators({
             addHighlight: AddHighlightConnection.create,
             removeHighlight: RemoveHighlightConnection.create,
             setContextMenuNode: SetContextMenuNode.create,
         }, dispatch),
-        removeFromGraph: new DatabaseDispatcher(dispatch).removeFromGraph,
+        removeFromGraph: databaseDispatcher.removeFromGraph,
+        updateUser: databaseDispatcher.updateUser,
     };
 }
 

@@ -1,4 +1,5 @@
 import { IFilter } from "../../../../Types/Graph";
+import { IUser } from "../../../../Types/Users";
 import { getDifferenceBetweenDates } from "../../../../Utils/Util";
 import { GREEN_DAYS, RED_DAYS } from "../../../DisplayGraph/DisplayGraphUtils";
 
@@ -33,3 +34,14 @@ export const RED_FILTER: IFilter = {
 };
 
 export const DATE_FILTERS = [ BLUE_FILTER, GREEN_FILTER, YELLOW_FILTER, RED_FILTER ];
+
+export const IGNORE_FILTER: IFilter = {
+    id: "ignore_filter",
+    shouldKeep: (user: IUser, currentUser?: IUser) => {
+        if (currentUser === undefined || currentUser.ignoreUsers === undefined) {
+            return true;
+        }
+        return !currentUser.ignoreUsers.includes(user.id);
+    },
+    type: "user",
+}

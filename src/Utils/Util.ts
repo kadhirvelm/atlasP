@@ -50,7 +50,7 @@ export function convertPayloadToUser(rawUser: any) {
   if (rawUser === undefined) {
     return undefined;
   }
-  return new User(rawUser._id, rawUser.name, rawUser.gender, rawUser.location, rawUser.phoneNumber, [], [], rawUser.connections);
+  return new User(rawUser._id, rawUser.name, rawUser.gender, rawUser.location, rawUser.phoneNumber, rawUser.ignoreUsers || [], rawUser.connections);
 }
 
 export function isValidPhoneNumber(rawNumber: string) {

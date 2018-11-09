@@ -7,8 +7,7 @@ export default class User implements IUser {
         public gender: string,
         public location: string,
         public contact: string,
-        public redList?: string[],
-        public greenList?: string[],
+        public ignoreUsers?: string[],
         public connections?: IConnections) {
     }
 
