@@ -24,27 +24,33 @@ export interface IAppState {
   hasErrored: boolean;
 }
 
-class PureAtlasP extends React.PureComponent<IAppStoreProps & IAppDispatchProps, IAppState> {
+class PureAtlasP extends React.PureComponent<
+  IAppStoreProps & IAppDispatchProps,
+  IAppState
+> {
   public state = {
     Element: Spinner,
-    hasErrored: false,
+    hasErrored: false
   };
 
   private refHandler = {
-      toaster: setToast,
+    toaster: setToast
   };
 
   public componentWillMount() {
     this.checkWhichComponent(this.props.isLoggedIn);
   }
 
-  public componentWillReceiveProps(nextProps: IAppStoreProps & IAppDispatchProps) {
+  public componentWillReceiveProps(
+    nextProps: IAppStoreProps & IAppDispatchProps
+  ) {
     if (this.props.isLoggedIn !== nextProps.isLoggedIn) {
       this.checkWhichComponent(nextProps.isLoggedIn);
     }
   }
 
   public componentDidCatch(error: any, info: any) {
+    // tslint:disable-next-line:no-console
     console.error(error, info);
     this.setState({ hasErrored: true });
   }
@@ -82,12 +88,18 @@ class PureAtlasP extends React.PureComponent<IAppStoreProps & IAppDispatchProps,
 function mapStateToProps(state: IStoreState): IAppStoreProps {
   return {
     fetching: state.DatabaseReducer.isFetching,
-    isLoggedIn: state.DatabaseReducer.isLoggedIn,
+    isLoggedIn: state.DatabaseReducer.isLoggedIn
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IAppDispatchProps {
-  return bindActionCreators({ emptyCache: EmptyDatabaseCache.create }, dispatch)
+  return bindActionCreators(
+    { emptyCache: EmptyDatabaseCache.create },
+    dispatch
+  );
 }
 
-export const AtlasP = connect(mapStateToProps, mapDispatchToProps)(PureAtlasP);
+export const AtlasP = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PureAtlasP);

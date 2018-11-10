@@ -14,72 +14,87 @@ import { zoomByScale } from "./DisplayGraphUtils";
 import "./DisplayGraphHelpers.scss";
 
 export interface IDisplayGraphHelpersProps {
-    zoomToNode(node: IUser): void;
+  zoomToNode(node: IUser): void;
 }
 
 export interface IDisplayGraphHelpersDispatchProps {
-    removeAllHighlights(): void;
+  removeAllHighlights(): void;
 }
 
 export interface IDisplayGraphHelpersStoreProps {
-    graphLabel: string;
-    userMap: Map<string, IUser> | undefined;
+  graphLabel: string;
+  userMap: Map<string, IUser> | undefined;
 }
 
-class PureDisplayGraphHelpers extends React.PureComponent<IDisplayGraphHelpersProps & IDisplayGraphHelpersDispatchProps & IDisplayGraphHelpersStoreProps> {
-    public render() {
-        return (
-            <div className="graph-helpers">
-                <Autocomplete
-                    className="find-user-autocomplete"
-                    dataSource={this.props.userMap}
-                    displayKey="name"
-                    placeholderText="Search for user…"
-                    onSelection={this.props.zoomToNode}
-                />
-                <div className="graph-helpers-bottom-container">
-                    <div className={classNames("graph-label", "show-change")} key={this.props.graphLabel}>
-                        {this.props.graphLabel}
-                    </div>
-                    <div className="graph-assistant-buttons">
-                        <Button
-                            title="Zoom in"
-                            icon="zoom-in"
-                            onClick={this.handleZoomIn}
-                        />
-                        <Button
-                            title="Zoom out"
-                            icon="zoom-out"
-                            onClick={this.handleZoomOut}
-                        />
-                        <Button
-                            title="Remove highlights"
-                            icon="delete"
-                            onClick={this.removeAllHighlights}
-                        />
-                    </div>
-                </div>
-            </div>
-        )
-    }
+class PureDisplayGraphHelpers extends React.PureComponent<
+  IDisplayGraphHelpersProps &
+    IDisplayGraphHelpersDispatchProps &
+    IDisplayGraphHelpersStoreProps
+> {
+  public render() {
+    return (
+      <div className="graph-helpers">
+        <Autocomplete
+          className="find-user-autocomplete"
+          dataSource={this.props.userMap}
+          displayKey="name"
+          placeholderText="Search for user…"
+          onSelection={this.props.zoomToNode}
+        />
+        <div className="graph-helpers-bottom-container">
+          <div
+            className={classNames("graph-label", "show-change")}
+            key={this.props.graphLabel}
+          >
+            {this.props.graphLabel}
+          </div>
+          <div className="graph-assistant-buttons">
+            <Button
+              title="Zoom in"
+              icon="zoom-in"
+              onClick={this.handleZoomIn}
+            />
+            <Button
+              title="Zoom out"
+              icon="zoom-out"
+              onClick={this.handleZoomOut}
+            />
+            <Button
+              title="Remove highlights"
+              icon="delete"
+              onClick={this.removeAllHighlights}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-    private handleZoomIn = () => zoomByScale(1.25);
-    private handleZoomOut = () => zoomByScale(0.75);
+  private handleZoomIn = () => zoomByScale(1.25);
+  private handleZoomOut = () => zoomByScale(0.75);
 
-    private removeAllHighlights = () => this.props.removeAllHighlights();
+  private removeAllHighlights = () => this.props.removeAllHighlights();
 }
 
 function mapStoreToProps(state: IStoreState): IDisplayGraphHelpersStoreProps {
-    return {
-        graphLabel: state.WebsiteReducer.graphType.id,
-        userMap: state.DatabaseReducer.userData,
-    }
+  return {
+    graphLabel: state.WebsiteReducer.graphType.id,
+    userMap: state.DatabaseReducer.userData
+  };
 }
 
-function mapDispatchToProps(dispatch: Dispatch): IDisplayGraphHelpersDispatchProps {
-    return bindActionCreators({
-        removeAllHighlights: RemoveAllHighlights.create,
-    }, dispatch);
+function mapDispatchToProps(
+  dispatch: Dispatch
+): IDisplayGraphHelpersDispatchProps {
+  return bindActionCreators(
+    {
+      removeAllHighlights: RemoveAllHighlights.create
+    },
+    dispatch
+  );
 }
 
-export const DisplayGraphHelpers = connect(mapStoreToProps, mapDispatchToProps)(PureDisplayGraphHelpers);
+export const DisplayGraphHelpers = connect(
+  mapStoreToProps,
+  mapDispatchToProps
+)(PureDisplayGraphHelpers);

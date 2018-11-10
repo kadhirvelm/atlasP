@@ -116,7 +116,7 @@ export class DatabaseDispatcher {
     public updateEvent = async (event: IEvent) => {
         try {
             const formattedEvent = this.formatEvent(event) as any;
-            formattedEvent["eventId"] = event.id;
+            formattedEvent.eventId = event.id;
             delete formattedEvent.id;
             await axios.put(this.retrieveURL("events/update"), formattedEvent);
             this.dispatch(CompoundAction.create([ SelectEvent.create(undefined), UpdateEventData.create(event) ]));
