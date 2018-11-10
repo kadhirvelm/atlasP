@@ -31,7 +31,7 @@ export interface IGraphContextMenuDispatchProps {
   removeHighlight(id: string): void;
   removeFromGraph(id: string): void;
   setContextMenuNode(node: IGraphUser | undefined): void;
-  updateUser(newUser: IUser): void;
+  updateUserIgnoreList(ignoreList: string[]): void;
 }
 
 export interface IGraphContextMenuState {
@@ -204,15 +204,12 @@ class PureGraphContextMenu extends React.PureComponent<
     currentUser: IUser
   ) => {
     return () => {
-      const currentUserDetails = { ...currentUser };
-      if (currentUserDetails.ignoreUsers === undefined) {
-        return;
-      }
-      currentUserDetails.ignoreUsers.splice(
-        currentUserDetails.ignoreUsers.indexOf(currentContextNodeId),
+      const currentUserIgnoreList = (currentUser.ignoreUsers || []).slice();
+      currentUserIgnoreList.splice(
+        currentUserIgnoreList.indexOf(currentContextNodeId),
         1
       );
-      this.props.updateUser(currentUserDetails);
+      this.props.updateUserIgnoreList(currentUserIgnoreList);
       this.close();
     };
   };
@@ -222,11 +219,9 @@ class PureGraphContextMenu extends React.PureComponent<
     currentUser: IUser
   ) => {
     return () => {
-      const currentUserDetails = { ...currentUser };
-      currentUserDetails.ignoreUsers = (
-        currentUserDetails.ignoreUsers || []
-      ).concat([currentContextNodeId]);
-      this.props.updateUser(currentUserDetails);
+      const currentUserIgnoreList = (currentUser.ignoreUsers || []).slice();
+      currentUserIgnoreList.push(currentContextNodeId);
+      this.props.updateUserIgnoreList(currentUserIgnoreList);
       this.close();
     };
   };
@@ -256,7 +251,7 @@ function mapDispatchToProps(
       dispatch
     ),
     removeFromGraph: databaseDispatcher.removeFromGraph,
-    updateUser: databaseDispatcher.updateUser
+    updateUserIgnoreList: databaseDispatcher.updateUserIgnoreList
   };
 }
 
