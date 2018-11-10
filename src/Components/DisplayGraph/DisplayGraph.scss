@@ -1,28 +1,28 @@
 .d3-graph-container {
-    position: relative;
-    display: flex;
-    flex: 1;
+  position: relative;
+  display: flex;
+  flex: 1;
 }
 
 .link {
-    user-select: none;
+  user-select: none;
 }
 
 .node {
-    cursor: pointer;
-    user-select: none;
-    stroke-width: 3;
+  cursor: pointer;
+  user-select: none;
+  stroke-width: 3;
 }
 
 .name {
-    font-size: 12;
-    cursor: pointer;
-    user-select: none;
-    opacity: 0.75;
-    transition: opacity 150ms ease-in;
-    fill: black;
+  font-size: 12;
+  cursor: pointer;
+  user-select: none;
+  opacity: 0.75;
+  transition: opacity 150ms ease-in;
+  fill: black;
 }
 
 .name:hover {
-    opacity: 1;
+  opacity: 1;
 }

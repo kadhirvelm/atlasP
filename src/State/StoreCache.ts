@@ -17,13 +17,18 @@ export const emptyCache = () => {
     const emptyState = JSON.stringify(EMPTY_STATE.DatabaseReducer);
     localStorage.setItem("state", emptyState);
   } catch (error) {
-    console.error(error);
+    // TODO: Handle error
   }
 };
 
 export const saveState = (state: IStoreState) => {
   try {
-    const substate = (({ currentUser, isFetching, isLoggedIn, forceUpdate }) => ({
+    const substate = (({
+      currentUser,
+      isFetching,
+      isLoggedIn,
+      forceUpdate
+    }) => ({
       currentUser,
       forceUpdate,
       isFetching,
@@ -32,7 +37,7 @@ export const saveState = (state: IStoreState) => {
     const serializedState = JSON.stringify(substate);
     localStorage.setItem("state", serializedState);
   } catch (error) {
-    console.error(error);
+    // TODO: Handle error
   }
 };
 
@@ -40,7 +45,7 @@ export const saveToken = (token: string) => {
   try {
     localStorage.setItem("token", token);
   } catch (error) {
-    console.error(error);
+    // TODO: Handle error
   }
 };
 
