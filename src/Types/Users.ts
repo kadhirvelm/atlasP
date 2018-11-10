@@ -20,4 +20,6 @@ export interface IUser {
   password?: string;
 }
 
-export interface IConnections { [key: string]: string[] }
+export interface IConnections {
+  [key: string]: string[];
+}

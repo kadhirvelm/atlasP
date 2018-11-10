@@ -88,16 +88,17 @@ export class DatabaseDispatcher {
     try {
       const finalUser = {
         gender: newUserDetails.gender,
-        ignoreUsers: newUserDetails.ignoreUsers,
         location: newUserDetails.location,
         name: newUserDetails.name,
-        password: securePassword(newUserDetails.password),
-        phoneNumber: newUserDetails.contact
+        phoneNumber: newUserDetails.contact,
+        ...(newUserDetails.password !== undefined && {
+          password: securePassword(newUserDetails.password)
+        })
       };
       await axios.put(this.retrieveURL("users/update"), finalUser);
       this.dispatch(
         CompoundAction.create([
-          UpdateUser.create({ ...newUserDetails, password: "" }),
+          UpdateUser.create({ ...newUserDetails, password: undefined }),
           ClearForceUpdate.create()
         ])
       );
@@ -107,6 +108,18 @@ export class DatabaseDispatcher {
         `Hum, something went wrong. ${error.response.data.message.join(", ")}.`
       );
       throw error;
+    }
+  };
+
+  public updateUserIgnoreList = async (ignoreUsers: string[]) => {
+    try {
+      await axios.put(this.retrieveURL("users/update"), { ignoreUsers });
+      this.dispatch(UpdateUser.create({ ignoreUsers }));
+    } catch (error) {
+      showToast(
+        Intent.DANGER,
+        "Hum, something went wrong. Try refreshing the page?"
+      );
     }
   };
 
