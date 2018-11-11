@@ -18,6 +18,13 @@ export const UpdateUser = TypedAction.define("DatabaseAction//UPDATE_USER")<
   Partial<IUser>
 >();
 
+export const UpdateOtherUser = TypedAction.define(
+  "DatabaseAction//UPDATE_OTHER_USER"
+)<{
+  userId: string;
+  newUserDetails: Pick<IUser, "name" | "gender" | "location">;
+}>();
+
 export const UpdateGraph = TypedAction.define("DatabaseAction//UPDATE_GRAPH")<{
   users: IUser[];
   events: IEvent[];

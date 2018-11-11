@@ -10,6 +10,7 @@ export interface IRawUser {
 }
 
 export interface IUser {
+  claimed: boolean;
   connections?: IConnections;
   contact: string;
   gender: string;
