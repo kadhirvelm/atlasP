@@ -8,10 +8,10 @@ import IStoreState from "../State/IStoreState";
 import { IUser } from "../Types/Users";
 import { getAuthenticationToken } from "../Utils/Security";
 import { DisplayGraph } from "./DisplayGraph/DisplayGraph";
-import { InfoGraphic } from "./Informational/InfoGraphic";
 import { MobileView } from "./Mobile/MobileView";
 import { AtlaspNavbar } from "./Navbar/Navbar";
 
+import { InfoPerson } from "./Informational/InfoPerson";
 import "./Main.scss";
 
 const Default = (props: any) => <Responsive {...props} minWidth={768} />;
@@ -19,14 +19,15 @@ const Mobile = (props: any) => <Responsive {...props} maxWidth={767} />;
 
 export interface IMainStoreProps {
   currentUser: IUser | undefined;
-};
+}
 
 export interface IMainDispatchProps {
   getLatestGraph(user: IUser): void;
-};
+}
 
-export class PureMain extends React.PureComponent<IMainStoreProps & IMainDispatchProps> {
-
+export class PureMain extends React.PureComponent<
+  IMainStoreProps & IMainDispatchProps
+> {
   public constructor(props: any) {
     super(props);
     getAuthenticationToken();
@@ -34,9 +35,9 @@ export class PureMain extends React.PureComponent<IMainStoreProps & IMainDispatc
 
   public componentDidMount() {
     if (this.props.currentUser !== undefined) {
-        this.props.getLatestGraph(this.props.currentUser);
+      this.props.getLatestGraph(this.props.currentUser);
     }
-}
+  }
 
   public render() {
     return (
@@ -52,7 +53,7 @@ export class PureMain extends React.PureComponent<IMainStoreProps & IMainDispatc
       <Mobile>
         <MobileView />
       </Mobile>
-    )
+    );
   }
 
   private renderDesktop() {
@@ -61,33 +62,36 @@ export class PureMain extends React.PureComponent<IMainStoreProps & IMainDispatc
         <AtlaspNavbar />
         {this.renderGraphAndInfo()}
       </Default>
-    )
+    );
   }
 
   private renderGraphAndInfo = () => {
-    return(
+    return (
       <div className="graph-container flexbox-row">
         <div className="display-graph">
           <DisplayGraph />
         </div>
         <div className="info-graphic">
-          <InfoGraphic />
+          <InfoPerson />
         </div>
       </div>
     );
-  }
+  };
 }
 
 function mapStoreToProps(state: IStoreState): IMainStoreProps {
   return {
-    currentUser: state.DatabaseReducer.currentUser,
-  }
+    currentUser: state.DatabaseReducer.currentUser
+  };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IMainDispatchProps {
   return {
-    getLatestGraph: new DatabaseDispatcher(dispatch).getLatestGraph,
-  }
+    getLatestGraph: new DatabaseDispatcher(dispatch).getLatestGraph
+  };
 }
 
-export const Main = connect(mapStoreToProps, mapDispatchToProps)(PureMain);
+export const Main = connect(
+  mapStoreToProps,
+  mapDispatchToProps
+)(PureMain);

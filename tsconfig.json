@@ -3,7 +3,11 @@
     "outDir": "build/dist",
     "module": "esnext",
     "target": "es2017",
-    "lib": ["dom", "es2017", "es7"],
+    "lib": [
+      "dom",
+      "es2017",
+      "es7"
+    ],
     "sourceMap": true,
     "jsx": "preserve",
     "moduleResolution": "node",
@@ -24,7 +28,8 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "noEmit": true
+    "noEmit": true,
+    "isolatedModules": true
   },
   "exclude": [
     "node_modules",
@@ -35,5 +40,7 @@
     "jest",
     "src/setupTests.ts"
   ],
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

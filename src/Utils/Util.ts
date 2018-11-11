@@ -18,9 +18,9 @@ export function throttle(func: () => void, limit: number) {
     if (!inThrottle) {
       func();
       inThrottle = true;
-      setTimeout(() => inThrottle = false, limit)
+      setTimeout(() => (inThrottle = false), limit);
     }
-  }
+  };
 }
 
 export function convertObjectToMap(object: {} | undefined): Map<string, {}> {
@@ -35,12 +35,19 @@ export function convertObjectToMap(object: {} | undefined): Map<string, {}> {
   return finalMap;
 }
 
-export function convertArrayToMap<T extends IUser | IEvent>(itemArray: T[]): Map<string, T> {
-  const iteratable: Array<[string, T]> = itemArray.map((item): [string, T] => [item.id, item]);
+export function convertArrayToMap<T extends IUser | IEvent>(
+  itemArray: T[]
+): Map<string, T> {
+  const iteratable: Array<[string, T]> = itemArray.map(
+    (item): [string, T] => [item.id, item]
+  );
   return new Map(iteratable);
 }
 
-export function addToMap<T extends IUser | IEvent>(map: Map<string, T>, newValue: T) {
+export function addToMap<T extends IUser | IEvent>(
+  map: Map<string, T>,
+  newValue: T
+) {
   const newMapping = new Map(map);
   newMapping.set(newValue.id, newValue);
   return newMapping;
@@ -50,14 +57,23 @@ export function convertPayloadToUser(rawUser: any) {
   if (rawUser === undefined) {
     return undefined;
   }
-  return new User(rawUser._id, rawUser.name, rawUser.gender, rawUser.location, rawUser.phoneNumber, rawUser.ignoreUsers || [], rawUser.connections);
+  return new User(
+    rawUser._id,
+    rawUser.name,
+    rawUser.gender,
+    rawUser.location,
+    rawUser.phoneNumber,
+    rawUser.claimed || false,
+    rawUser.ignoreUsers || [],
+    rawUser.connections
+  );
 }
 
 export function isValidPhoneNumber(rawNumber: string) {
   try {
-      return new PhoneNumber(rawNumber, "US").isValid();
+    return new PhoneNumber(rawNumber, "US").isValid();
   } catch (e) {
-      return false;
+    return false;
   }
 }
 
@@ -71,8 +87,10 @@ export function getDifferenceBetweenDates(dateA: Date, dateB: Date) {
 }
 
 export function distinctArray(array: any[]) {
-  const selfIndex = (value: any, index: number, self: any[]) => self.indexOf(value) === index;
+  const selfIndex = (value: any, index: number, self: any[]) =>
+    self.indexOf(value) === index;
   return array.filter(selfIndex);
 }
 
-export const getLatestEventDate = (events: IEvent[]) => events.sort((a, b) => getDifferenceBetweenDates(a.date, b.date)).slice(-1)[0];
+export const getLatestEventDate = (events: IEvent[]) =>
+  events.sort((a, b) => getDifferenceBetweenDates(a.date, b.date)).slice(-1)[0];

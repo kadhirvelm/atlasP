@@ -1,5 +1,6 @@
 import { setWith, TypedReducer } from "redoodle";
 
+import { IUser } from "../Types/Users";
 import {
   addToMap,
   convertArrayToMap,
@@ -12,6 +13,7 @@ import {
   Login,
   UpdateEventData,
   UpdateGraph,
+  UpdateOtherUser,
   UpdateUser,
   UpdateUserData
 } from "./DatabaseActions";
@@ -46,6 +48,24 @@ export const DatabaseReducer = TypedReducer.builder<
         ...currentUser,
         ...payload
       }
+    });
+  })
+  .withHandler(UpdateOtherUser.TYPE, (state, payload) => {
+    const { userData } = state;
+    if (userData === undefined) {
+      return state;
+    }
+
+    const newUserDataMap = new Map(userData);
+    const currentDetails = newUserDataMap.get(payload.userId);
+    if (currentDetails === undefined) {
+      return state;
+    }
+
+    const newDetails: IUser = { ...currentDetails, ...payload.newUserDetails };
+    newUserDataMap.set(payload.userId, newDetails);
+    return setWith(state, {
+      userData: newUserDataMap
     });
   })
   .withHandler(UpdateGraph.TYPE, (state, payload) => {
