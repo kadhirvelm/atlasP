@@ -74,7 +74,7 @@ export class PureEditUser extends React.PureComponent<
       <Dialog
         canEscapeKeyClose={false}
         isOpen={this.props.isOpen}
-        onClose={this.resetStateAndClose}
+        onClose={this.props.onClose}
         title={
           <div className="edit-user-title">
             Edit {this.props.user.name} {this.maybeRenderTooltip()}
@@ -142,24 +142,8 @@ export class PureEditUser extends React.PureComponent<
     );
   }
 
-  private resetStateAndClose = () => {
-    this.setState(
-      {
-        finalPerson: {
-          gender: "",
-          location: "",
-          name: ""
-        },
-        isLoading: false
-      },
-      () => {
-        this.props.onClose();
-      }
-    );
-  };
-
   private handleSubmit = () => {
-    if (this.isDisabled) {
+    if (this.isDisabled()) {
       showToast(
         Intent.DANGER,
         "Cannot update someone who has already claimed their account."
@@ -178,7 +162,7 @@ export class PureEditUser extends React.PureComponent<
           Intent.SUCCESS,
           `Successfully updated ${this.props.user.name}.`
         );
-        this.resetStateAndClose();
+        this.props.onClose();
       } catch (error) {
         this.setState({ isLoading: false });
       }
