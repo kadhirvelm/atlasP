@@ -31,18 +31,18 @@ export class SplashPage extends React.PureComponent<IMatchParams> {
             <div className="splash-main-content">
               <div className="splash-bullet border-right">
                 <div className="splash-bullet-header">
-                  Meet friends with a single text.
-                </div>
-                <div className="splash-bullet-text">
-                  AtlasScheduler – automated scheduling.
-                </div>
-              </div>
-              <div className="splash-bullet">
-                <div className="splash-bullet-header">
                   Understand your social time.
                 </div>
                 <div className="splash-bullet-text">
                   AtlasGraph – relationship visualization.
+                </div>
+              </div>
+              <div className="splash-bullet">
+                <div className="splash-bullet-header">
+                  Be suggested friends to see.
+                </div>
+                <div className="splash-bullet-text">
+                  AtlasRec – weekly recommendations.
                 </div>
               </div>
             </div>

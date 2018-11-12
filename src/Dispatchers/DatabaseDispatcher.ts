@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Dispatch } from "redux";
 
 import { IFinalPerson } from "../Components/Dialogs/AddNewUser";
@@ -8,6 +9,7 @@ import { AuthenticationDispatcher } from "./AuthenticationDispatcher";
 import { EventDispatcher } from "./EventDispatcher";
 import { GraphDispatcher } from "./GraphDispatcher";
 import { UserDispatcher } from "./UserDispatcher";
+import { retrieveURL } from "./Utils";
 
 /**
  * Send requests to the API through this class.
@@ -23,6 +25,15 @@ export class DatabaseDispatcher {
     this.eventDisptcher = new EventDispatcher(dispatch);
     this.graphDispatcher = new GraphDispatcher(dispatch);
     this.userDispatcher = new UserDispatcher(dispatch);
+  }
+
+  public async checkServerStatus() {
+    try {
+      await axios.get(retrieveURL(""), { timeout: 1000 });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   public login = async (
