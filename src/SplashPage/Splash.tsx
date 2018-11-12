@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { Button, Intent } from "@blueprintjs/core";
 
+import "../Components/Login/Login.scss";
 import "./Splash.scss";
 
 import image from "./billy-pasco.jpg";
@@ -61,7 +62,7 @@ export class SplashPage extends React.PureComponent<IMatchParams> {
         </div>
         <div className={classNames("filter", "white-filter")} />
         <div className={classNames("filter", "black-filter")} />
-        <img className="splash-page-background" src={image} alt="" />
+        <img className="login-page-background" src={image} alt="" />
         <div className="splash-credit">
           Photo by{" "}
           <a
