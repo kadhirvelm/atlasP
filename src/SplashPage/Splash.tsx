@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { Button, Intent } from "@blueprintjs/core";
 
+import "../Components/Login/Login.scss";
 import "./Splash.scss";
 
 import image from "./billy-pasco.jpg";
@@ -31,18 +32,18 @@ export class SplashPage extends React.PureComponent<IMatchParams> {
             <div className="splash-main-content">
               <div className="splash-bullet border-right">
                 <div className="splash-bullet-header">
-                  Meet friends with a single text.
-                </div>
-                <div className="splash-bullet-text">
-                  AtlasScheduler – automated scheduling.
-                </div>
-              </div>
-              <div className="splash-bullet">
-                <div className="splash-bullet-header">
                   Understand your social time.
                 </div>
                 <div className="splash-bullet-text">
                   AtlasGraph – relationship visualization.
+                </div>
+              </div>
+              <div className="splash-bullet">
+                <div className="splash-bullet-header">
+                  Be suggested friends to see.
+                </div>
+                <div className="splash-bullet-text">
+                  AtlasRec – weekly recommendations.
                 </div>
               </div>
             </div>
@@ -61,7 +62,7 @@ export class SplashPage extends React.PureComponent<IMatchParams> {
         </div>
         <div className={classNames("filter", "white-filter")} />
         <div className={classNames("filter", "black-filter")} />
-        <img className="splash-page-background" src={image} alt="" />
+        <img className="login-page-background" src={image} alt="" />
         <div className="splash-credit">
           Photo by{" "}
           <a
