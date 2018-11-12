@@ -2,7 +2,7 @@ import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 
-import { NonIdealState, Text } from "@blueprintjs/core";
+import { Icon, Text } from "@blueprintjs/core";
 
 import IStoreState from "../../State/IStoreState";
 import { IEvent } from "../../Types/Events";
@@ -19,12 +19,21 @@ export interface IInfoPersonStoreProps {
   events: IEvent[] | undefined;
 }
 
+export interface IInfoPersonState {
+  shouldShowEvents: boolean;
+}
+
 export class PureInfoPerson extends React.PureComponent<
-  IInfoPersonStoreProps & IInfoPersonStoreProps
+  IInfoPersonStoreProps & IInfoPersonStoreProps,
+  IInfoPersonState
 > {
+  public state: IInfoPersonState = {
+    shouldShowEvents: false
+  };
+
   public render() {
     if (this.props.person === undefined) {
-      return this.renderNoPerson();
+      return null;
     }
     return (
       <div
@@ -33,26 +42,40 @@ export class PureInfoPerson extends React.PureComponent<
           "main-info-graphic-container",
           "info-person",
           "bp3-dark",
-          "show-change"
+          "show-change",
+          {
+            "should-show-events": this.state.shouldShowEvents
+          }
         )}
       >
         <div className="info-person-name">
           <DialogWrapper dialog={EditUser}>
-            <Text ellipsize={true}>{this.props.person.name}</Text>
+            <Text className="info-person-link" ellipsize={true}>
+              {this.props.person.name}
+            </Text>
           </DialogWrapper>
+          <Icon
+            className="info-person-minimizer"
+            icon={
+              this.state.shouldShowEvents ? "chevron-down" : "chevron-right"
+            }
+            onClick={this.changeShouldShow}
+          />
         </div>
-        <EventList className="show-change" events={this.props.events} />
+        {this.maybeRenderEventList()}
       </div>
     );
   }
 
-  private renderNoPerson() {
-    return (
-      <div key="No Person" className="info-person">
-        <NonIdealState icon="person" />
-      </div>
-    );
+  private maybeRenderEventList() {
+    if (!this.state.shouldShowEvents) {
+      return null;
+    }
+    return <EventList className="show-change" events={this.props.events} />;
   }
+
+  private changeShouldShow = () =>
+    this.setState({ shouldShowEvents: !this.state.shouldShowEvents });
 }
 
 function mapStateToProps(store: IStoreState): IInfoPersonStoreProps {
