@@ -11,6 +11,7 @@ import { IUser } from "../../Types/Users";
 import { Autocomplete } from "../Common/Autocomplete";
 import { zoomByScale } from "./DisplayGraphUtils";
 
+import { GraphIcon } from "../../icons/graphIcon";
 import "./DisplayGraphHelpers.scss";
 
 export interface IDisplayGraphHelpersProps {
@@ -46,6 +47,19 @@ class PureDisplayGraphHelpers extends React.PureComponent<
             className={classNames("graph-label", "show-change")}
             key={this.props.graphLabel}
           >
+            <GraphIcon
+              attributes={{
+                height: 15,
+                style: {
+                  fill: "white",
+                  marginRight: "5px",
+                  minHeight: 15,
+                  minWidth: 15,
+                  stroke: "white"
+                },
+                width: 15
+              }}
+            />
             {this.props.graphLabel}
           </div>
           <div className="graph-assistant-buttons">

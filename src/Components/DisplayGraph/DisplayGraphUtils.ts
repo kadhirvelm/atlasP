@@ -16,7 +16,7 @@ const YELLOW = "#F7DC6F";
 const GREEN = "#7DCEA0";
 const BLUE = "#7FB3D5";
 
-const DEFAULT_RADIUS = 12;
+const DEFAULT_RADIUS = 15;
 const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
 
 const ZOOM_TO_PERSON = "ZOOM_TO_PERSON";
@@ -177,7 +177,7 @@ export function returnNames(
     .append("text")
     .text(node => {
       const name = node.name.split(" ");
-      return name.length > 1 ? `${name[0]} ${name[1][0]}` : name[0];
+      return name.length > 1 ? `${name[0]} ${name[1][0]}.` : name[0];
     })
     .attr("dx", node => -(node.name.split(" ")[0].length + 2) * 3.5)
     .attr("dy", 5)

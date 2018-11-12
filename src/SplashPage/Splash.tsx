@@ -43,7 +43,7 @@ export class SplashPage extends React.PureComponent<IMatchParams> {
                   Be suggested friends to see.
                 </div>
                 <div className="splash-bullet-text">
-                  AtlasRec – weekly recommendations.
+                  AtlasText – weekly recommendations.
                 </div>
               </div>
             </div>
