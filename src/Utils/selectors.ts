@@ -1,5 +1,9 @@
 import { createSelector } from "reselect";
 
+import {
+  LINK_DEFAULT_OPACITY,
+  LINK_DEFAULT_STROKE_WIDTH
+} from "../Components/Navbar/NavbarComponents/GraphType/GraphConstants";
 import IStoreState from "../State/IStoreState";
 import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType, ILink } from "../Types/Graph";
@@ -20,11 +24,12 @@ export interface IPeopleGraph {
 
 function returnLastEvents(connectionCopy: Map<string, IEvent[]>) {
   const lastEvents = new Map();
-  Array.from(connectionCopy.keys()).forEach((id) => {
-      const events = connectionCopy.get(id) as IEvent[];
-      const lastEvent = events.length === 0 ? undefined : getLatestEventDate(events).date;
-      lastEvents.set(id, lastEvent);
-  })
+  Array.from(connectionCopy.keys()).forEach(id => {
+    const events = connectionCopy.get(id) as IEvent[];
+    const lastEvent =
+      events.length === 0 ? undefined : getLatestEventDate(events).date;
+    lastEvents.set(id, lastEvent);
+  });
   return lastEvents;
 }
 
@@ -35,7 +40,7 @@ export const selectConnectionsAndDates = createSelector(
   (
     mainPerson: IUser | undefined,
     allUsers: Map<string, IUser> | undefined,
-    allEvents: Map<string, IEvent> | undefined,
+    allEvents: Map<string, IEvent> | undefined
   ): IFilteredNodes | undefined => {
     if (
       mainPerson === undefined ||
@@ -51,13 +56,16 @@ export const selectConnectionsAndDates = createSelector(
 
     const connectionEvents: Map<string, IEvent[]> = new Map();
     for (const key of Object.keys(connectionCopy)) {
-      connectionEvents.set(key, connectionCopy[key].map((id) => allEvents.get(id) as IEvent));
+      connectionEvents.set(
+        key,
+        connectionCopy[key].map(id => allEvents.get(id) as IEvent)
+      );
     }
-  
+
     return {
       connectionEvents,
       lastEvents: returnLastEvents(connectionEvents),
-      nodes: Array.from(allUsers.values()),
+      nodes: Array.from(allUsers.values())
     };
   }
 );
@@ -69,7 +77,7 @@ export const selectFilteredConnections = createSelector(
   (
     filteredNodes: IFilteredNodes | undefined,
     currentUser: IUser | undefined,
-    graphFilter: IFilter[] | undefined,
+    graphFilter: IFilter[] | undefined
   ): IFilteredNodes | undefined => {
     if (filteredNodes === undefined || graphFilter === undefined) {
       return filteredNodes;
@@ -77,10 +85,13 @@ export const selectFilteredConnections = createSelector(
 
     const filteredNodesCopy = { ...filteredNodes };
     const connectionEvents = new Map(filteredNodes.connectionEvents);
-  
-    graphFilter.forEach((filter) => {
-      filteredNodesCopy.nodes = filteredNodesCopy.nodes.filter((user) => {
-        const check = filter.type === "date" ? filteredNodesCopy.lastEvents.get(user.id) : user;
+
+    graphFilter.forEach(filter => {
+      filteredNodesCopy.nodes = filteredNodesCopy.nodes.filter(user => {
+        const check =
+          filter.type === "date"
+            ? filteredNodesCopy.lastEvents.get(user.id)
+            : user;
         if (check === undefined) {
           return true;
         }
@@ -100,59 +111,82 @@ export const selectLinkedConnections = createSelector(
   selectFilteredConnections,
   (state: IStoreState) => state.DatabaseReducer.currentUser,
   (state: IStoreState) => state.WebsiteReducer.graphType,
-  (filteredNodes: IFilteredNodes | undefined, mainPerson: IUser | undefined, graphType: IGraphType): IPeopleGraph | undefined => {
+  (
+    filteredNodes: IFilteredNodes | undefined,
+    mainPerson: IUser | undefined,
+    graphType: IGraphType
+  ): IPeopleGraph | undefined => {
     if (filteredNodes === undefined || mainPerson === undefined) {
       return undefined;
     }
     return {
       lastEvents: filteredNodes.lastEvents,
-      links: graphType.generateLinks(mainPerson.id, filteredNodes.connectionEvents),
-      nodes: filteredNodes.nodes,
+      links: graphType.generateLinks(
+        mainPerson.id,
+        filteredNodes.connectionEvents
+      ),
+      nodes: filteredNodes.nodes
     };
   }
 );
 
 const resetLink = (link: ILink) => {
   link.color = "black";
-  link.opacity = 0.1;
-  link.strokeWidth = 1;
-}
+  link.opacity = LINK_DEFAULT_OPACITY;
+  link.strokeWidth = LINK_DEFAULT_STROKE_WIDTH;
+};
 
 const setLink = (link: ILink, totalHits: number) => {
   link.color = totalHits === 1 ? "#7D6608" : "#6E2C00";
-  link.opacity = totalHits === 1 ? 0.5 : 1;
+  link.opacity = totalHits === 1 ? 0.75 : 1;
   link.strokeWidth = totalHits === 1 ? 2 : 4;
-}
+};
 
-const hasHighlight = (link: any, highlights: Set<string>) => (highlights.has(link) || highlights.has(link.id)) ? 1 : 0;
+const hasHighlight = (link: any, highlights: Set<string>) =>
+  highlights.has(link) || highlights.has(link.id) ? 1 : 0;
 
 export const selectMainPersonGraph = createSelector(
   selectLinkedConnections,
   (state: IStoreState) => state.WebsiteReducer.highlightConnections,
-  (linkedGraph: IPeopleGraph | undefined, highlightConnections: Set<string>): IPeopleGraph | undefined => {
+  (
+    linkedGraph: IPeopleGraph | undefined,
+    highlightConnections: Set<string>
+  ): IPeopleGraph | undefined => {
     if (linkedGraph === undefined) {
       return undefined;
     }
 
-    const resetLinks = linkedGraph.links.map((link) => ({ ...link, color: undefined, opacity: undefined, strokeWidth: undefined }));
+    const resetLinks = linkedGraph.links.map(link => ({
+      ...link,
+      color: undefined,
+      opacity: undefined,
+      strokeWidth: undefined
+    }));
 
     return {
       ...linkedGraph,
-      links: resetLinks.map((link) => {
-        const targetHasHighlight = hasHighlight(link.target, highlightConnections);
-        const sourceHasHighlight = hasHighlight(link.source, highlightConnections);
+      links: resetLinks.map(link => {
+        const targetHasHighlight = hasHighlight(
+          link.target,
+          highlightConnections
+        );
+        const sourceHasHighlight = hasHighlight(
+          link.source,
+          highlightConnections
+        );
         if (!targetHasHighlight && !sourceHasHighlight) {
           resetLink(link);
         } else {
           setLink(link, targetHasHighlight + sourceHasHighlight);
         }
         return link;
-      }),
+      })
     };
   }
 );
 
-const sortDate = (a: IEvent, b: IEvent) => new Date(b.date).getTime() - new Date(a.date).getTime();
+const sortDate = (a: IEvent, b: IEvent) =>
+  new Date(b.date).getTime() - new Date(a.date).getTime();
 
 export const selectSortedEvents = createSelector(
   (state: IStoreState) => state.DatabaseReducer.eventData,
@@ -182,6 +216,8 @@ export const selectInfoPersonSortedEvents = createSelector(
     ) {
       return undefined;
     }
-    return mainPerson.connections[infoPerson.id].map(id => eventData.get(id) as IEvent).sort(sortDate);
+    return mainPerson.connections[infoPerson.id]
+      .map(id => eventData.get(id) as IEvent)
+      .sort(sortDate);
   }
 );
