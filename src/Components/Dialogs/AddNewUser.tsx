@@ -20,11 +20,6 @@ import "./AddNewEvent.scss";
 export interface IAddNewPersonDispatchProps {
   dialogUtils: DialogUtils;
   addUserByPhoneNumber(phoneNumber: string, successCallback: () => void): void;
-  refreshGraph(user: IUser): void;
-}
-
-export interface IAddNewPersonStoreProps {
-  currentUser: IUser | undefined;
 }
 
 interface IAddNewPersonProps {
@@ -55,7 +50,7 @@ const EMPTY_STATE: IAddNewPersonState = {
 };
 
 export class PureAddNewPerson extends React.PureComponent<
-  IAddNewPersonProps & IAddNewPersonDispatchProps & IAddNewPersonStoreProps,
+  IAddNewPersonProps & IAddNewPersonDispatchProps,
   IAddNewPersonState
 > {
   public state: IAddNewPersonState = EMPTY_STATE;
@@ -116,13 +111,7 @@ export class PureAddNewPerson extends React.PureComponent<
   };
 
   private checkForPhoneNumber = (phoneNumber: string) => {
-    this.props.addUserByPhoneNumber(phoneNumber, () => {
-      // const { currentUser } = this.props;
-      // if (currentUser !== undefined) {
-      //   this.props.refreshGraph(currentUser);
-      // }
-      this.resetStateAndClose();
-    });
+    this.props.addUserByPhoneNumber(phoneNumber, this.resetStateAndClose);
   };
 
   private createNewPerson = () => {
@@ -151,22 +140,15 @@ export class PureAddNewPerson extends React.PureComponent<
   };
 }
 
-function mapStoreToProps(state: IStoreState): IAddNewPersonStoreProps {
-  return {
-    currentUser: state.DatabaseReducer.currentUser
-  };
-}
-
 function mapDispatchToProps(dispatch: Dispatch): IAddNewPersonDispatchProps {
   const databaseDispatcher = new DatabaseDispatcher(dispatch);
   return {
     addUserByPhoneNumber: databaseDispatcher.addToGraphFromPhoneNumber,
-    dialogUtils: new DialogUtils(dispatch),
-    refreshGraph: databaseDispatcher.getUpdatedUser
+    dialogUtils: new DialogUtils(dispatch)
   };
 }
 
 export const AddNewPerson = connect(
-  mapStoreToProps,
+  undefined,
   mapDispatchToProps
 )(PureAddNewPerson);
