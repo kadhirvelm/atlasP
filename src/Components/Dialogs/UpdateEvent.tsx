@@ -13,7 +13,7 @@ import { DialogUtils } from "./DialogUtils";
 import { IDialogProps } from "./DialogWrapper";
 
 import "./Update.scss";
-import "./UpdateEvents.scss";
+import "./UpdateEvent.scss";
 
 export interface IUpdateEventStoreProps {
   selectedEvent: IEvent | undefined;
@@ -22,10 +22,12 @@ export interface IUpdateEventStoreProps {
 
 export interface IUpdateEventDispatchProps {
   dialogUtils: DialogUtils;
+  deleteEvent(event: IEvent): void;
   updateEvent(event: IEvent): void;
 }
 
 export interface IUpdateEventState {
+  doubleCheckEventDeletion: boolean;
   isLoading: boolean;
   newDate: string;
   selectedEvent?: IEvent;
@@ -36,6 +38,7 @@ class PureUpdateEvent extends React.PureComponent<
   IUpdateEventState
 > {
   public state = {
+    doubleCheckEventDeletion: false,
     isLoading: false,
     newDate: "",
     selectedEvent: this.props.selectedEvent
@@ -47,6 +50,7 @@ class PureUpdateEvent extends React.PureComponent<
       nextProps.selectedEvent !== undefined
     ) {
       this.setState({
+        doubleCheckEventDeletion: false,
         newDate: this.formatDate(nextProps.selectedEvent.date),
         selectedEvent: nextProps.selectedEvent
       });
@@ -58,6 +62,7 @@ class PureUpdateEvent extends React.PureComponent<
     if (selectedEvent === undefined) {
       return null;
     }
+
     return (
       <Dialog
         icon="edit"
@@ -74,7 +79,20 @@ class PureUpdateEvent extends React.PureComponent<
             Classes.DIALOG_FOOTER_ACTIONS
           )}
         >
-          <Button onClick={this.props.onClose} text="Cancel" />
+          <Button
+            className="update-event-delete"
+            icon="delete"
+            intent={this.state.doubleCheckEventDeletion ? "danger" : "none"}
+            onClick={
+              this.state.doubleCheckEventDeletion
+                ? this.handleDeleteEvent(selectedEvent)
+                : this.doubleCheckEventDeletion
+            }
+            text={this.state.doubleCheckEventDeletion ? "Delete event" : ""}
+            title="Delete event"
+          />
+          <div className="update-event-divider" />
+          <Button onClick={this.handleClose} text="Cancel" />
           <Button
             intent="primary"
             loading={this.state.isLoading}
@@ -85,6 +103,18 @@ class PureUpdateEvent extends React.PureComponent<
       </Dialog>
     );
   }
+
+  private doubleCheckEventDeletion = () =>
+    this.setState({ doubleCheckEventDeletion: true });
+
+  private handleDeleteEvent = (event: IEvent) => () => {
+    this.props.deleteEvent(event);
+    this.handleClose();
+  };
+
+  private handleClose = () => {
+    this.setState({ doubleCheckEventDeletion: false }, this.props.onClose);
+  };
 
   private maybeRenderEventDetails(selectedEvent: IEvent) {
     return (
@@ -181,9 +211,11 @@ function mapStateToProps(state: IStoreState): IUpdateEventStoreProps {
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IUpdateEventDispatchProps {
+  const databaseDispatcher = new DatabaseDispatcher(dispatch);
   return {
+    deleteEvent: databaseDispatcher.deleteEvent,
     dialogUtils: new DialogUtils(dispatch),
-    updateEvent: new DatabaseDispatcher(dispatch).updateEvent
+    updateEvent: databaseDispatcher.updateEvent
   };
 }
 

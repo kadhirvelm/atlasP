@@ -72,6 +72,23 @@ export class EventDispatcher {
     }
   };
 
+  public deleteEvent = async (event: IEvent) => {
+    try {
+      await axios.post(retrieveURL("events/delete"), { eventId: event.id });
+      showToast(
+        Intent.SUCCESS,
+        "Event successfully deleted. Please refresh your graph to update the graph."
+      );
+    } catch (error) {
+      showToast(
+        Intent.DANGER,
+        `Hum something went wrong, we weren't able to delete the event: ${
+          error.response.data.message
+        }`
+      );
+    }
+  };
+
   private formatEvent(event: IEvent) {
     return { ...event, attendees: event.attendees.map(user => user.id) };
   }

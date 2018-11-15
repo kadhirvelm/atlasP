@@ -95,6 +95,10 @@ export class DatabaseDispatcher {
     return this.eventDisptcher.createNewEvent(event);
   };
 
+  public deleteEvent = async (event: IEvent) => {
+    this.eventDisptcher.deleteEvent(event);
+  };
+
   public updateEvent = async (event: IEvent) => {
     this.eventDisptcher.updateEvent(event);
   };
