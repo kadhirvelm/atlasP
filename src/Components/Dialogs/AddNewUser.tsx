@@ -10,8 +10,6 @@ import {
 } from "@blueprintjs/core";
 
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
-import IStoreState from "../../State/IStoreState";
-import { IUser } from "../../Types/Users";
 import { showToast } from "../../Utils/Toaster";
 import { DialogUtils } from "./DialogUtils";
 
