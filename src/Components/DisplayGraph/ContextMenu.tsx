@@ -12,6 +12,7 @@ import {
   SetContextMenuNode
 } from "../../State/WebsiteActions";
 import { IUser } from "../../Types/Users";
+import { isInsideDiv } from "../Common/utils";
 import { IGraphUser } from "./DisplayGraph";
 
 import "./ContextMenu.scss";
@@ -56,12 +57,12 @@ class PureGraphContextMenu extends React.PureComponent<
 
   public componentWillMount() {
     window.addEventListener("contextmenu", this.setMouseCoordinates);
-    window.addEventListener("click", this.checkForOutsideClick);
+    window.addEventListener("click", this.handleClick);
   }
 
   public componentWillUnmount() {
     window.removeEventListener("contextmenu", this.setMouseCoordinates);
-    window.removeEventListener("click", this.checkForOutsideClick);
+    window.removeEventListener("click", this.handleClick);
   }
 
   public render() {
@@ -143,7 +144,7 @@ class PureGraphContextMenu extends React.PureComponent<
   ) {
     return (
       <div className="context-menu-option" onClick={onClick}>
-        <Icon className="context-menu-icon" icon={icon} />
+        <Icon className="context-menu-icon" icon={icon} iconSize={11} />
         {text}
       </div>
     );
@@ -175,29 +176,12 @@ class PureGraphContextMenu extends React.PureComponent<
     this.close();
   };
 
-  private checkForOutsideClick = (event: any) => {
-    if (
-      this.ref === null ||
-      (this.isInConstraint(
-        event.clientX,
-        this.state.screenX,
-        this.ref.clientWidth
-      ) &&
-        this.isInConstraint(
-          event.clientY,
-          this.state.screenY,
-          this.ref.clientHeight
-        ))
-    ) {
+  private handleClick = (event: any) => {
+    if (isInsideDiv(event, this.ref, this.state.screenX, this.state.screenY)) {
       return;
     }
     this.close();
   };
-
-  private isInConstraint(click: number, window: number, size: number) {
-    const totalSize = click - window;
-    return totalSize > 0 && totalSize < size;
-  }
 
   private handleRemoveFromIgnore = (
     currentContextNodeId: string,

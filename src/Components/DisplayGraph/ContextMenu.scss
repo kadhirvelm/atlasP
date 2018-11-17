@@ -3,10 +3,10 @@
   flex-direction: column;
   position: fixed;
   z-index: 10;
-  background: rgba(28, 37, 47, 0.9);
+  background: #394b59;
   color: white;
   border-radius: 3px;
-  width: 150px;
+  width: 130px;
   animation: fade-in 200ms ease-in;
   padding-bottom: 5px;
 }
@@ -15,14 +15,14 @@
   position: relative;
   font-size: 16px;
   padding: 5px;
+  font-weight: bold;
+  background: #34495e;
 }
 
 .context-menu-option {
   display: flex;
   align-items: center;
   padding: 5px 0;
-  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.35);
-  margin: 0 5px;
   transition: background-color 200ms ease-in;
   cursor: pointer;
 }

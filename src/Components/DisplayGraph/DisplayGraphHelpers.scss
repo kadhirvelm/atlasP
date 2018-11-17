@@ -28,6 +28,10 @@
 .graph-assistant-buttons {
   display: flex;
   justify-content: flex-end;
+
+  .bp3-button {
+    margin: 5px;
+  }
 }
 
 .find-user-autocomplete {
