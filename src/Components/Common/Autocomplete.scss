@@ -1,105 +1,106 @@
 .autocomplete-tag {
-    display: flex;
-    width: fit-content;
-    height: fit-content;
-    flex: 0 0 auto;
-    color: white;
-    background: #154360;
-    border-radius: 4px;
-    font-size: 12px;
-    padding: 3px 5px;
-    margin: 5px 10px 0 0;
-    animation: fade-in 200ms ease-in;
-    cursor: pointer;
-    align-items: center;
+  display: flex;
+  width: fit-content;
+  height: fit-content;
+  flex: 0 0 auto;
+  color: white;
+  background: #154360;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 3px 5px;
+  margin: 5px 10px 0 0;
+  animation: fade-in 200ms ease-in;
+  cursor: pointer;
+  align-items: center;
 }
 
 .autocomplete-remove {
-    padding-left: 2px;
-    margin-left: 6px;
-    box-shadow: -1px 0 rgba(255, 255, 255, 0.25);
+  padding-left: 2px;
+  margin-left: 6px;
+  box-shadow: -1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .autocomplete-row {
+  display: flex;
+  flex: 1;
+  background-color: white;
+  transition: background-color 200ms ease;
+  padding: 10px;
+  cursor: pointer;
+
+  &.key {
     display: flex;
-    flex: 1;
-    background-color: white;
+    flex: 1 0 30%;
+  }
+
+  &.value {
+    display: flex;
+    flex: 1 0 70%;
+    justify-content: flex-start;
+    text-overflow: ellipsis;
+  }
+
+  &.hovering,
+  &:hover {
+    background-color: #85c1e9;
     transition: background-color 200ms ease;
-    padding: 10px;
-    cursor: pointer;
-
-    &.key {
-        display: flex;
-        flex: 1 0 30%;
-    }
-
-    &.value {
-        display: flex;
-        flex: 1 0 70%;
-        justify-content: flex-start;
-        text-overflow: ellipsis;
-    }
-
-    &:hover {
-        background-color: #85C1E9;
-        transition: background-color 200ms ease;
-    }
+  }
 }
 
 .autocomplete-row-selected {
-    background-color: #7DCEA0;
-    transition: background-color 200ms ease;
+  background-color: #7dcea0;
+  transition: background-color 200ms ease;
 
-    &:hover {
-        background-color: #F1948A;
-        transition: background-color 200ms ease;
-    }
+  &:hover {
+    background-color: #f1948a;
+    transition: background-color 200ms ease;
+  }
 }
 
 .autofill-container {
-    z-index: 10;
-    position: absolute;
-    top: 30px;
-    left: 0;
-    right: 0;
-    padding: 10px;
-    justify-content: center;
-    background-color: white;
-    border: 1px solid #1B4F72;
-    border-radius: 2px 2px 15px 15px;
-    height: 200px;
-    overflow-y: auto;
-    animation: fade-in 200ms ease-in;
+  z-index: 10;
+  position: absolute;
+  top: 30px;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  justify-content: center;
+  background-color: white;
+  border-radius: 2px 2px 15px 15px;
+  height: 200px;
+  overflow-y: auto;
+  animation: fade-in 200ms ease-in;
+  box-shadow: 0 0 4px rgba(#1b4f72, 0.65);
 
-    &::-webkit-scrollbar {
-        display: none;
-    }
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .autofill-input {
-    display: flex;
-    flex-grow: 1;
-    transition: width 200ms ease;
+  display: flex;
+  flex-grow: 1;
+  transition: width 200ms ease;
 }
 
 .rendered-values-container {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
 
-    &::-webkit-scrollbar {
-        background: transparent;
-    }
+  &::-webkit-scrollbar {
+    background: transparent;
+  }
 }
 
 .total-container {
-    position: relative;
+  position: relative;
 }
 
 @keyframes fade-in {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
