@@ -91,15 +91,20 @@ export const DatabaseReducer = TypedReducer.builder<
   })
   .withHandler(UpdateEventData.TYPE, (state, payload) => {
     const { currentUser, eventData } = state;
-    if (eventData === undefined) {
+    if (eventData === undefined || currentUser === undefined) {
       return state;
     }
 
-    if (currentUser !== undefined && currentUser.connections !== undefined) {
-      payload.attendees.forEach(user =>
-        (currentUser.connections as any)[user.id].push(payload.id)
-      );
+    const { connections } = currentUser;
+    if (connections === undefined) {
+      return state;
     }
+
+    payload.attendees.forEach(user => {
+      if (!connections[user.id].includes(payload.id)) {
+        connections[user.id].push(payload.id);
+      }
+    });
 
     return setWith(state, {
       currentUser,
