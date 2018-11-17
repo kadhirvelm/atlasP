@@ -84,6 +84,7 @@
   margin: 0 20px;
 
   animation: fade-in 3.6s ease-in-out;
+  margin-bottom: 70px;
 }
 
 @keyframes fade-in {
@@ -122,7 +123,7 @@
 .claim-button {
   display: flex;
   justify-content: center;
-  margin-top: -10px;
+  margin-top: 20px;
 }
 
 .claim-button .pt-button {
@@ -130,7 +131,7 @@
 }
 
 .border-right {
-  box-shadow: 1px 0 rgba(255, 255, 255, 0.4);
+  border-right: 1px solid #95a5a6;
 }
 
 .splash-bullet-header {
