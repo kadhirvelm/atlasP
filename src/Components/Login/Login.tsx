@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import Responsive from "react-responsive";
 import { Dispatch } from "redux";
 
-import { Button, Card, EditableText, Intent } from "@blueprintjs/core";
+import { Button, EditableText, Intent } from "@blueprintjs/core";
 
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import { isValidPhoneNumber } from "../../Utils/Util";
@@ -13,7 +13,7 @@ import { PasswordField } from "../Common/PasswordField";
 import { showToast } from "../../Utils/Toaster";
 import "./Login.scss";
 
-import image from "./khachik-simonian.jpg";
+import image from "./mark-koch.jpg";
 
 export interface ILoginComponentDispatchProps {
   checkServerStatus(): Promise<boolean>;
@@ -51,12 +51,13 @@ class PureLoginComponent extends React.PureComponent<
   public render() {
     return (
       <div>
-        <Card
+        <div
           className="fade-in login-parent-container"
           onKeyDown={this.handleKeyboard}
-          elevation={3}
         >
-          <div className="login-title">Welcome to AtlasP</div>
+          <div className="login-title">
+            <Desktop>Welcome to</Desktop> AtlasP
+          </div>
           <div className="login-center">
             <div className="login-main-container">
               <EditableText
@@ -101,7 +102,7 @@ class PureLoginComponent extends React.PureComponent<
               </div>
             </Desktop>
           </div>
-        </Card>
+        </div>
         <div className="server-status">
           Server –{" "}
           <div
@@ -113,15 +114,13 @@ class PureLoginComponent extends React.PureComponent<
         </div>
         <div className="login-credit">
           Photo by
-          <a
-            style={{ color: "white", margin: "0 3px" }}
-            target="_blank"
-            href="https://unsplash.com/@khachiksimonian"
-          >
-            Khachik Simonian
+          <a target="_blank" href="https://unsplash.com/@markk92">
+            Mark Koch
           </a>
           on Unsplash
         </div>
+        <div className={classNames("filter", "login-white-filter")} />
+        <div className={classNames("filter", "login-black-filter")} />
         <img className="login-page-background" src={image} alt="" />
       </div>
     );

@@ -6,7 +6,7 @@ import { Button, Intent } from "@blueprintjs/core";
 import "../Components/Login/Login.scss";
 import "./Splash.scss";
 
-import image from "./billy-pasco.jpg";
+import image from "./daniel-leone.jpg";
 
 export interface IMatchParams {
   match: {
@@ -40,16 +40,13 @@ export class SplashPage extends React.PureComponent<IMatchParams> {
               </div>
               <div className="splash-bullet">
                 <div className="splash-bullet-header">
-                  Be suggested friends to see.
+                  Keep in touch with friends.
                 </div>
                 <div className="splash-bullet-text">
                   AtlasText – weekly recommendations.
                 </div>
               </div>
             </div>
-            <h4 className="splash-subheader">
-              Stay in touch with your friends.{" "}
-            </h4>
             <div className="claim-button">
               <Button
                 intent={Intent.PRIMARY}
@@ -68,9 +65,9 @@ export class SplashPage extends React.PureComponent<IMatchParams> {
           <a
             style={{ color: "white" }}
             target="_blank"
-            href="https://unsplash.com/@billy_pasco"
+            href="https://unsplash.com/@danielleone"
           >
-            Billy Pasco
+            Daniel Leone
           </a>{" "}
           on Unsplash
         </div>
