@@ -15,7 +15,7 @@ import { IUser } from "../Types/Users";
 import { securePassword } from "../Utils/Security";
 import { showToast } from "../Utils/Toaster";
 import User from "../Utils/User";
-import { convertPayloadToUser } from "../Utils/Util";
+import { convertPayloadToUser, isValidPhoneNumber } from "../Utils/Util";
 import { retrieveURL } from "./Utils";
 
 /**
@@ -130,6 +130,31 @@ export class UserDispatcher {
         )}`
       );
       throw error;
+    }
+  };
+
+  public addToGraphFromPhoneNumber = async (
+    phoneNumber: string,
+    successCallback: () => void
+  ) => {
+    if (!isValidPhoneNumber(phoneNumber)) {
+      showToast(Intent.DANGER, `Invalid phone number: ${phoneNumber}`);
+      return;
+    }
+    try {
+      const response = await axios.post(retrieveURL("users/add-connection"), {
+        phoneNumber
+      });
+      successCallback();
+      const user = response.data.payload.user;
+      this.dispatch(
+        UpdateUserData.create(
+          new User(user._id, user.name, user.gender, user.location, "", false)
+        )
+      );
+      showToast(Intent.SUCCESS, response.data.payload.message);
+    } catch (error) {
+      showToast(Intent.DANGER, `${error.response.data.payload.error}`);
     }
   };
 

@@ -5,3 +5,11 @@
 .autocomplete-attendees {
   margin: 10px 0;
 }
+
+.new-user-or-separator {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  padding: 5px 0;
+  color: #7f8c8d;
+}
