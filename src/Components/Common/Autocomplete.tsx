@@ -250,8 +250,8 @@ export class Autocomplete extends React.PureComponent<
       });
     }
     this.setState({
-      searchText: (event.target as any).value,
-      filteredDataSource
+      filteredDataSource,
+      searchText: (event.target as any).value
     });
   };
 }
