@@ -6,8 +6,6 @@ import { Button, Intent } from "@blueprintjs/core";
 import "../Components/Login/Login.scss";
 import "./Splash.scss";
 
-import image from "./daniel-leone.jpg";
-
 export interface IMatchParams {
   match: {
     params: {
@@ -59,7 +57,11 @@ export class SplashPage extends React.PureComponent<IMatchParams> {
         </div>
         <div className={classNames("filter", "white-filter")} />
         <div className={classNames("filter", "black-filter")} />
-        <img className="login-page-background" src={image} alt="" />
+        <img
+          className="login-page-background"
+          src="https://s3-us-west-1.amazonaws.com/www.atlas-people/daniel-leone.jpg"
+          alt=""
+        />
         <div className="splash-credit">
           Photo by{" "}
           <a

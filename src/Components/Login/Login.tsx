@@ -13,8 +13,6 @@ import { PasswordField } from "../Common/PasswordField";
 import { showToast } from "../../Utils/Toaster";
 import "./Login.scss";
 
-import image from "./mark-koch.jpg";
-
 export interface ILoginComponentDispatchProps {
   checkServerStatus(): Promise<boolean>;
   claim(phoneNumber: string): Promise<void>;
@@ -121,7 +119,11 @@ class PureLoginComponent extends React.PureComponent<
         </div>
         <div className={classNames("filter", "login-white-filter")} />
         <div className={classNames("filter", "login-black-filter")} />
-        <img className="login-page-background" src={image} alt="" />
+        <img
+          className="login-page-background"
+          src="https://s3-us-west-1.amazonaws.com/www.atlas-people/mark-koch.jpg"
+          alt=""
+        />
       </div>
     );
   }
