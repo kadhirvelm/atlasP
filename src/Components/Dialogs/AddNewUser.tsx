@@ -9,6 +9,7 @@ import {
   Intent
 } from "@blueprintjs/core";
 
+import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import { showToast } from "../../Utils/Toaster";
 import { DialogUtils } from "./DialogUtils";
 
@@ -16,6 +17,7 @@ import "./AddNewEvent.scss";
 
 export interface IAddNewPersonDispatchProps {
   dialogUtils: DialogUtils;
+  addUserByPhoneNumber(phoneNumber: string, successCallback: () => void): void;
 }
 
 interface IAddNewPersonProps {
@@ -27,6 +29,7 @@ export interface IFinalPerson {
   name: string;
   gender: string;
   location: string;
+  phoneNumber?: string;
 }
 
 export interface IAddNewPersonState {
@@ -38,7 +41,8 @@ const EMPTY_STATE: IAddNewPersonState = {
   finalPerson: {
     gender: "X",
     location: "",
-    name: ""
+    name: "",
+    phoneNumber: ""
   },
   isLoading: false
 };
@@ -59,6 +63,12 @@ export class PureAddNewPerson extends React.PureComponent<
       >
         <div className={Classes.DIALOG_BODY}>
           <FormGroup>
+            <InputGroup
+              className="input-group"
+              onChange={this.handleChange("phoneNumber")}
+              placeholder="Phone number"
+            />
+            <div className="new-user-or-separator">— or —</div>
             <InputGroup
               className="input-group"
               onChange={this.handleChange("name")}
@@ -91,6 +101,18 @@ export class PureAddNewPerson extends React.PureComponent<
   };
 
   private handleSubmit = () => {
+    const { phoneNumber } = this.state.finalPerson;
+    if (phoneNumber !== undefined && phoneNumber !== "") {
+      return this.checkForPhoneNumber(phoneNumber);
+    }
+    return this.createNewPerson();
+  };
+
+  private checkForPhoneNumber = (phoneNumber: string) => {
+    this.props.addUserByPhoneNumber(phoneNumber, this.resetStateAndClose);
+  };
+
+  private createNewPerson = () => {
     try {
       this.setState({ isLoading: true }, async () => {
         const { finalPerson } = this.state;
@@ -117,7 +139,9 @@ export class PureAddNewPerson extends React.PureComponent<
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IAddNewPersonDispatchProps {
+  const databaseDispatcher = new DatabaseDispatcher(dispatch);
   return {
+    addUserByPhoneNumber: databaseDispatcher.addToGraphFromPhoneNumber,
     dialogUtils: new DialogUtils(dispatch)
   };
 }

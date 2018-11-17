@@ -67,6 +67,16 @@ export class DatabaseDispatcher {
     return this.userDispatcher.updateOtherUser(user, newOtherUserDetails);
   };
 
+  public addToGraphFromPhoneNumber = async (
+    phoneNumber: string,
+    successCallback: () => void
+  ) => {
+    return this.userDispatcher.addToGraphFromPhoneNumber(
+      phoneNumber,
+      successCallback
+    );
+  };
+
   public updateUserIgnoreList = async (ignoreUsers: string[]) => {
     return this.userDispatcher.updateUserIgnoreList(ignoreUsers);
   };
