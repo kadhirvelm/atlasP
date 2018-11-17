@@ -21,6 +21,7 @@ export interface IAutocompleteProps {
 }
 
 interface IAutocompleteState {
+  filteredDataSource: any[];
   hovering: number;
   searchText: string;
   openAutofill: boolean;
@@ -31,6 +32,10 @@ export class Autocomplete extends React.PureComponent<
   IAutocompleteState
 > {
   public state = {
+    filteredDataSource:
+      this.props.dataSource !== undefined
+        ? Array.from(this.props.dataSource.keys())
+        : [],
     hovering: -1,
     openAutofill: false,
     searchText: ""
@@ -145,29 +150,18 @@ export class Autocomplete extends React.PureComponent<
     const display = this.props.displayKey;
     return (
       <div className="autofill-container" ref={this.setRef.div}>
-        {Array.from(dataSource.keys())
-          .filter(key => {
-            const searchText = this.state.searchText.toLowerCase();
-            return (
-              key.toLowerCase().includes(searchText) ||
-              dataSource
-                .get(key)
-                [display].toLowerCase()
-                .includes(searchText)
-            );
-          })
-          .map((key, index) => (
-            <div
-              className={classNames("autocomplete-row", {
-                "autocomplete-row-selected": this.isSelected(key),
-                hovering: this.state.hovering === index
-              })}
-              key={index}
-              onClick={this.handleSelection(key)}
-            >
-              <div className="value"> {dataSource.get(key)[display]} </div>
-            </div>
-          ))}
+        {this.state.filteredDataSource.map((key, index) => (
+          <div
+            className={classNames("autocomplete-row", {
+              "autocomplete-row-selected": this.isSelected(key),
+              hovering: this.state.hovering === index
+            })}
+            key={index}
+            onClick={this.handleSelection(key)}
+          >
+            <div className="value"> {dataSource.get(key)[display]} </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -192,19 +186,25 @@ export class Autocomplete extends React.PureComponent<
     }
 
     if (event.key === "ArrowDown") {
+      event.preventDefault();
       this.setState(
         {
-          hovering: Math.min(this.state.hovering + 1, dataSource.size - 1)
+          hovering: Math.min(
+            this.state.hovering + 1,
+            this.state.filteredDataSource.length - 1
+          )
         },
         this.scrollToHovered
       );
     } else if (event.key === "ArrowUp") {
+      event.preventDefault();
       this.setState(
         { hovering: Math.max(0, this.state.hovering - 1) },
         this.scrollToHovered
       );
     } else if (event.key === "Enter" && hovering !== -1) {
-      this.handleSelection(Array.from(dataSource.keys())[hovering])();
+      event.preventDefault();
+      this.handleSelection(this.state.filteredDataSource[hovering])();
     }
   };
 
@@ -234,6 +234,24 @@ export class Autocomplete extends React.PureComponent<
     };
   }
 
-  private handleChange = (event: React.FormEvent<HTMLElement>) =>
-    this.setState({ searchText: (event.target as any).value });
+  private handleChange = (event: React.FormEvent<HTMLElement>) => {
+    const { dataSource, displayKey } = this.props;
+    let { filteredDataSource } = this.state;
+    if (dataSource !== undefined && displayKey !== undefined) {
+      filteredDataSource = Array.from(dataSource.keys()).filter(key => {
+        const searchText = this.state.searchText.toLowerCase();
+        return (
+          key.toLowerCase().includes(searchText) ||
+          dataSource
+            .get(key)
+            [displayKey].toLowerCase()
+            .includes(searchText)
+        );
+      });
+    }
+    this.setState({
+      searchText: (event.target as any).value,
+      filteredDataSource
+    });
+  };
 }
