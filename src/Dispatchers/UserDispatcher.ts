@@ -7,6 +7,8 @@ import { Intent } from "@blueprintjs/core";
 import { IFinalPerson } from "../Components/Dialogs/AddNewUser";
 import {
   ClearForceUpdate,
+  DeleteUser,
+  EmptyDatabaseCache,
   UpdateOtherUser,
   UpdateUser,
   UpdateUserData
@@ -96,6 +98,10 @@ export class UserDispatcher {
       this.dispatch(UpdateUser.create(updatedUser));
       return updatedUser;
     } catch (error) {
+      if (error.response.statusText === "Unauthorized") {
+        this.dispatch(EmptyDatabaseCache.create());
+        return;
+      }
       showToast(
         Intent.DANGER,
         "Something went wrong, try logging out and refreshing the page."
@@ -138,7 +144,10 @@ export class UserDispatcher {
     successCallback: () => void
   ) => {
     if (!isValidPhoneNumber(phoneNumber)) {
-      showToast(Intent.DANGER, `Invalid phone number: ${phoneNumber}`);
+      showToast(
+        Intent.DANGER,
+        `Hum, that doesn't look like a valid phone number: ${phoneNumber}`
+      );
       return;
     }
     try {
@@ -158,15 +167,25 @@ export class UserDispatcher {
     }
   };
 
-  public removeFromGraph = async (removeConnection: string) => {
+  public removeFromGraph = async (removeConnection: string, name: string) => {
     try {
-      await axios.post(retrieveURL("users/remove-connection"), {
-        removeConnection
-      });
-      showToast(
-        Intent.SUCCESS,
-        "Sweet, we've removed this person. Refresh your page to see your graph update!"
+      const rawUpdatedUser = await axios.post(
+        retrieveURL("users/remove-connection"),
+        {
+          removeConnection
+        }
       );
+      const updatedUser = convertPayloadToUser(rawUpdatedUser.data.payload);
+      if (updatedUser === undefined) {
+        return;
+      }
+      this.dispatch(
+        CompoundAction([
+          DeleteUser.create(removeConnection),
+          UpdateUser.create(updatedUser)
+        ])
+      );
+      showToast(Intent.SUCCESS, `We've removed ${name} from your graph.`);
     } catch (error) {
       showToast(
         Intent.DANGER,

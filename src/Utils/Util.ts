@@ -53,7 +53,7 @@ export function addToMap<T extends IUser | IEvent>(
   return newMapping;
 }
 
-export function convertPayloadToUser(rawUser: any) {
+export function convertPayloadToUser(rawUser: any): IUser | undefined {
   if (rawUser === undefined) {
     return undefined;
   }

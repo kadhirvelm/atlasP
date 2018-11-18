@@ -113,7 +113,7 @@ export class DatabaseDispatcher {
     this.eventDisptcher.updateEvent(event);
   };
 
-  public removeFromGraph = async (removeConnection: string) => {
-    return this.userDispatcher.removeFromGraph(removeConnection);
+  public removeFromGraph = async (removeConnection: string, name: string) => {
+    return this.userDispatcher.removeFromGraph(removeConnection, name);
   };
 }

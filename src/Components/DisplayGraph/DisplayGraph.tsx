@@ -51,7 +51,7 @@ class PureDispayGraph extends React.PureComponent<
   IDisplayGraphStoreProps & IDisplayGraphDispatchProps
 > {
   public setRef = (ref: HTMLElement | null) => {
-    if (this.props.graphRef != null || ref === null) {
+    if (ref == null) {
       return;
     }
     this.props.setGraphRef(ref);

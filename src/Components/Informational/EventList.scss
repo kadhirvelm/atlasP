@@ -1,65 +1,65 @@
 .flexbox-events {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .flexbox-events::-webkit-scrollbar {
-    display:none;
+  display: none;
 }
 
 .overflow-y {
-    overflow-y: auto;
-    height: 100%;
+  overflow-y: auto;
+  height: 100%;
 }
 
 .title {
-    font-size: 16px;
-    font-weight: 450;
-    margin-bottom: 5px;
+  font-size: 16px;
+  font-weight: 450;
+  margin-bottom: 5px;
 }
 
 .event {
-    padding: 8px 5px;
-    width: 100%;
-    flex-direction: column;
-    transition: background-color 300ms ease-in;
-    cursor: pointer;
+  padding: 8px 5px;
+  width: 100%;
+  flex-direction: column;
+  transition: background-color 300ms ease-in;
+  cursor: pointer;
 }
 
 .event:nth-of-type(odd) {
-    background-color: rgba(229,232,232, 0.1);
+  background-color: rgba(229, 232, 232, 0.1);
 }
 
 .event .description {
-    margin: 3px 0;
-    max-width: calc(100% - 5px);
-    font-size: 11px;
+  margin: 3px 0;
+  max-width: calc(100% - 5px);
+  font-size: 11px;
 }
 
 .event .event-labels {
-    display: flex;
-    flex: 1;
+  display: flex;
+  flex: 1;
 }
 
 .event .date {
-    display: flex;
-    flex: 1;
+  display: flex;
+  flex: 1;
 }
 
 .event .attendees {
-    display: flex;
+  display: flex;
 }
 
 .event .attendees .people_icon {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .event:hover {
-    background-color: #7D6608;
+  background-color: #7d6608;
 }
 
 .event-list-attendees {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }

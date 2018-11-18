@@ -30,7 +30,7 @@ export interface IGraphContextMenuStoreProps {
 export interface IGraphContextMenuDispatchProps {
   addHighlight(id: string): void;
   removeHighlight(id: string): void;
-  removeFromGraph(id: string): void;
+  removeFromGraph(id: string, name: string): void;
   setContextMenuNode(node: IGraphUser | undefined): void;
   updateUserIgnoreList(ignoreList: string[]): void;
 }
@@ -131,7 +131,10 @@ class PureGraphContextMenu extends React.PureComponent<
       return null;
     }
     return this.renderContextMenuOption(
-      this.handleRemoveFromGraph(currentContextNode.id),
+      this.handleRemoveFromGraph(
+        currentContextNode.id,
+        currentContextNode.name
+      ),
       "remove",
       "Remove"
     );
@@ -159,8 +162,8 @@ class PureGraphContextMenu extends React.PureComponent<
     this.close();
   };
 
-  private handleRemoveFromGraph = (id: string) => () => {
-    this.props.removeFromGraph(id);
+  private handleRemoveFromGraph = (id: string, name: string) => () => {
+    this.props.removeFromGraph(id, name);
     this.close();
   };
 

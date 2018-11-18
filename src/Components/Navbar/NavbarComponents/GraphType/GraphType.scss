@@ -1,59 +1,59 @@
 .graph-type-container {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .graph-type {
-    position: relative;
-    padding: 0 12.5px;
+  position: relative;
+  padding: 0 12.5px;
 }
 
 .graph-type-selected {
-    background: #7D6608;
-    animation: change-background 400ms ease-in;
+  background: #7d6608;
+  animation: change-background 400ms ease-in;
 }
 
 @keyframes change-background {
-    0% {
-        background: #283747;
-    }
-    30% {
-        background: #283747;
-    }
-    100% {
-        background: #7D6608;
-    }
+  0% {
+    background: #283747;
+  }
+  30% {
+    background: #283747;
+  }
+  100% {
+    background: #7d6608;
+  }
 }
 
 .graph-helper-tooltip {
-    display: flex;
-    flex-direction: column;
-    max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  max-width: 250px;
 }
 
 .graph-helper-math-box {
-    margin-top: 10px;
-    padding: 5px;
-    background: gray;
-    border-radius: 3px;
-    color: white;
-    font-size: 10px;
+  margin-top: 10px;
+  padding: 5px;
+  background: gray;
+  border-radius: 3px;
+  color: white;
+  font-size: 10px;
 }
 
 .graph-helper-title {
-    font-size: 15px;
-    font-weight: bold;
-    animation: fade-in-delay 750ms ease-in-out;
+  font-size: 15px;
+  font-weight: bold;
+  animation: fade-in-delay 750ms ease-in-out;
 }
 
 @keyframes fade-in-delay {
-    0% {
-        opacity: 0;
-    }
-    66% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

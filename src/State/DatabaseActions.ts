@@ -34,9 +34,17 @@ export const UpdateUserData = TypedAction.define(
   "DatabaseAction//UPDATE_USER_DATA"
 )<IUser>();
 
+export const DeleteUser = TypedAction.define("DatabaseAction//DELETE_USER")<
+  string
+>();
+
 export const UpdateEventData = TypedAction.define(
   "DatabaseAction//UPDATE_EVENT_DATA"
 )<IEvent>();
+
+export const DeleteEvent = TypedAction.define("DatabaseAction//DELETE_EVENT")<
+  string
+>();
 
 export const EmptyDatabaseCache = TypedAction.defineWithoutPayload(
   "WebsiteReducer//EMPTY_DATABASE_CACHE"
