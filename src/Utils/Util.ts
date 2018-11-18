@@ -4,32 +4,6 @@ import { IEvent } from "../Types/Events";
 import { IUser } from "../Types/Users";
 import User from "./User";
 
-/**
- * Enforce minimum time between function calls, eg execute only if 100ms
- * have passed since last call.
- */
-export function debounce(func: () => void, delay: number) {
-  let inDebounce: NodeJS.Timer;
-  return () => {
-    clearTimeout(inDebounce);
-    inDebounce = setTimeout(() => func(), delay);
-  };
-}
-
-/**
- * Enforce maximum execution number, eg at most once every 100 ms.
- */
-export function throttle(func: () => void, limit: number) {
-  let inThrottle: boolean;
-  return () => {
-    if (!inThrottle) {
-      func();
-      inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
-    }
-  };
-}
-
 export function convertObjectToMap(object: {} | undefined): Map<string, {}> {
   const finalMap = new Map();
 

@@ -1,3 +1,4 @@
+import { throttle } from "lodash-es";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
@@ -9,7 +10,6 @@ import registerServiceWorker from "./registerServiceWorker";
 import { Router } from "./Router";
 import configureStore from "./State/Store";
 import { loadState, saveState } from "./State/StoreCache";
-import { throttle } from "./Utils/Util";
 
 import "./index.scss";
 
