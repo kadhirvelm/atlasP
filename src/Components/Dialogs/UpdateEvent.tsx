@@ -9,7 +9,7 @@ import IStoreState from "../../State/IStoreState";
 import { IEvent } from "../../Types/Events";
 import { IUser } from "../../Types/Users";
 import { Autocomplete } from "../Common/Autocomplete";
-import { DialogUtils } from "./DialogUtils";
+import { DialogUtils, handleKeyDown } from "./DialogUtils";
 import { IDialogProps } from "./DialogWrapper";
 
 import "./Update.scss";
@@ -70,7 +70,13 @@ class PureUpdateEvent extends React.PureComponent<
         isOpen={this.props.isOpen}
         title="Update Event"
       >
-        <div className={Classes.DIALOG_BODY}>
+        <div
+          className={Classes.DIALOG_BODY}
+          onKeyDown={handleKeyDown(
+            this.handleUpdate(selectedEvent),
+            this.props.onClose
+          )}
+        >
           {this.maybeRenderEventDetails(selectedEvent)}
         </div>
         <div

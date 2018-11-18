@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { debounce } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -55,6 +56,26 @@ class PureDispayGraph extends React.PureComponent<
       return;
     }
     this.props.setGraphRef(ref);
+  };
+
+  public componentDidMount() {
+    window.addEventListener("resize", debounce(this.refreshGraph, 1500));
+  }
+
+  public componentWillUnmount() {
+    window.removeEventListener("resize", debounce(this.refreshGraph, 1500));
+  }
+
+  public refreshGraph = () => {
+    const { graphRef } = this.props;
+    if (graphRef == null) {
+      return;
+    }
+    this.renderD3Graph(
+      graphRef.clientWidth,
+      graphRef.clientHeight,
+      this.props.peopleGraph
+    );
   };
 
   public componentWillReceiveProps(

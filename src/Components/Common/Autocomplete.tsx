@@ -51,6 +51,17 @@ export class Autocomplete extends React.PureComponent<
     this.handleSelection = this.handleSelection.bind(this);
   }
 
+  public componentDidUpdate(previousProps: IAutocompleteProps) {
+    if (
+      previousProps.dataSource === undefined &&
+      this.props.dataSource !== undefined
+    ) {
+      this.setState({
+        filteredDataSource: Array.from(this.props.dataSource.keys())
+      });
+    }
+  }
+
   public addEventListeners = () => {
     window.addEventListener("keydown", this.handleKeyboardClick);
     window.addEventListener("click", this.handleOutsideClick);
