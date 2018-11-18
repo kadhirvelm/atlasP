@@ -4,11 +4,16 @@ import { Dispatch } from "redux";
 
 import { Intent } from "@blueprintjs/core";
 
-import { UpdateEventData } from "../State/DatabaseActions";
+import {
+  DeleteEvent,
+  UpdateEventData,
+  UpdateUser
+} from "../State/DatabaseActions";
 import { SelectEvent } from "../State/WebsiteActions";
 import { IEvent } from "../Types/Events";
 import Event from "../Utils/Event";
 import { showToast } from "../Utils/Toaster";
+import { convertPayloadToUser } from "../Utils/Util";
 import { retrieveURL } from "./Utils";
 
 /**
@@ -50,17 +55,26 @@ export class EventDispatcher {
       const formattedEvent = this.formatEvent(event) as any;
       formattedEvent.eventId = event.id;
       delete formattedEvent.id;
-      await axios.put(retrieveURL("events/update"), formattedEvent);
+
+      const rawUpdatedUser = await axios.put(
+        retrieveURL("events/update"),
+        formattedEvent
+      );
+      const updatedUser = convertPayloadToUser(
+        rawUpdatedUser.data.payload.updatedUser[0]
+      );
+      if (updatedUser === undefined) {
+        return;
+      }
+
       this.dispatch(
         CompoundAction.create([
           SelectEvent.create(undefined),
-          UpdateEventData.create(event)
+          UpdateEventData.create(event),
+          UpdateUser.create(updatedUser)
         ])
       );
-      showToast(
-        Intent.SUCCESS,
-        "Event updated successfully. Please refresh the page to update the graph."
-      );
+      showToast(Intent.SUCCESS, `${event.description} updated successfully.`);
     } catch (error) {
       showToast(
         Intent.DANGER,
@@ -74,11 +88,20 @@ export class EventDispatcher {
 
   public deleteEvent = async (event: IEvent) => {
     try {
-      await axios.post(retrieveURL("events/delete"), { eventId: event.id });
-      showToast(
-        Intent.SUCCESS,
-        "Event successfully deleted. Please refresh your graph to update the graph."
+      const rawUpdatedUser = await axios.post(retrieveURL("events/delete"), {
+        eventId: event.id
+      });
+      const updatedUser = convertPayloadToUser(rawUpdatedUser.data.payload[0]);
+      if (updatedUser === undefined) {
+        return;
+      }
+      this.dispatch(
+        CompoundAction.create([
+          DeleteEvent.create(event.id),
+          UpdateUser.create(updatedUser)
+        ])
       );
+      showToast(Intent.SUCCESS, `${event.description} successfully deleted.`);
     } catch (error) {
       showToast(
         Intent.DANGER,

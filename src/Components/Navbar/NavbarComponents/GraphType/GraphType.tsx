@@ -13,47 +13,58 @@ import { GRAPHS } from "./GraphConstants";
 import "./GraphType.scss";
 
 export interface IGraphTypeStoreProps {
-    currentGraph: IGraphType;
+  currentGraph: IGraphType;
 }
 
 export interface IGraphTypeDispatchProps {
-    changeFilter: (newGraph: IGraphType) => void;
+  changeFilter: (newGraph: IGraphType) => void;
 }
 
-class PureGraphType extends React.PureComponent<IGraphTypeStoreProps & IGraphTypeDispatchProps> {
-    public render() {
-        return (
-            <div className="graph-type-container">
-                {GRAPHS.map(this.renderSingleGraph)}
-            </div>
-        )
-    }
+class PureGraphType extends React.PureComponent<
+  IGraphTypeStoreProps & IGraphTypeDispatchProps
+> {
+  public render() {
+    return (
+      <div className="graph-type-container">
+        {GRAPHS.map(this.renderSingleGraph)}
+      </div>
+    );
+  }
 
-    private renderSingleGraph = (graph: IGraphType, index: number) => {
-        return (
-            <div className={classNames("graph-type", { "graph-type-selected": this.props.currentGraph.id === graph.id })} key={index} onClick={this.change(graph)}>
-                <Tooltip content={graph.tooltip} hoverOpenDelay={400}>
-                    {graph.icon}
-                </Tooltip>
-            </div>
-        )
-    }
+  private renderSingleGraph = (graph: IGraphType, index: number) => {
+    return (
+      <div
+        className={classNames("graph-type", {
+          "graph-type-selected": this.props.currentGraph.id === graph.id
+        })}
+        key={index}
+        onClick={this.change(graph)}
+      >
+        <Tooltip content={graph.tooltip} hoverOpenDelay={400}>
+          {graph.icon}
+        </Tooltip>
+      </div>
+    );
+  };
 
-    private change(graph: IGraphType){
-        return () => {
-            this.props.changeFilter(graph);
-        }
-    }
+  private change(graph: IGraphType) {
+    return () => {
+      this.props.changeFilter(graph);
+    };
+  }
 }
 
 function mapStoreToProps(state: IStoreState): IGraphTypeStoreProps {
-    return {
-        currentGraph: state.WebsiteReducer.graphType,
-    }
+  return {
+    currentGraph: state.WebsiteReducer.graphType
+  };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IGraphTypeDispatchProps {
-    return bindActionCreators({ changeFilter: ChangeGraphType.create }, dispatch);
+  return bindActionCreators({ changeFilter: ChangeGraphType.create }, dispatch);
 }
 
-export const GraphType = connect(mapStoreToProps, mapDispatchToProps)(PureGraphType);
+export const GraphType = connect(
+  mapStoreToProps,
+  mapDispatchToProps
+)(PureGraphType);

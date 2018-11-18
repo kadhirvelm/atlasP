@@ -8,6 +8,8 @@ import {
 } from "../Utils/Util";
 import {
   ClearForceUpdate,
+  DeleteEvent,
+  DeleteUser,
   EmptyDatabaseCache,
   ForceUpdate,
   Login,
@@ -36,6 +38,26 @@ export const DatabaseReducer = TypedReducer.builder<
   .withHandler(ClearForceUpdate.TYPE, state => {
     return setWith(state, {
       forceUpdate: undefined
+    });
+  })
+  .withHandler(DeleteEvent.TYPE, (state, payload) => {
+    if (state.eventData === undefined) {
+      return state;
+    }
+    const eventData = new Map(state.eventData);
+    eventData.delete(payload);
+    return setWith(state, {
+      eventData
+    });
+  })
+  .withHandler(DeleteUser.TYPE, (state, payload) => {
+    if (state.userData === undefined) {
+      return state;
+    }
+    const userData = new Map(state.userData);
+    userData.delete(payload);
+    return setWith(state, {
+      userData
     });
   })
   .withHandler(UpdateUser.TYPE, (state, payload) => {

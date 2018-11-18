@@ -117,7 +117,7 @@ export class PureAddNewPerson extends React.PureComponent<
       this.setState({ isLoading: true }, async () => {
         const { finalPerson } = this.state;
         await this.props.dialogUtils.submitFinalPerson(finalPerson);
-        showToast(Intent.SUCCESS, "Successfully created new user.");
+        showToast(Intent.SUCCESS, `Successfully created ${finalPerson.name}.`);
         this.resetStateAndClose();
       });
     } catch (error) {

@@ -166,7 +166,7 @@ class PureUpdateUser extends React.PureComponent<
     this.setState({ isLoading: true }, async () => {
       try {
         await this.props.updateUser(currentUser);
-        showToast(Intent.SUCCESS, "Successfully updated account details.");
+        showToast(Intent.SUCCESS, "Successfully updated your account details.");
         this.props.onClose();
       } finally {
         this.setState({ isLoading: false });

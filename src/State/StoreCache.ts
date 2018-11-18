@@ -43,7 +43,7 @@ export const saveState = (state: IStoreState) => {
 
 export const saveToken = (token: string) => {
   try {
-    localStorage.setItem("token", token);
+    document.cookie = `a_t=${token}`;
   } catch (error) {
     // TODO: Handle error
   }
@@ -51,7 +51,11 @@ export const saveToken = (token: string) => {
 
 export const retrieveToken = () => {
   try {
-    return localStorage.getItem("token");
+    const cookie = document.cookie.match("a_t=.*(;?)");
+    if (cookie == null) {
+      return null;
+    }
+    return cookie[0].split("=")[1];
   } catch (error) {
     return "";
   }

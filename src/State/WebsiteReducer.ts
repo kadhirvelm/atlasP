@@ -1,71 +1,86 @@
 import { setWith, TypedReducer } from "redoodle";
 
 import IStoreState from "./IStoreState";
-import { AddGraphFilter, AddHighlightConnection, ChangeGraphType, RemoveAllHighlights, RemoveGraphFilter, RemoveHighlightConnection, SelectEvent, SetContextMenuNode, SetGraphRef, SetInfoPerson } from "./WebsiteActions";
+import {
+  AddGraphFilter,
+  AddHighlightConnection,
+  ChangeGraphType,
+  RemoveAllHighlights,
+  RemoveGraphFilter,
+  RemoveHighlightConnection,
+  SelectEvent,
+  SetContextMenuNode,
+  SetGraphRef,
+  SetInfoPerson
+} from "./WebsiteActions";
 
-export const WebsiteReducer = TypedReducer.builder<IStoreState["WebsiteReducer"]>()
+export const WebsiteReducer = TypedReducer.builder<
+  IStoreState["WebsiteReducer"]
+>()
   .withHandler(SetInfoPerson.TYPE, (state, payload) => {
     return setWith(state, {
-      infoPerson: payload,
+      infoPerson: payload
     });
   })
   .withHandler(SetGraphRef.TYPE, (state, payload) => {
     return setWith(state, {
-      graphRef: payload,
+      graphRef: payload
     });
   })
   .withHandler(SelectEvent.TYPE, (state, payload) => {
     return setWith(state, {
-      selectedEvent: payload,
-    })
+      selectedEvent: payload
+    });
   })
   .withHandler(AddGraphFilter.TYPE, (state, payload) => {
-    if (state.graphFilters.find((filter) => filter.id === payload.id) !== undefined) {
+    if (
+      state.graphFilters.find(filter => filter.id === payload.id) !== undefined
+    ) {
       return state;
     }
     return setWith(state, {
-      graphFilters: state.graphFilters.concat(payload),
-    })
+      graphFilters: state.graphFilters.concat(payload)
+    });
   })
   .withHandler(RemoveGraphFilter.TYPE, (state, payload) => {
-    const index = state.graphFilters.findIndex((filter) => filter.id === payload);
+    const index = state.graphFilters.findIndex(filter => filter.id === payload);
     if (index === -1) {
       return state;
     }
     const graphFiltersCopy = state.graphFilters.slice();
     graphFiltersCopy.splice(index, 1);
     return setWith(state, {
-      graphFilters: graphFiltersCopy,
-    })
+      graphFilters: graphFiltersCopy
+    });
   })
   .withHandler(ChangeGraphType.TYPE, (state, payload) => {
     return setWith(state, {
-      graphType: payload,
-    })
+      graphType: payload
+    });
   })
   .withHandler(SetContextMenuNode.TYPE, (state, payload) => {
     return setWith(state, {
-      contextMenuNode: payload,
-    })
+      contextMenuNode: payload
+    });
   })
   .withHandler(AddHighlightConnection.TYPE, (state, payload) => {
     const highlightConnections = new Set(state.highlightConnections);
     highlightConnections.add(payload);
     return setWith(state, {
-      highlightConnections,
-    })
+      highlightConnections
+    });
   })
   .withHandler(RemoveHighlightConnection.TYPE, (state, payload) => {
     const highlightConnections = new Set(state.highlightConnections);
     highlightConnections.delete(payload);
     return setWith(state, {
-      highlightConnections,
-    })
+      highlightConnections
+    });
   })
-  .withHandler(RemoveAllHighlights.TYPE, (state) => {
+  .withHandler(RemoveAllHighlights.TYPE, state => {
     return {
       ...state,
-      highlightConnections: new Set(),
+      highlightConnections: new Set()
     };
   })
   .build();

@@ -2,137 +2,137 @@ $filter-width: 25px;
 $filter-height: 25px;
 
 .filters-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding: 5px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 5px;
 
-    .bp3-control {
-        margin: 0;
-    }
+  .bp3-control {
+    margin: 0;
+  }
 }
 
 .filters-last-seen {
-    display: flex;
+  display: flex;
 }
 
 .filters-people {
-    display: flex;
-    margin-top: 10px;
+  display: flex;
+  margin-top: 10px;
 }
 
 .filters-date-tooltip {
-    display: flex;
-    flex: 1;
-    justify-content: flex-end;
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 .filters-date-helper {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .filters-actionable-container {
-    background: gray;
-    border-radius: 3px;
-    padding: 5px;
-    margin-top: 5px;
+  background: gray;
+  border-radius: 3px;
+  padding: 5px;
+  margin-top: 5px;
 }
 
 .filters-date-helper-single-row {
-    display: flex;
-    margin: 3px 0;
-    color: white;
+  display: flex;
+  margin: 3px 0;
+  color: white;
 }
 
 .filters-date-line {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    height: 1px;
-    margin: auto 5px;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  height: 1px;
+  margin: auto 5px;
 }
 
 .filters-date-line.blue {
-    background: #A9CCE3;
+  background: #a9cce3;
 }
 
 .filters-date-line.green {
-    background: #7DCEA0;
+  background: #7dcea0;
 }
 
 .filters-date-line.yellow {
-    background: #F7DC6F;
+  background: #f7dc6f;
 }
 
 .filters-date-line.red {
-    background: #F1948A;
+  background: #f1948a;
 }
 
 .filters-date-helper-single-row-title {
-    display: flex;
-    font-weight: bold;
+  display: flex;
+  font-weight: bold;
 }
 
 .filters-date-helper-single-row-description {
-    display: flex;
-    justify-content: flex-end;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .filters-date-checkboxes {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 5px;
 }
 
 .filters-date-single {
-    display: flex;
-    align-items: center;
-    margin: 5px;
+  display: flex;
+  align-items: center;
+  margin: 5px;
 }
 
 .filters-box {
-    margin-right: 3px;
-    width: $filter-width;
-    height: $filter-height;
-    border-radius: 3px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    position: relative;
-    
-    &.blue {
-        background: #7FB3D5;
-    }
-    
-    &.green {
-        background: #7DCEA0;
-    }
-    
-    &.yellow {
-        background: #F7DC6F;
-    }
-    
-    &.red {
-        background: #F1948A;
-    }
+  margin-right: 3px;
+  width: $filter-width;
+  height: $filter-height;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  position: relative;
+
+  &.blue {
+    background: #7fb3d5;
+  }
+
+  &.green {
+    background: #7dcea0;
+  }
+
+  &.yellow {
+    background: #f7dc6f;
+  }
+
+  &.red {
+    background: #f1948a;
+  }
 }
 
 .filters-ignore-users {
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-    margin-left: 9px;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 9px;
 }
 
 .filter-ignore-users-icon {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .filter-ignore-list-helper {
-    max-width: 250px;
+  max-width: 250px;
 
-    .filters-actionable-container {
-        color: white;
-        font-size: 12px;
-    }
+  .filters-actionable-container {
+    color: white;
+    font-size: 12px;
+  }
 }
