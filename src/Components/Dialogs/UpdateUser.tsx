@@ -20,6 +20,7 @@ import { showToast } from "../../Utils/Toaster";
 import { PasswordField } from "../Common/PasswordField";
 import { IDialogProps } from "./DialogWrapper";
 
+import { handleKeyDown } from "./DialogUtils";
 import "./Update.scss";
 import "./UpdateUser.scss";
 
@@ -73,6 +74,7 @@ class PureUpdateUser extends React.PureComponent<
       >
         <div
           className={classNames(Classes.DIALOG_BODY, "all-fields-container")}
+          onKeyDown={handleKeyDown(this.submitChangeUser, this.props.onClose)}
         >
           <div className="user-fields-container">
             {Object.values(this.fields).map(value =>

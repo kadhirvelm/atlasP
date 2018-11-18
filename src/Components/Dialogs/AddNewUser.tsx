@@ -11,7 +11,7 @@ import {
 
 import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import { showToast } from "../../Utils/Toaster";
-import { DialogUtils } from "./DialogUtils";
+import { DialogUtils, handleKeyDown } from "./DialogUtils";
 
 import "./AddNewEvent.scss";
 
@@ -61,7 +61,10 @@ export class PureAddNewPerson extends React.PureComponent<
         onClose={this.resetStateAndClose}
         title="Add New Person"
       >
-        <div className={Classes.DIALOG_BODY}>
+        <div
+          className={Classes.DIALOG_BODY}
+          onKeyDown={handleKeyDown(this.handleSubmit, this.props.onClose)}
+        >
           <FormGroup>
             <InputGroup
               className="input-group"
@@ -113,16 +116,17 @@ export class PureAddNewPerson extends React.PureComponent<
   };
 
   private createNewPerson = () => {
-    try {
-      this.setState({ isLoading: true }, async () => {
-        const { finalPerson } = this.state;
+    this.setState({ isLoading: true }, async () => {
+      const { finalPerson } = this.state;
+      try {
         await this.props.dialogUtils.submitFinalPerson(finalPerson);
-        showToast(Intent.SUCCESS, `Successfully created ${finalPerson.name}.`);
-        this.resetStateAndClose();
-      });
-    } catch (error) {
-      this.setState({ isLoading: false });
-    }
+      } catch (error) {
+        this.setState({ isLoading: false });
+        return;
+      }
+      showToast(Intent.SUCCESS, `Successfully created ${finalPerson.name}.`);
+      this.resetStateAndClose();
+    });
   };
 
   private handleChange = (key: string) => {

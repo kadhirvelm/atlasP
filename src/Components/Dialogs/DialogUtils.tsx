@@ -132,3 +132,16 @@ export class DialogUtils {
     );
   }
 }
+
+export function handleKeyDown(
+  handleSubmit: () => void,
+  handleClose: () => void
+) {
+  return (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      handleSubmit();
+    } else if (event.key === "Escape") {
+      handleClose();
+    }
+  };
+}

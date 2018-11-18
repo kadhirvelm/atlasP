@@ -4,25 +4,6 @@ import { IEvent } from "../Types/Events";
 import { IUser } from "../Types/Users";
 import User from "./User";
 
-export function debounce(func: () => void, delay: number) {
-  let inDebounce: NodeJS.Timer;
-  return () => {
-    clearTimeout(inDebounce);
-    inDebounce = setTimeout(() => func(), delay);
-  };
-}
-
-export function throttle(func: () => void, limit: number) {
-  let inThrottle: boolean;
-  return () => {
-    if (!inThrottle) {
-      func();
-      inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
-    }
-  };
-}
-
 export function convertObjectToMap(object: {} | undefined): Map<string, {}> {
   const finalMap = new Map();
 

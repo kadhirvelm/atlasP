@@ -14,7 +14,7 @@ import {
 import IStoreState from "../../State/IStoreState";
 import { IUser } from "../../Types/Users";
 import { showToast } from "../../Utils/Toaster";
-import { DialogUtils } from "./DialogUtils";
+import { DialogUtils, handleKeyDown } from "./DialogUtils";
 
 import "./AddNewEvent.scss";
 import "./EditUser.scss";
@@ -81,7 +81,10 @@ export class PureEditUser extends React.PureComponent<
           </div>
         }
       >
-        <div className={Classes.DIALOG_BODY}>
+        <div
+          className={Classes.DIALOG_BODY}
+          onKeyDown={handleKeyDown(this.handleSubmit, this.props.onClose)}
+        >
           <FormGroup>
             <InputGroup
               className="input-group"

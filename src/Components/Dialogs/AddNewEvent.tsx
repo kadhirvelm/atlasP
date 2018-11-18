@@ -14,7 +14,7 @@ import IStoreState from "../../State/IStoreState";
 import { IUser } from "../../Types/Users";
 import { showToast } from "../../Utils/Toaster";
 import { Autocomplete, IAutcompleteValuesProps } from "../Common/Autocomplete";
-import { DialogUtils } from "./DialogUtils";
+import { DialogUtils, handleKeyDown } from "./DialogUtils";
 import { IDialogProps } from "./DialogWrapper";
 
 import "./AddNewEvent.scss";
@@ -63,7 +63,10 @@ export class PureAddNewEvent extends React.PureComponent<
         onClose={this.resetStateAndClose}
         title="Add New Event"
       >
-        <div className={Classes.DIALOG_BODY}>
+        <div
+          className={Classes.DIALOG_BODY}
+          onKeyDown={handleKeyDown(this.handleSubmit, this.props.onClose)}
+        >
           <FormGroup>
             <InputGroup
               autoFocus={true}
