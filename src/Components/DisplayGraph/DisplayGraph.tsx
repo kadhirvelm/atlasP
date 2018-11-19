@@ -51,6 +51,8 @@ const INITIAL_ZOOM_DELAY = 250;
 class PureDispayGraph extends React.PureComponent<
   IDisplayGraphStoreProps & IDisplayGraphDispatchProps
 > {
+  private hasZoomedToUser = false;
+
   public setRef = (ref: HTMLElement | null) => {
     if (ref == null) {
       return;
@@ -78,21 +80,26 @@ class PureDispayGraph extends React.PureComponent<
     );
   };
 
-  public componentWillReceiveProps(
-    nextProps: IDisplayGraphStoreProps & IDisplayGraphDispatchProps
+  public componentDidUpdate(
+    previousProps: IDisplayGraphStoreProps & IDisplayGraphDispatchProps
   ) {
+    const { graphRef } = this.props;
     if (
-      nextProps.graphRef === null ||
-      this.props.peopleGraph === nextProps.peopleGraph
+      graphRef === null ||
+      this.props.peopleGraph === previousProps.peopleGraph
     ) {
       return;
     }
     this.renderD3Graph(
-      nextProps.graphRef.clientWidth,
-      nextProps.graphRef.clientHeight,
-      nextProps.peopleGraph
+      graphRef.clientWidth,
+      graphRef.clientHeight,
+      this.props.peopleGraph
     );
-    this.zoomToCurrentUser();
+
+    if (!this.hasZoomedToUser) {
+      this.zoomToCurrentUser();
+      this.hasZoomedToUser = true;
+    }
   }
 
   public render() {

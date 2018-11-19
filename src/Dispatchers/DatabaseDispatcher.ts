@@ -62,9 +62,14 @@ export class DatabaseDispatcher {
 
   public updateOtherUser = async (
     user: Pick<IUser, "claimed" | "id">,
-    newOtherUserDetails: Pick<IUser, "gender" | "location" | "name">
+    newOtherUserDetails: Pick<IUser, "gender" | "location" | "name">,
+    currentUserId: string
   ) => {
-    return this.userDispatcher.updateOtherUser(user, newOtherUserDetails);
+    return this.userDispatcher.updateOtherUser(
+      user,
+      newOtherUserDetails,
+      currentUserId
+    );
   };
 
   public addToGraphFromPhoneNumber = async (

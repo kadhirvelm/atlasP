@@ -221,3 +221,14 @@ export const selectInfoPersonSortedEvents = createSelector(
       .sort(sortDate);
   }
 );
+
+export const selectInfoPerson = createSelector(
+  (state: IStoreState) => state.DatabaseReducer.userData,
+  (state: IStoreState) => state.WebsiteReducer.infoPerson,
+  (userData: Map<string, IUser> | undefined, infoPerson: IUser | undefined) => {
+    if (userData === undefined || infoPerson === undefined) {
+      return undefined;
+    }
+    return userData.get(infoPerson.id);
+  }
+);

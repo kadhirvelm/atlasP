@@ -77,7 +77,7 @@ export class PureEditUser extends React.PureComponent<
         onClose={this.props.onClose}
         title={
           <div className="edit-user-title">
-            Edit {this.props.user.name} {this.maybeRenderTooltip()}
+            Edit {this.state.finalPerson.name} {this.maybeRenderTooltip()}
           </div>
         }
       >
@@ -154,12 +154,18 @@ export class PureEditUser extends React.PureComponent<
       return;
     }
 
+    const { currentUser } = this.props;
+    if (currentUser === undefined) {
+      return;
+    }
+
     this.setState({ isLoading: true }, async () => {
       try {
         const { finalPerson } = this.state;
         await this.props.dialogUtils.updateFinalPerson(
           this.props.user,
-          finalPerson
+          finalPerson,
+          currentUser.id
         );
         showToast(
           Intent.SUCCESS,

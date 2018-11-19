@@ -26,10 +26,15 @@ export class DialogUtils {
 
   public async updateFinalPerson(
     user: Pick<IUser, "claimed" | "id">,
-    finalPersonDetails: IFinalPerson
+    finalPersonDetails: IFinalPerson,
+    currentUserId: string
   ) {
     if (this.isCompletePerson(finalPersonDetails)) {
-      await this.databaseDispatcher.updateOtherUser(user, finalPersonDetails);
+      await this.databaseDispatcher.updateOtherUser(
+        user,
+        finalPersonDetails,
+        currentUserId
+      );
     } else {
       this.errorToast();
     }
