@@ -1,3 +1,5 @@
+@import "../../Utils/Colors";
+
 .input-group {
   margin: 10px 0;
 }
@@ -11,5 +13,5 @@
   flex: 1;
   justify-content: center;
   padding: 5px 0;
-  color: #7f8c8d;
+  color: $light-gray4;
 }

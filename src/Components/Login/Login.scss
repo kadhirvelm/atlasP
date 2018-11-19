@@ -1,3 +1,5 @@
+@import "../../Utils/Colors";
+
 .filter {
   width: 100%;
   height: 100%;
@@ -22,13 +24,13 @@
 }
 
 .login-white-filter {
-  background: white;
+  background: $white;
   opacity: 0.2;
   z-index: 2;
 }
 
 .login-black-filter {
-  background: black;
+  background: $gray5;
   opacity: 0.2;
   z-index: 3;
 }
@@ -42,9 +44,9 @@
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 15px;
-  background: #fbfcfc;
+  background: $white;
   border-radius: 6px;
-  box-shadow: -3px 4px 12px rgba(#2c3e50, 0.5);
+  box-shadow: -3px 4px 12px rgba($gray4, 0.5);
   z-index: 4;
 }
 
@@ -71,18 +73,18 @@
 .login-divider {
   width: 1px;
   margin: 0 20px;
-  background: rgba(112, 112, 112, 0.45);
+  background: $light-gray2;
   transform: translateX(-15%);
 }
 
 .login-textfield {
   margin: 5px 0;
-  border: 1px solid rgba(112, 112, 112, 0.25);
+  border: 1px solid $light-gray3;
   border-radius: 3px;
   padding: 3px 6px;
   font-size: 12px;
   min-width: 200px;
-  background: white;
+  background: $white;
 }
 
 .login-action-button {
@@ -96,7 +98,7 @@
   margin-top: 5px;
   font-size: 10px;
   text-decoration: underline;
-  color: #5dade2;
+  color: $blue3;
   cursor: pointer;
 }
 
@@ -107,12 +109,12 @@
   bottom: 3px;
   right: 3px;
   z-index: 4;
-  color: white;
+  color: $light-gray2;
   font-size: 8px;
   text-align: right;
 
   a {
-    color: white;
+    color: $white;
     margin: 0 3px;
   }
 }
@@ -125,7 +127,7 @@
   left: 3px;
   font-size: 8px;
   z-index: 4;
-  color: white;
+  color: $light-gray2;
 
   .server-status-circle {
     width: 10px;
@@ -135,10 +137,10 @@
   }
 
   .serverIsAlive {
-    background-color: #52be80;
+    background-color: $green2;
   }
 
   .serverIsDead {
-    background-color: #ec7063;
+    background-color: $red2;
   }
 }

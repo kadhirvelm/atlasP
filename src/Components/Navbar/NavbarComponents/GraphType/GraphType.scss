@@ -1,3 +1,5 @@
+@import "../../../../Utils/Colors";
+
 .graph-type-container {
   display: flex;
   flex-direction: column;
@@ -9,19 +11,19 @@
 }
 
 .graph-type-selected {
-  background: #7d6608;
-  animation: change-background 400ms ease-in;
+  background: $gold5;
+  animation: change-background 400ms $transition;
 }
 
 @keyframes change-background {
   0% {
-    background: #283747;
+    background: $gray4;
   }
   30% {
-    background: #283747;
+    background: $gray4;
   }
   100% {
-    background: #7d6608;
+    background: $gold5;
   }
 }
 
@@ -34,16 +36,16 @@
 .graph-helper-math-box {
   margin-top: 10px;
   padding: 5px;
-  background: gray;
+  background: $light-gray5;
   border-radius: 3px;
-  color: white;
+  color: $white;
   font-size: 10px;
 }
 
 .graph-helper-title {
   font-size: 15px;
   font-weight: bold;
-  animation: fade-in-delay 750ms ease-in-out;
+  animation: fade-in-delay 750ms $transition;
 }
 
 @keyframes fade-in-delay {

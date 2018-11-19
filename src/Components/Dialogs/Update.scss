@@ -1,3 +1,5 @@
+@import "../../Utils/Colors";
+
 .render-field-container {
   display: flex;
   margin: 10px;
@@ -13,24 +15,24 @@
   display: flex;
   margin: 0 5px;
   width: 1px;
-  background: #1a5276;
+  background: $light-gray3;
   border-radius: 0.5px;
 }
 
 .render-field-text {
-  background: white;
+  background: $white;
   padding: 5px;
   border-radius: 5px;
   flex: 1 0;
 }
 
 .render-field-text.error {
-  animation: flash-yellow ease-in-out 1.5s 3;
+  animation: flash-yellow $transition 1.5s 3;
   animation-delay: 2s;
 }
 
 @keyframes flash-yellow {
   50% {
-    background: #f1c40f;
+    background: $gold5;
   }
 }

@@ -1,7 +1,9 @@
+@import "./Utils/Colors";
+
 body {
   font-family: "Work Sans", sans-serif;
   font-weight: 200;
-  color: #2e4053;
+  color: $gray5;
 }
 
 h1 {
