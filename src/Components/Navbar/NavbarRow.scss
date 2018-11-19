@@ -1,11 +1,13 @@
+@import "../../Utils/Colors";
+
 .navbar-button-component {
   margin: 1px 0;
-  transition: background-color 200ms ease-in-out, height 300ms ease-in-out;
+  transition: background-color 200ms $transition, height 300ms $transition;
   overflow: hidden;
 }
 
 .navbar-button-component:hover {
-  background-color: #34495e;
+  background-color: $gray3;
 }
 
 .navbar-button-header {
@@ -21,14 +23,14 @@
   display: flex;
   justify-content: flex-end;
   flex: 1;
-  animation: fade-in 400ms ease-in;
+  animation: fade-in 400ms $transition;
   cursor: pointer;
 }
 
 .navbar-children {
   display: flex;
   flex: 1 1;
-  animation: fade-in 400ms ease-in;
+  animation: fade-in 400ms $transition;
 }
 
 @keyframes fade-in {

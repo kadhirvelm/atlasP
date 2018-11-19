@@ -1,3 +1,5 @@
+@import "../../Utils/Colors";
+
 .d3-graph-container {
   position: relative;
   display: flex;
@@ -12,6 +14,26 @@
   cursor: pointer;
   user-select: none;
   stroke-width: 3;
+
+  &.gray {
+    fill: $light-gray3;
+  }
+
+  &.blue {
+    fill: $blue2;
+  }
+
+  &.green {
+    fill: $green2;
+  }
+
+  &.yellow {
+    fill: $gold2;
+  }
+
+  &.red {
+    fill: $red2;
+  }
 }
 
 .name {
@@ -19,7 +41,7 @@
   cursor: pointer;
   user-select: none;
   opacity: 1;
-  fill: black;
+  fill: $gray5;
 }
 
 .name:hover {

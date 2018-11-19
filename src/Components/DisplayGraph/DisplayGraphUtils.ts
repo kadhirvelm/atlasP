@@ -1,20 +1,15 @@
+import classNames from "classnames";
 import * as d3 from "d3";
 
 import { ILink } from "../../Types/Graph";
 import { IUser } from "../../Types/Users";
 import { getDifferenceBetweenDates } from "../../Utils/Util";
 
-const CHARGE_STRENGTH = -400;
+const CHARGE_STRENGTH = -75;
 const GRAPH_ID = "BOUNDING_RECTANGLE";
 
 export const GREEN_DAYS = 30;
 export const RED_DAYS = 90;
-
-const GRAY = "#839192";
-const RED = "#F1948A";
-const YELLOW = "#F7DC6F";
-const GREEN = "#7DCEA0";
-const BLUE = "#7FB3D5";
 
 const DEFAULT_RADIUS = 15;
 const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
@@ -102,27 +97,6 @@ export function returnSimulation(width: number, height: number) {
   return simulation;
 }
 
-export function returnFill(id: string, map: Map<string, Date>) {
-  const lastTime = map.get(id);
-  if (lastTime === undefined) {
-    return GRAY;
-  }
-
-  const totalDifference = getDifferenceBetweenDates(
-    new Date(),
-    new Date(lastTime)
-  );
-  if (totalDifference < 0) {
-    return BLUE;
-  } else if (totalDifference < GREEN_DAYS) {
-    return GREEN;
-  } else if (totalDifference < RED_DAYS) {
-    return YELLOW;
-  } else {
-    return RED;
-  }
-}
-
 export function maybeApplyLinkForce(
   simulation: d3.Simulation<{}, undefined>,
   links: ILink[]
@@ -132,6 +106,27 @@ export function maybeApplyLinkForce(
     return;
   }
   linkForce.links(links);
+}
+
+function returnFill(id: string, map: Map<string, Date>) {
+  const lastTime = map.get(id);
+  if (lastTime === undefined) {
+    return "gray";
+  }
+
+  const totalDifference = getDifferenceBetweenDates(
+    new Date(),
+    new Date(lastTime)
+  );
+  if (totalDifference < 0) {
+    return "blue";
+  } else if (totalDifference < GREEN_DAYS) {
+    return "green";
+  } else if (totalDifference < RED_DAYS) {
+    return "yellow";
+  } else {
+    return "red";
+  }
 }
 
 export function returnNodeElements(
@@ -155,9 +150,10 @@ export function returnNodeElements(
     .attr("r", (node: IUser) =>
       node.id === currentUser.id ? MAIN_PERSON_RADIUS : DEFAULT_RADIUS
     )
-    .attr("fill", (node: IUser) => returnFill(node.id, lastEvents))
     .on("click", handleClick)
-    .attr("class", "node")
+    .attr("class", (node: IUser) =>
+      classNames("node", returnFill(node.id, lastEvents))
+    )
     .attr("id", (node: IUser) => node.id);
 }
 

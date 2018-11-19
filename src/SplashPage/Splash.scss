@@ -1,3 +1,5 @@
+@import "../Utils/Colors";
+
 .filter {
   width: 100%;
   height: 100%;
@@ -7,13 +9,13 @@
 }
 
 .white-filter {
-  background: white;
+  background: $white;
   opacity: 0.2;
   z-index: 2;
 }
 
 .black-filter {
-  background: black;
+  background: $gray5;
   opacity: 0.6;
   z-index: 3;
 }
@@ -33,19 +35,19 @@
 
   overflow: hidden;
   z-index: 4;
-  color: white;
+  color: $light-gray1;
 }
 
 .splash-header {
   position: relative;
-  color: white;
+  color: $light-gray1;
   text-align: center;
   margin: 0 20px;
 
   max-width: 100vw;
   word-wrap: break-word;
 
-  animation: pop-in 3s ease;
+  animation: pop-in 3s $transition;
 }
 
 @keyframes pop-in {
@@ -83,7 +85,7 @@
   max-width: 700px;
   margin: 0 20px;
 
-  animation: fade-in 3.6s ease-in-out;
+  animation: fade-in 3.6s $transition;
   margin-bottom: 70px;
 }
 
@@ -102,7 +104,7 @@
 .splash-subheader {
   display: flex;
   justify-content: center;
-  color: white;
+  color: $light-gray1;
   margin: 20px 0;
 }
 
@@ -131,7 +133,7 @@
 }
 
 .border-right {
-  border-right: 1px solid #95a5a6;
+  border-right: 1px solid $light-gray4;
 }
 
 .splash-bullet-header {
@@ -141,7 +143,7 @@
 
 .splash-bullet-text {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
+  color: $light-gray2;
 }
 
 .splash-credit {
@@ -150,6 +152,6 @@
   bottom: 5px;
   text-align: right;
   z-index: 4;
-  color: white;
+  color: $light-gray3;
   font-size: 9px;
 }

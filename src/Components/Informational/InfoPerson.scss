@@ -1,10 +1,12 @@
+@import "../../Utils/Colors";
+
 .main-info-graphic-container {
   display: flex;
   flex-direction: column;
   flex: 1;
   max-height: 40px;
   min-height: 0;
-  transition: max-height 300ms ease-in-out, min-height 300ms ease-in-out;
+  transition: max-height 300ms $transition, min-height 300ms $transition;
 
   &.should-show-events {
     height: 50vh;
@@ -17,19 +19,19 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  background: #394b59;
-  color: white;
+  background: $gray4;
+  color: $white;
   padding: 10px;
   border-radius: 5px;
 }
 
 .show-change {
-  animation: flash 0.65s ease-in-out;
+  animation: flash 0.65s $transition;
 }
 
 @keyframes flash {
   50% {
-    background: #b7950b;
+    background: $gold5;
   }
 }
 
@@ -38,7 +40,7 @@
   align-items: center;
   font-size: 16px;
   min-width: 0;
-  text-decoration: underline dotted rgba(255, 255, 255, 0.25);
+  text-decoration: underline dotted $light-gray5;
 }
 
 .info-person-link {

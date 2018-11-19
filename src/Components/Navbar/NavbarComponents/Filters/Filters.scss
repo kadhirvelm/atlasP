@@ -1,3 +1,5 @@
+@import "../../../../Utils/Colors";
+
 $filter-width: 25px;
 $filter-height: 25px;
 
@@ -33,7 +35,7 @@ $filter-height: 25px;
 }
 
 .filters-actionable-container {
-  background: gray;
+  background: $light-gray5;
   border-radius: 3px;
   padding: 5px;
   margin-top: 5px;
@@ -42,7 +44,7 @@ $filter-height: 25px;
 .filters-date-helper-single-row {
   display: flex;
   margin: 3px 0;
-  color: white;
+  color: $white;
 }
 
 .filters-date-line {
@@ -54,19 +56,19 @@ $filter-height: 25px;
 }
 
 .filters-date-line.blue {
-  background: #a9cce3;
+  background: $blue2;
 }
 
 .filters-date-line.green {
-  background: #7dcea0;
+  background: $green2;
 }
 
 .filters-date-line.yellow {
-  background: #f7dc6f;
+  background: $gold2;
 }
 
 .filters-date-line.red {
-  background: #f1948a;
+  background: $red2;
 }
 
 .filters-date-helper-single-row-title {
@@ -97,23 +99,23 @@ $filter-height: 25px;
   width: $filter-width;
   height: $filter-height;
   border-radius: 3px;
-  border: 1px solid rgba(0, 0, 0, 0.5);
+  border: 1px solid $gray4;
   position: relative;
 
   &.blue {
-    background: #7fb3d5;
+    background: $blue2;
   }
 
   &.green {
-    background: #7dcea0;
+    background: $green2;
   }
 
   &.yellow {
-    background: #f7dc6f;
+    background: $gold2;
   }
 
   &.red {
-    background: #f1948a;
+    background: $red2;
   }
 }
 
@@ -132,7 +134,7 @@ $filter-height: 25px;
   max-width: 250px;
 
   .filters-actionable-container {
-    color: white;
+    color: $white;
     font-size: 12px;
   }
 }

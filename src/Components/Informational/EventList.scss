@@ -1,3 +1,5 @@
+@import "../../Utils/Colors";
+
 .flexbox-events {
   display: flex;
   flex-direction: column;
@@ -23,12 +25,12 @@
   padding: 8px 5px;
   width: 100%;
   flex-direction: column;
-  transition: background-color 300ms ease-in;
+  transition: background-color 300ms $transition;
   cursor: pointer;
 }
 
 .event:nth-of-type(odd) {
-  background-color: rgba(229, 232, 232, 0.1);
+  background-color: $gray3;
 }
 
 .event .description {
@@ -56,7 +58,7 @@
 }
 
 .event:hover {
-  background-color: #7d6608;
+  background-color: $gold5;
 }
 
 .event-list-attendees {

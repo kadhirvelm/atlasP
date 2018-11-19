@@ -1,3 +1,5 @@
+@import "../../Utils/Colors";
+
 .graph-helpers {
   display: flex;
   flex-direction: column;
@@ -18,8 +20,8 @@
 
 .graph-label {
   display: flex;
-  color: white;
-  background-color: #154360;
+  color: $white;
+  background-color: $gray4;
   border-radius: 3px;
   padding: 5px 10px;
   margin-right: 10px;
