@@ -7,7 +7,10 @@ import { Icon, Text } from "@blueprintjs/core";
 import IStoreState from "../../State/IStoreState";
 import { IEvent } from "../../Types/Events";
 import { IUser } from "../../Types/Users";
-import { selectInfoPersonSortedEvents } from "../../Utils/selectors";
+import {
+  selectInfoPerson,
+  selectInfoPersonSortedEvents
+} from "../../Utils/selectors";
 import { DialogWrapper } from "../Dialogs/DialogWrapper";
 import { EditUser } from "../Dialogs/EditUser";
 import { EventList } from "./EventList";
@@ -81,7 +84,7 @@ export class PureInfoPerson extends React.PureComponent<
 function mapStateToProps(store: IStoreState): IInfoPersonStoreProps {
   return {
     events: selectInfoPersonSortedEvents(store),
-    person: store.WebsiteReducer.infoPerson
+    person: selectInfoPerson(store)
   };
 }
 

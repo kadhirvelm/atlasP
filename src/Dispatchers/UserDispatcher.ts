@@ -56,10 +56,11 @@ export class UserDispatcher {
 
   public updateOtherUser = async (
     user: Pick<IUser, "claimed" | "id">,
-    newUserDetails: Pick<IUser, "gender" | "location" | "name">
+    newUserDetails: Pick<IUser, "gender" | "location" | "name">,
+    currentUserId: string
   ) => {
     try {
-      if (user.claimed === true) {
+      if (user.claimed === true && user.id !== currentUserId) {
         throw new Error("We cannot update a claimed user.");
       }
       await axios.put(retrieveURL("users/update-other"), {
