@@ -75,18 +75,6 @@ export class UserDispatcher {
     }
   };
 
-  public updateUserIgnoreList = async (ignoreUsers: string[]) => {
-    try {
-      await axios.put(retrieveURL("users/update"), { ignoreUsers });
-      this.dispatch(UpdateUser.create({ ignoreUsers }));
-    } catch (error) {
-      showToast(
-        Intent.DANGER,
-        "Hum, something went wrong. Try refreshing the page?"
-      );
-    }
-  };
-
   public getUpdatedUser = async (user: IUser) => {
     try {
       const rawUpdate = await axios.post(retrieveURL("users/getOne"), {
