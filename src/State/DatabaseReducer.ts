@@ -13,6 +13,7 @@ import {
   EmptyDatabaseCache,
   ForceUpdate,
   Login,
+  SetPremiumStatus,
   UpdateEventData,
   UpdateGraph,
   UpdateOtherUser,
@@ -131,6 +132,11 @@ export const DatabaseReducer = TypedReducer.builder<
     return setWith(state, {
       currentUser,
       eventData: addToMap(eventData, payload)
+    });
+  })
+  .withHandler(SetPremiumStatus.TYPE, (state, payload) => {
+    return setWith(state, {
+      isPremium: payload
     });
   })
   .withHandler(EmptyDatabaseCache.TYPE, () => {

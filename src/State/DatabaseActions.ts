@@ -46,6 +46,10 @@ export const DeleteEvent = TypedAction.define("DatabaseAction//DELETE_EVENT")<
   string
 >();
 
+export const SetPremiumStatus = TypedAction.define(
+  "DatabaseAction//SET_PREMIUM_STATUS"
+)<boolean>();
+
 export const EmptyDatabaseCache = TypedAction.defineWithoutPayload(
   "WebsiteReducer//EMPTY_DATABASE_CACHE"
 )();

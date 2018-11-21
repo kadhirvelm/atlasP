@@ -13,6 +13,7 @@ export default interface IStoreState {
     forceUpdate?: IForceUpdate;
     isFetching: boolean;
     isLoggedIn: boolean;
+    isPremium: boolean;
     userData?: Map<string, IUser>;
   };
   WebsiteReducer: {
@@ -29,7 +30,8 @@ export default interface IStoreState {
 export const EMPTY_STATE: IStoreState = {
   DatabaseReducer: {
     isFetching: false,
-    isLoggedIn: false
+    isLoggedIn: false,
+    isPremium: false
   },
   WebsiteReducer: {
     contextMenuNode: undefined,

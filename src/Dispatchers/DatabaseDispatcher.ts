@@ -8,6 +8,8 @@ import { convertPayloadToUser } from "../Utils/Util";
 import { AuthenticationDispatcher } from "./AuthenticationDispatcher";
 import { EventDispatcher } from "./EventDispatcher";
 import { GraphDispatcher } from "./GraphDispatcher";
+import { PremiumDispatcher } from "./PremiumDispatcher";
+import { RelationshipsDispatcher } from "./RelationshipsDispatcher";
 import { UserDispatcher } from "./UserDispatcher";
 import { retrieveURL } from "./Utils";
 
@@ -19,12 +21,16 @@ export class DatabaseDispatcher {
   private eventDisptcher: EventDispatcher;
   private graphDispatcher: GraphDispatcher;
   private userDispatcher: UserDispatcher;
+  private relationshipDispatcher: RelationshipsDispatcher;
+  private premiumDispatcher: PremiumDispatcher;
 
   public constructor(dispatch: Dispatch) {
     this.authenticationDispatcher = new AuthenticationDispatcher(dispatch);
     this.eventDisptcher = new EventDispatcher(dispatch);
     this.graphDispatcher = new GraphDispatcher(dispatch);
     this.userDispatcher = new UserDispatcher(dispatch);
+    this.relationshipDispatcher = new RelationshipsDispatcher(dispatch);
+    this.premiumDispatcher = new PremiumDispatcher(dispatch);
   }
 
   public async checkServerStatus() {
@@ -82,8 +88,12 @@ export class DatabaseDispatcher {
     );
   };
 
+  public getAllRelationships = async () => {
+    return this.relationshipDispatcher.getAllRelationships();
+  };
+
   public updateUserIgnoreList = async (ignoreUsers: string[]) => {
-    return this.userDispatcher.updateUserIgnoreList(ignoreUsers);
+    return this.relationshipDispatcher.updateUserIgnoreList(ignoreUsers);
   };
 
   public getUpdatedUser = async (user: IUser) => {
@@ -120,5 +130,9 @@ export class DatabaseDispatcher {
 
   public removeFromGraph = async (removeConnection: string, name: string) => {
     return this.userDispatcher.removeFromGraph(removeConnection, name);
+  };
+
+  public checkPremiumStatus = async () => {
+    return this.premiumDispatcher.getPremiumStatus();
   };
 }
