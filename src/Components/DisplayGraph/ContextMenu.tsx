@@ -12,11 +12,11 @@ import {
   SetContextMenuNode
 } from "../../State/WebsiteActions";
 import { IUser } from "../../Types/Users";
-import { isInsideDiv } from "../Common/utils";
-import { IGraphUser } from "./DisplayGraph";
-
 import { ALL_VALID_CATEGORIES, IValidCategories } from "../../Utils/selectors";
+import { fetchCategoryDetails } from "../../Utils/Util";
+import { isInsideDiv } from "../Common/utils";
 import "./ContextMenu.scss";
+import { IGraphUser } from "./DisplayGraph";
 
 export interface IGraphContextMenuProps {
   onZoomClick(node: IGraphUser): void;
@@ -179,19 +179,6 @@ class PureGraphContextMenu extends React.PureComponent<
     );
   }
 
-  private fetchCategoryDetails(
-    category: IValidCategories
-  ): { icon: IconName; name: string } {
-    switch (category) {
-      case "frequentUsers":
-        return { icon: "flows", name: "Frequent" };
-      case "semiFrequentUsers":
-        return { icon: "chart", name: "Semi-frequent" };
-      case "ignoreUsers":
-        return { icon: "blocked-person", name: "Ignore" };
-    }
-  }
-
   private renderSingleCategory(
     category: IValidCategories,
     contextNode: IGraphUser,
@@ -200,7 +187,7 @@ class PureGraphContextMenu extends React.PureComponent<
     const userCategory = currentUser[category];
     const isInCategory =
       userCategory !== undefined && userCategory.includes(contextNode.id);
-    const details = this.fetchCategoryDetails(category);
+    const details = fetchCategoryDetails(category);
     return isInCategory
       ? this.renderContextMenuOption(
           this.handleRemoveFromCategory(category, contextNode.id, currentUser),

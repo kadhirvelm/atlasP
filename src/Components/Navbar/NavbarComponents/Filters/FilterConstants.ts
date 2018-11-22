@@ -1,5 +1,9 @@
 import { IFilter } from "../../../../Types/Graph";
 import { IUser } from "../../../../Types/Users";
+import {
+  ALL_VALID_CATEGORIES,
+  IValidCategories
+} from "../../../../Utils/selectors";
 import { getDifferenceBetweenDates } from "../../../../Utils/Util";
 import { GREEN_DAYS, RED_DAYS } from "../../../DisplayGraph/DisplayGraphUtils";
 
@@ -41,13 +45,32 @@ export const DATE_FILTERS = [
   RED_FILTER
 ];
 
-export const IGNORE_FILTER: IFilter = {
-  id: "ignore_filter",
+export const CATEGORY_FILTER = (category: IValidCategories): IFilter => {
+  return {
+    id: `${category}_filter`,
+    shouldKeep: (user: IUser, currentUser?: IUser) => {
+      if (currentUser === undefined || currentUser[category] === undefined) {
+        return true;
+      }
+      return !(currentUser[category] as string[]).includes(user.id);
+    },
+    type: "user"
+  };
+};
+
+export const NOT_IN_CATEGORY_FILTER: IFilter = {
+  id: `no_category_filter`,
   shouldKeep: (user: IUser, currentUser?: IUser) => {
-    if (currentUser === undefined || currentUser.ignoreUsers === undefined) {
-      return true;
+    for (const category of ALL_VALID_CATEGORIES) {
+      if (
+        currentUser !== undefined &&
+        currentUser[category] !== undefined &&
+        (currentUser[category] as string[]).includes(user.id)
+      ) {
+        return true;
+      }
     }
-    return !currentUser.ignoreUsers.includes(user.id);
+    return currentUser !== undefined && user.id === currentUser.id;
   },
   type: "user"
 };

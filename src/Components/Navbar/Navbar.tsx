@@ -121,7 +121,7 @@ class PureAtlaspNavbar extends React.PureComponent<
           <GraphType />
         </NavbarRow>
         <NavbarRow
-          componentHeight={175}
+          componentHeight={this.props.isPremium ? 250 : 150}
           handleHoverLeave={this.handleHoverLeave}
           isHovering={this.state.isHovering}
           icon={<Icon icon="filter" iconSize={ICON_SIZE} />}

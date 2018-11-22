@@ -119,15 +119,20 @@ $filter-height: 25px;
   }
 }
 
-.filters-ignore-users {
+.filters-categories {
   display: flex;
   align-items: center;
-  margin-top: 10px;
-  margin-left: 9px;
+  padding-top: 10px;
+  padding-left: 5px;
+}
+
+.filters-category-text {
+  margin-right: 5px;
+  margin-bottom: 2px;
 }
 
 .filter-ignore-users-icon {
-  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .filter-ignore-list-helper {
