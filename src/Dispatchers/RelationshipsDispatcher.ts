@@ -19,8 +19,8 @@ export class RelationshipsDispatcher {
       const allRelationships = await axios.get(
         retrieveURL("relationships/all")
       );
-      const ignoreUsers = allRelationships.data.payload.ignoreUsers;
-      this.dispatch(UpdateUser.create({ ignoreUsers }));
+      const fetchedRelationships = allRelationships.data.payload;
+      this.dispatch(UpdateUser.create({ ...fetchedRelationships }));
     } catch (error) {
       showToast(
         Intent.DANGER,
