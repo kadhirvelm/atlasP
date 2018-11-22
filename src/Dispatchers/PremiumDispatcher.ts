@@ -1,9 +1,12 @@
 import axios from "axios";
+import { CompoundAction } from "redoodle";
 import { Dispatch } from "redux";
 
 import { Intent } from "@blueprintjs/core";
 
+import { CATEGORY_FILTER } from "../Components/Navbar/NavbarComponents/Filters/FilterConstants";
 import { SetPremiumStatus } from "../State/DatabaseActions";
+import { AddGraphFilter } from "../State/WebsiteActions";
 import { showToast } from "../Utils/Toaster";
 import { retrieveURL } from "./Utils";
 
@@ -17,8 +20,13 @@ export class PremiumDispatcher {
   public getPremiumStatus = async () => {
     try {
       const premiumStatus = await axios.get(retrieveURL("premium/check"));
-      const isPremium = premiumStatus.data.payload.isPremium;
-      this.dispatch(SetPremiumStatus.create(isPremium));
+      const isPremium: boolean = premiumStatus.data.payload.isPremium;
+      this.dispatch(
+        CompoundAction.create([
+          SetPremiumStatus.create(isPremium),
+          AddGraphFilter.create(CATEGORY_FILTER("ignoreUsers"))
+        ])
+      );
     } catch (error) {
       showToast(
         Intent.DANGER,

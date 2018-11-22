@@ -1,7 +1,10 @@
 import PhoneNumber from "awesome-phonenumber";
 
+import { IconName } from "@blueprintjs/core";
+
 import { IEvent } from "../Types/Events";
 import { IUser } from "../Types/Users";
+import { IValidCategories } from "./selectors";
 import User from "./User";
 
 export function convertObjectToMap(object: {} | undefined): Map<string, {}> {
@@ -75,3 +78,16 @@ export function distinctArray(array: any[]) {
 
 export const getLatestEventDate = (events: IEvent[]) =>
   events.sort((a, b) => getDifferenceBetweenDates(a.date, b.date)).slice(-1)[0];
+
+export const fetchCategoryDetails = (
+  category: IValidCategories
+): { icon: IconName; name: string } => {
+  switch (category) {
+    case "frequentUsers":
+      return { icon: "flows", name: "Frequent" };
+    case "semiFrequentUsers":
+      return { icon: "chart", name: "Semi-frequent" };
+    case "ignoreUsers":
+      return { icon: "blocked-person", name: "Ignore" };
+  }
+};

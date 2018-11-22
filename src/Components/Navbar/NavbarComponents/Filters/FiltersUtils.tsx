@@ -38,11 +38,10 @@ export const getDateFiltersHelper = (
 
 export const getIgnoreListHelper = (
   <div className="filter-ignore-list-helper">
-    When checked, will add everyone back to your graph. AtlasP will not
-    recommend anyone who is on your ignore list.
+    When unchecked, will remove people in that category from your graph. AtlasP
+    will take a persons' category into account when generating recommendations.
     <div className="filters-actionable-container">
-      To add (or remove) someone to your ignore list, right click on their
-      circle and click "Add to ignore".
+      You can change someone's category by right clicking on them in the graph.
     </div>
   </div>
 );

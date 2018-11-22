@@ -3,7 +3,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Checkbox, Icon, Tooltip } from "@blueprintjs/core";
+import { Checkbox, Icon, Text, Tooltip } from "@blueprintjs/core";
 
 import IStoreState from "../../../../State/IStoreState";
 import {
@@ -11,13 +11,20 @@ import {
   RemoveGraphFilter
 } from "../../../../State/WebsiteActions";
 import { IFilter } from "../../../../Types/Graph";
-import { DATE_FILTERS, IGNORE_FILTER } from "./FilterConstants";
+import {
+  CATEGORY_FILTER,
+  DATE_FILTERS,
+  NOT_IN_CATEGORY_FILTER
+} from "./FilterConstants";
 import { getDateFiltersHelper, getIgnoreListHelper } from "./FiltersUtils";
 
+import { ALL_VALID_CATEGORIES } from "../../../../Utils/selectors";
+import { fetchCategoryDetails } from "../../../../Utils/Util";
 import "./Filters.scss";
 
 export interface IFiltersStoreProps {
   currentFilters: IFilter[];
+  isPremium: boolean;
 }
 
 export interface IFilterDispatchProps {
@@ -33,19 +40,15 @@ class PureFilters extends React.PureComponent<
       <div className="filters-container">
         <div className="filters-last-seen">
           Last Seen
-          {this.renderLastSeenTooltip(getDateFiltersHelper)}
+          {this.renderHelperTooltip(getDateFiltersHelper)}
         </div>
         {this.renderDateFilterButtons()}
-        <div className="filters-people">
-          Relationships
-          {this.renderLastSeenTooltip(getIgnoreListHelper)}
-        </div>
-        {this.renderIgnoreFilter()}
+        {this.maybeRenderCategoryFilters()}
       </div>
     );
   }
 
-  private renderLastSeenTooltip(content: JSX.Element) {
+  private renderHelperTooltip(content: JSX.Element) {
     return (
       <Tooltip className="filters-date-tooltip" content={content}>
         <Icon icon="help" iconSize={12} />
@@ -73,19 +76,47 @@ class PureFilters extends React.PureComponent<
     );
   };
 
-  private renderIgnoreFilter() {
+  private maybeRenderCategoryFilters() {
+    if (!this.props.isPremium) {
+      return null;
+    }
     return (
-      <div className="filters-ignore-users" key={IGNORE_FILTER.id}>
-        <Icon
-          className="filter-ignore-users-icon"
-          icon="blocked-person"
-          iconSize={25}
-        />
+      <>
+        <div className="filters-people">
+          Categories
+          {this.renderHelperTooltip(getIgnoreListHelper)}
+        </div>
+        {this.renderCategoriesFilters()}
+        {this.renderNoCategoriesFilter()}
+      </>
+    );
+  }
+
+  private renderSingleCategoryFilter(title: string, categoryFilter: IFilter) {
+    return (
+      <div className="filters-categories" key={categoryFilter.id}>
         <Checkbox
-          checked={!this.doesContainFilter(IGNORE_FILTER.id)}
-          onChange={this.changeFilter(IGNORE_FILTER)}
+          checked={!this.doesContainFilter(categoryFilter.id)}
+          onChange={this.changeFilter(categoryFilter)}
         />
+        <Text className="filters-category-text">{title}</Text>
       </div>
+    );
+  }
+
+  private renderCategoriesFilters() {
+    return ALL_VALID_CATEGORIES.map(category =>
+      this.renderSingleCategoryFilter(
+        fetchCategoryDetails(category).name,
+        CATEGORY_FILTER(category)
+      )
+    );
+  }
+
+  private renderNoCategoriesFilter() {
+    return this.renderSingleCategoryFilter(
+      "Uncategorized",
+      NOT_IN_CATEGORY_FILTER
     );
   }
 
@@ -108,7 +139,8 @@ class PureFilters extends React.PureComponent<
 
 function mapStateToProps(state: IStoreState): IFiltersStoreProps {
   return {
-    currentFilters: state.WebsiteReducer.graphFilters
+    currentFilters: state.WebsiteReducer.graphFilters,
+    isPremium: state.DatabaseReducer.isPremium
   };
 }
 
