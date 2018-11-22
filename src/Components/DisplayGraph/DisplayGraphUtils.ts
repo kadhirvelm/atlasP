@@ -3,6 +3,11 @@ import * as d3 from "d3";
 
 import { ILink } from "../../Types/Graph";
 import { IUser } from "../../Types/Users";
+import {
+  ALL_VALID_CATEGORIES,
+  IRelationship,
+  IValidCategories
+} from "../../Utils/selectors";
 import { getDifferenceBetweenDates } from "../../Utils/Util";
 
 const CHARGE_STRENGTH = -75;
@@ -11,8 +16,8 @@ const GRAPH_ID = "BOUNDING_RECTANGLE";
 export const GREEN_DAYS = 30;
 export const RED_DAYS = 90;
 
-const DEFAULT_RADIUS = 15;
-const MAIN_PERSON_RADIUS = DEFAULT_RADIUS * 1.5;
+export const DEFAULT_RADIUS = 30;
+export const HALF_DEFAULT = DEFAULT_RADIUS / 2;
 
 const ZOOM_TO_PERSON = "ZOOM_TO_PERSON";
 
@@ -68,7 +73,7 @@ export function returnLinkElements(
 ) {
   return svg
     .append("g")
-    .selectAll("line")
+    .selectAll(".link")
     .exit()
     .remove()
     .data(links)
@@ -129,6 +134,12 @@ function returnFill(id: string, map: Map<string, Date>) {
   }
 }
 
+const getNameLength = (name: string) =>
+  Math.min(
+    Math.max((name.split(" ")[0].length + 1) * 10, DEFAULT_RADIUS * 2),
+    DEFAULT_RADIUS * 4
+  );
+
 export function returnNodeElements(
   svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>,
   nodes: IUser[],
@@ -141,20 +152,58 @@ export function returnNodeElements(
   }
   return svg
     .append("g")
-    .selectAll("circle")
+    .selectAll(".node")
     .exit()
     .remove()
     .data(nodes)
     .enter()
-    .append("circle")
-    .attr("r", (node: IUser) =>
-      node.id === currentUser.id ? MAIN_PERSON_RADIUS : DEFAULT_RADIUS
-    )
+    .append("rect")
+    .attr("height", DEFAULT_RADIUS)
+    .attr("width", (node: IUser) => getNameLength(node.name))
+    .attr("rx", 5)
+    .attr("ry", 5)
     .on("click", handleClick)
     .attr("class", (node: IUser) =>
       classNames("node", returnFill(node.id, lastEvents))
     )
-    .attr("id", (node: IUser) => node.id);
+    .attr("id", (node: IUser) => `NODE_${node.id}`);
+}
+
+function relationshipIncludes(
+  id: string,
+  relationships: IRelationship,
+  key: IValidCategories
+) {
+  const allRelationships = relationships.get(id);
+  if (allRelationships === undefined) {
+    return false;
+  }
+  return allRelationships.includes(key);
+}
+
+export function returnRelationshipElements(
+  svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>,
+  nodes: IUser[],
+  relationships: IRelationship
+) {
+  const allRelationships = svg
+    .append("g")
+    .selectAll(".relationship")
+    .exit()
+    .remove()
+    .data(nodes)
+    .enter()
+    .append("g");
+  ALL_VALID_CATEGORIES.forEach(relationshipType => {
+    allRelationships
+      .filter(node =>
+        relationshipIncludes(node.id, relationships, relationshipType)
+      )
+      .append("circle")
+      .attr("r", 5)
+      .attr("class", classNames("relationship", relationshipType));
+  });
+  return allRelationships;
 }
 
 export function returnNames(
@@ -175,8 +224,9 @@ export function returnNames(
       const name = node.name.split(" ");
       return name.length > 1 ? `${name[0]} ${name[1][0]}.` : name[0];
     })
-    .attr("dx", node => -(node.name.split(" ")[0].length + 2) * 3.5)
-    .attr("dy", 5)
+    .attr("dx", (node: IUser) => getNameLength(node.name) / 2)
+    .attr("dy", HALF_DEFAULT)
+    .attr("dominant-baseline", "middle")
     .on("click", handleClick)
     .on("contextmenu", (node: IUser) => {
       d3.event.preventDefault();
@@ -186,7 +236,7 @@ export function returnNames(
 }
 
 export function zoomToNode(id: string, zoomAmount: number) {
-  const selectedNode = d3.select(`[id="${id}"]`);
+  const selectedNode = d3.select(`[id="NODE_${id}"]`);
   if (selectedNode == null || selectedNode.size() === 0) {
     return;
   }
@@ -194,8 +244,8 @@ export function zoomToNode(id: string, zoomAmount: number) {
   d3.select(`#${GRAPH_ID}`)
     .call(
       d3.zoom().translateTo as any,
-      parseInt(selectedNode.attr("cx"), 10),
-      parseInt(selectedNode.attr("cy"), 10)
+      parseInt(selectedNode.attr("x"), 10),
+      parseInt(selectedNode.attr("y"), 10)
     )
     .call(d3.zoom().scaleTo as any, zoomAmount)
     .dispatch(ZOOM_TO_PERSON, {

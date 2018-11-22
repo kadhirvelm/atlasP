@@ -16,6 +16,8 @@ export interface IUser {
   gender: string;
   id: string;
   ignoreUsers?: string[];
+  frequentUsers?: string[];
+  semiFrequentUsers?: string[];
   location: string;
   name: string;
   password?: string;

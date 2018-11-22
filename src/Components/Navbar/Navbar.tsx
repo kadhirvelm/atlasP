@@ -35,6 +35,7 @@ export interface INavbarStateProps {
   currentUser?: IUser;
   fetching: boolean;
   forceUpdate: IForceUpdate | undefined;
+  isPremium: boolean;
 }
 
 export interface INavbarDispatchProps {
@@ -188,7 +189,8 @@ function mapStateToProps(state: IStoreState): INavbarStateProps {
   return {
     currentUser: state.DatabaseReducer.currentUser,
     fetching: state.DatabaseReducer.isFetching,
-    forceUpdate: state.DatabaseReducer.forceUpdate
+    forceUpdate: state.DatabaseReducer.forceUpdate,
+    isPremium: state.DatabaseReducer.isPremium
   };
 }
 
