@@ -16,10 +16,22 @@ export interface IFilteredNodes {
   connectionEvents: Map<string, IEvent[]>;
 }
 
+export const ALL_VALID_CATEGORIES: IValidCategories[] = [
+  "frequentUsers",
+  "semiFrequentUsers",
+  "ignoreUsers"
+];
+export type IValidCategories =
+  | "ignoreUsers"
+  | "frequentUsers"
+  | "semiFrequentUsers";
+export type IRelationship = Map<string, IValidCategories[]>;
+
 export interface IPeopleGraph {
   nodes: IUser[];
   lastEvents: Map<string, Date>;
   links: ILink[];
+  relationships: IRelationship;
 }
 
 function returnLastEvents(connectionCopy: Map<string, IEvent[]>) {
@@ -107,12 +119,43 @@ export const selectFilteredConnections = createSelector(
   }
 );
 
+export const selectRelationships = createSelector(
+  (state: IStoreState) => state.DatabaseReducer.currentUser,
+  (mainPerson: IUser | undefined) => {
+    if (mainPerson === undefined) {
+      return new Map();
+    }
+    const relationships: IRelationship = new Map();
+    const addToMap = (userId: string, key: IValidCategories) =>
+      relationships.set(
+        userId,
+        (relationships.get(userId) || []).concat([key])
+      );
+    const maybeAddStringToMap = (
+      users: string[] | undefined,
+      key: IValidCategories
+    ) => {
+      if (users === undefined) {
+        return;
+      }
+      users.forEach(userId => addToMap(userId, key));
+    };
+
+    ALL_VALID_CATEGORIES.forEach(key =>
+      maybeAddStringToMap(mainPerson[key], key)
+    );
+    return relationships;
+  }
+);
+
 export const selectLinkedConnections = createSelector(
   selectFilteredConnections,
+  selectRelationships,
   (state: IStoreState) => state.DatabaseReducer.currentUser,
   (state: IStoreState) => state.WebsiteReducer.graphType,
   (
     filteredNodes: IFilteredNodes | undefined,
+    relationships: IRelationship,
     mainPerson: IUser | undefined,
     graphType: IGraphType
   ): IPeopleGraph | undefined => {
@@ -125,7 +168,8 @@ export const selectLinkedConnections = createSelector(
         mainPerson.id,
         filteredNodes.connectionEvents
       ),
-      nodes: filteredNodes.nodes
+      nodes: filteredNodes.nodes,
+      relationships
     };
   }
 );

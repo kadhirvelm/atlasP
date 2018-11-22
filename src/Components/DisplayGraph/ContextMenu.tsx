@@ -15,6 +15,7 @@ import { IUser } from "../../Types/Users";
 import { isInsideDiv } from "../Common/utils";
 import { IGraphUser } from "./DisplayGraph";
 
+import { ALL_VALID_CATEGORIES, IValidCategories } from "../../Utils/selectors";
 import "./ContextMenu.scss";
 
 export interface IGraphContextMenuProps {
@@ -25,14 +26,17 @@ export interface IGraphContextMenuStoreProps {
   currentContextNode: IGraphUser | undefined;
   currentUser: IUser | undefined;
   highlightConnections: Set<string>;
+  isPremium: boolean;
 }
 
 export interface IGraphContextMenuDispatchProps {
   addHighlight(id: string): void;
+  frequentUsers(ignoreList: string[]): void;
+  ignoreUsers(ignoreList: string[]): void;
   removeHighlight(id: string): void;
   removeFromGraph(id: string, name: string): void;
+  semiFrequentUsers(ignoreList: string[]): void;
   setContextMenuNode(node: IGraphUser | undefined): void;
-  updateUserIgnoreList(ignoreList: string[]): void;
 }
 
 export interface IGraphContextMenuState {
@@ -79,8 +83,8 @@ class PureGraphContextMenu extends React.PureComponent<
         <div className="context-menu-node-name">{currentContextNode.name}</div>
         {this.renderContextMenuOption(this.handleZoomClick, "zoom-in", "Zoom")}
         {this.renderHighlightConnections(currentContextNode)}
-        {this.renderAddToIgnore(currentContextNode)}
         {this.maybeRenderRemoveConnection(currentContextNode)}
+        {this.maybeRenderCategorizeOptions(currentContextNode)}
       </div>
     );
   }
@@ -98,27 +102,6 @@ class PureGraphContextMenu extends React.PureComponent<
       "highlight",
       "Highlight"
     );
-  }
-
-  private renderAddToIgnore(currentContextNode: IGraphUser) {
-    const { currentUser } = this.props;
-    if (currentUser === undefined) {
-      return;
-    }
-    const isInIgnore =
-      currentUser.ignoreUsers !== undefined &&
-      currentUser.ignoreUsers.includes(currentContextNode.id);
-    return isInIgnore
-      ? this.renderContextMenuOption(
-          this.handleRemoveFromIgnore(currentContextNode.id, currentUser),
-          "following",
-          "Remove from ignore"
-        )
-      : this.renderContextMenuOption(
-          this.handleAddToIgnore(currentContextNode.id, currentUser),
-          "blocked-person",
-          "Add to ignore"
-        );
   }
 
   private maybeRenderRemoveConnection(currentContextNode: IGraphUser) {
@@ -146,7 +129,7 @@ class PureGraphContextMenu extends React.PureComponent<
     text: string
   ) {
     return (
-      <div className="context-menu-option" onClick={onClick}>
+      <div key={text} className="context-menu-option" onClick={onClick}>
         <Icon className="context-menu-icon" icon={icon} iconSize={11} />
         {text}
       </div>
@@ -186,29 +169,76 @@ class PureGraphContextMenu extends React.PureComponent<
     this.close();
   };
 
-  private handleRemoveFromIgnore = (
+  private maybeRenderCategorizeOptions(contextNode: IGraphUser) {
+    const { currentUser } = this.props;
+    if (currentUser === undefined || !this.props.isPremium) {
+      return;
+    }
+    return ALL_VALID_CATEGORIES.map(category =>
+      this.renderSingleCategory(category, contextNode, currentUser)
+    );
+  }
+
+  private fetchCategoryDetails(
+    category: IValidCategories
+  ): { icon: IconName; name: string } {
+    switch (category) {
+      case "frequentUsers":
+        return { icon: "flows", name: "Frequent" };
+      case "semiFrequentUsers":
+        return { icon: "chart", name: "Semi-frequent" };
+      case "ignoreUsers":
+        return { icon: "blocked-person", name: "Ignore" };
+    }
+  }
+
+  private renderSingleCategory(
+    category: IValidCategories,
+    contextNode: IGraphUser,
+    currentUser: IUser
+  ) {
+    const userCategory = currentUser[category];
+    const isInCategory =
+      userCategory !== undefined && userCategory.includes(contextNode.id);
+    const details = this.fetchCategoryDetails(category);
+    return isInCategory
+      ? this.renderContextMenuOption(
+          this.handleRemoveFromCategory(category, contextNode.id, currentUser),
+          "minus",
+          `Remove from ${details.name}`
+        )
+      : this.renderContextMenuOption(
+          this.handleAddToCategory(category, contextNode.id, currentUser),
+          "plus",
+          `Add to ${details.name}`
+        );
+  }
+
+  private handleRemoveFromCategory = (
+    category: IValidCategories,
     currentContextNodeId: string,
     currentUser: IUser
   ) => {
     return () => {
-      const currentUserIgnoreList = (currentUser.ignoreUsers || []).slice();
-      currentUserIgnoreList.splice(
-        currentUserIgnoreList.indexOf(currentContextNodeId),
+      const currentUserCategory = (currentUser[category] || []).slice();
+      currentUserCategory.splice(
+        currentUserCategory.indexOf(currentContextNodeId),
         1
       );
-      this.props.updateUserIgnoreList(currentUserIgnoreList);
+      this.props[category](currentUserCategory);
       this.close();
     };
   };
 
-  private handleAddToIgnore = (
+  private handleAddToCategory = (
+    category: IValidCategories,
     currentContextNodeId: string,
     currentUser: IUser
   ) => {
     return () => {
-      const currentUserIgnoreList = (currentUser.ignoreUsers || []).slice();
-      currentUserIgnoreList.push(currentContextNodeId);
-      this.props.updateUserIgnoreList(currentUserIgnoreList);
+      const currentUserCategory = (currentUser[category] || []).slice();
+      currentUserCategory.push(currentContextNodeId);
+      this.props[category](currentUserCategory);
       this.close();
     };
   };
@@ -220,7 +250,8 @@ function mapStateToProps(state: IStoreState): IGraphContextMenuStoreProps {
   return {
     currentContextNode: state.WebsiteReducer.contextMenuNode,
     currentUser: state.DatabaseReducer.currentUser,
-    highlightConnections: state.WebsiteReducer.highlightConnections
+    highlightConnections: state.WebsiteReducer.highlightConnections,
+    isPremium: state.DatabaseReducer.isPremium
   };
 }
 
@@ -237,8 +268,10 @@ function mapDispatchToProps(
       },
       dispatch
     ),
+    frequentUsers: databaseDispatcher.updateFrequentUsersList,
+    ignoreUsers: databaseDispatcher.updateUserIgnoreList,
     removeFromGraph: databaseDispatcher.removeFromGraph,
-    updateUserIgnoreList: databaseDispatcher.updateUserIgnoreList
+    semiFrequentUsers: databaseDispatcher.updateSemiFrequentUsersList
   };
 }
 

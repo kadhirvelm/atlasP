@@ -11,16 +11,23 @@ import {
   SetInfoPerson
 } from "../../State/WebsiteActions";
 import { IUser } from "../../Types/Users";
-import { IPeopleGraph, selectMainPersonGraph } from "../../Utils/selectors";
+import {
+  ALL_VALID_CATEGORIES,
+  IPeopleGraph,
+  selectMainPersonGraph
+} from "../../Utils/selectors";
 import { GraphContextMenu } from "./ContextMenu";
 import { DisplayGraphHelpers } from "./DisplayGraphHelpers";
 import {
+  DEFAULT_RADIUS,
+  HALF_DEFAULT,
   maybeApplyLinkForce,
   returnBoundRectangle,
   returnDragDrop,
   returnLinkElements,
   returnNames,
   returnNodeElements,
+  returnRelationshipElements,
   returnSimulation,
   zoomToNode
 } from "./DisplayGraphUtils";
@@ -153,6 +160,7 @@ class PureDispayGraph extends React.PureComponent<
       if (zoomToPersonTransform === undefined) {
         linkElements.attr("transform", d3.event.transform);
         nodeElements.attr("transform", d3.event.transform);
+        relationshipElements.attr("transform", d3.event.transform);
         names.attr("transform", d3.event.transform);
         return;
       }
@@ -164,11 +172,20 @@ class PureDispayGraph extends React.PureComponent<
         .transition()
         .duration(500)
         .attr("transform", zoomToPersonTransform);
+      relationshipElements
+        .transition()
+        .duration(500)
+        .attr("transform", zoomToPersonTransform);
       names
         .transition()
         .duration(500)
         .attr("transform", zoomToPersonTransform);
     });
+    const relationshipElements = returnRelationshipElements(
+      svg,
+      peopleGraph.nodes,
+      peopleGraph.relationships
+    );
     const nodeElements = returnNodeElements(
       svg,
       peopleGraph.nodes,
@@ -184,17 +201,24 @@ class PureDispayGraph extends React.PureComponent<
     );
 
     simulation.nodes(peopleGraph.nodes).on("tick", () => {
+      ALL_VALID_CATEGORIES.forEach((relationshipType, index) => {
+        relationshipElements
+          .selectAll(`.${relationshipType}`)
+          .attr("cx", (node: any) => node.x - 10)
+          .attr("cy", (node: any) => node.y + HALF_DEFAULT / 4 + 12 * index);
+      });
       nodeElements
-        .attr("cx", (node: any) => node.x)
-        .attr("cy", (node: any) => node.y);
+        .attr("x", (node: any) => node.x)
+        .attr("y", (node: any) => node.y);
       names.attr("x", (node: any) => node.x).attr("y", (node: any) => node.y);
       linkElements
-        .attr("x1", (link: any) => link.source.x)
-        .attr("y1", (link: any) => link.source.y)
-        .attr("x2", (link: any) => link.target.x)
-        .attr("y2", (link: any) => link.target.y);
+        .attr("x1", (link: any) => link.source.x + DEFAULT_RADIUS)
+        .attr("y1", (link: any) => link.source.y + HALF_DEFAULT)
+        .attr("x2", (link: any) => link.target.x + DEFAULT_RADIUS)
+        .attr("y2", (link: any) => link.target.y + HALF_DEFAULT);
     });
 
+    relationshipElements.call(returnDragDrop(simulation) as any);
     nodeElements.call(returnDragDrop(simulation) as any);
     names.call(returnDragDrop(simulation) as any);
 

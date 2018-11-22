@@ -37,7 +37,7 @@ class PureFilters extends React.PureComponent<
         </div>
         {this.renderDateFilterButtons()}
         <div className="filters-people">
-          Ignore List
+          Relationships
           {this.renderLastSeenTooltip(getIgnoreListHelper)}
         </div>
         {this.renderIgnoreFilter()}

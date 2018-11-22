@@ -42,6 +42,10 @@ export class DatabaseDispatcher {
     }
   }
 
+  /**
+   * Authentication Dispatcher
+   */
+
   public login = async (
     phoneNumber: string,
     password: string | undefined,
@@ -62,6 +66,94 @@ export class DatabaseDispatcher {
     return this.authenticationDispatcher.resetClaim(phoneNumber);
   };
 
+  /**
+   * Event Dispatcher
+   */
+
+  public createNewEvent = async (event: IEvent) => {
+    return this.eventDisptcher.createNewEvent(event);
+  };
+
+  public deleteEvent = async (event: IEvent) => {
+    this.eventDisptcher.deleteEvent(event);
+  };
+
+  public updateEvent = async (event: IEvent) => {
+    this.eventDisptcher.updateEvent(event);
+  };
+
+  /**
+   * Graph Dispatcher
+   */
+
+  public getGraph = async (user: IUser | undefined) => {
+    return this.graphDispatcher.getGraph(user);
+  };
+
+  public getLatestGraph = async (user: IUser) => {
+    const latestUser = await this.getUpdatedUser(user);
+    if (latestUser === undefined) {
+      return;
+    }
+    await this.getGraph(convertPayloadToUser(latestUser));
+  };
+
+  /**
+   * Premium Dispatcher
+   */
+
+  public checkPremiumStatus = async () => {
+    return this.premiumDispatcher.getPremiumStatus();
+  };
+
+  /**
+   * Relationship Dispatcher
+   */
+
+  public getAllRelationships = async () => {
+    return this.relationshipDispatcher.getAllRelationships();
+  };
+
+  public updateUserIgnoreList = async (ignoreUsers: string[]) => {
+    return this.relationshipDispatcher.updateUserIgnoreList(ignoreUsers);
+  };
+
+  public updateFrequentUsersList = async (frequentUsers: string[]) => {
+    return this.relationshipDispatcher.updateFrequentUsersList(frequentUsers);
+  };
+
+  public updateSemiFrequentUsersList = async (semiFrequentUsers: string[]) => {
+    return this.relationshipDispatcher.updateSemiFrequentUsersList(
+      semiFrequentUsers
+    );
+  };
+
+  /**
+   * User Dispatcher
+   */
+
+  public addToGraphFromPhoneNumber = async (
+    phoneNumber: string,
+    successCallback: () => void
+  ) => {
+    return this.userDispatcher.addToGraphFromPhoneNumber(
+      phoneNumber,
+      successCallback
+    );
+  };
+
+  public getUpdatedUser = async (user: IUser) => {
+    return this.userDispatcher.getUpdatedUser(user);
+  };
+
+  public createNewUser = async (user: IFinalPerson) => {
+    return this.userDispatcher.createNewUser(user);
+  };
+
+  public removeFromGraph = async (removeConnection: string, name: string) => {
+    return this.userDispatcher.removeFromGraph(removeConnection, name);
+  };
+
   public updateUser = async (newUserDetails: IUser) => {
     return this.userDispatcher.updateUser(newUserDetails);
   };
@@ -76,63 +168,5 @@ export class DatabaseDispatcher {
       newOtherUserDetails,
       currentUserId
     );
-  };
-
-  public addToGraphFromPhoneNumber = async (
-    phoneNumber: string,
-    successCallback: () => void
-  ) => {
-    return this.userDispatcher.addToGraphFromPhoneNumber(
-      phoneNumber,
-      successCallback
-    );
-  };
-
-  public getAllRelationships = async () => {
-    return this.relationshipDispatcher.getAllRelationships();
-  };
-
-  public updateUserIgnoreList = async (ignoreUsers: string[]) => {
-    return this.relationshipDispatcher.updateUserIgnoreList(ignoreUsers);
-  };
-
-  public getUpdatedUser = async (user: IUser) => {
-    return this.userDispatcher.getUpdatedUser(user);
-  };
-
-  public getGraph = async (user: IUser | undefined) => {
-    return this.graphDispatcher.getGraph(user);
-  };
-
-  public getLatestGraph = async (user: IUser) => {
-    const latestUser = await this.getUpdatedUser(user);
-    if (latestUser === undefined) {
-      return;
-    }
-    await this.getGraph(convertPayloadToUser(latestUser));
-  };
-
-  public createNewUser = async (user: IFinalPerson) => {
-    return this.userDispatcher.createNewUser(user);
-  };
-
-  public createNewEvent = async (event: IEvent) => {
-    return this.eventDisptcher.createNewEvent(event);
-  };
-
-  public deleteEvent = async (event: IEvent) => {
-    this.eventDisptcher.deleteEvent(event);
-  };
-
-  public updateEvent = async (event: IEvent) => {
-    this.eventDisptcher.updateEvent(event);
-  };
-
-  public removeFromGraph = async (removeConnection: string, name: string) => {
-    return this.userDispatcher.removeFromGraph(removeConnection, name);
-  };
-
-  public checkPremiumStatus = async () => {
-    return this.premiumDispatcher.getPremiumStatus();
   };
 }

@@ -16,7 +16,7 @@
   stroke-width: 3;
 
   &.gray {
-    fill: $light-gray3;
+    fill: $light-gray4;
   }
 
   &.blue {
@@ -36,12 +36,27 @@
   }
 }
 
+.relationship {
+  &.ignoreUsers {
+    fill: $gray3;
+  }
+
+  &.frequentUsers {
+    fill: $green3;
+  }
+
+  &.semiFrequentUsers {
+    fill: $orange3;
+  }
+}
+
 .name {
   font-size: 15;
   cursor: pointer;
   user-select: none;
   opacity: 1;
   fill: $gray5;
+  text-anchor: middle;
 }
 
 .name:hover {
