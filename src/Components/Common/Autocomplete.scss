@@ -45,8 +45,15 @@
 
   &.hovering,
   &:hover {
-    background-color: $blue2;
     transition: background-color 200ms $transition;
+  }
+
+  &.hovering {
+    background-color: $blue2;
+  }
+
+  &:hover {
+    background-color: $blue1;
   }
 }
 

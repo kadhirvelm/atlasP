@@ -167,6 +167,7 @@ export class Autocomplete extends React.PureComponent<
               "autocomplete-row-selected": this.isSelected(key),
               hovering: this.state.hovering === index
             })}
+            id={`${index}`}
             key={index}
             onClick={this.handleSelection(key)}
           >
