@@ -71,7 +71,7 @@ export class EventDispatcher {
         CompoundAction.create([
           SelectEvent.create(undefined),
           UpdateEventData.create(event),
-          UpdateUser.create(updatedUser)
+          UpdateUser.create({ connections: updatedUser.connections })
         ])
       );
       showToast(Intent.SUCCESS, `${event.description} updated successfully.`);
@@ -98,7 +98,7 @@ export class EventDispatcher {
       this.dispatch(
         CompoundAction.create([
           DeleteEvent.create(event.id),
-          UpdateUser.create(updatedUser)
+          UpdateUser.create({ connections: updatedUser.connections })
         ])
       );
       showToast(Intent.SUCCESS, `${event.description} successfully deleted.`);

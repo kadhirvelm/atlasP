@@ -66,6 +66,9 @@ export const DatabaseReducer = TypedReducer.builder<
     if (currentUser === undefined) {
       return state;
     }
+
+    console.log(currentUser, payload);
+
     return setWith(state, {
       currentUser: {
         ...currentUser,
