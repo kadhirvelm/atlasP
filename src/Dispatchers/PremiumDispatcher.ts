@@ -19,7 +19,7 @@ export class PremiumDispatcher {
 
   public getPremiumStatus = async () => {
     try {
-      const premiumStatus = await axios.get(retrieveURL("premium/check"));
+      const premiumStatus = await axios.get(retrieveURL("account/check"));
       const isPremium: boolean = premiumStatus.data.payload.isPremium;
       this.dispatch(
         CompoundAction.create([
