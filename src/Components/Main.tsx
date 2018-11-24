@@ -22,9 +22,7 @@ export interface IMainStoreProps {
 }
 
 export interface IMainDispatchProps {
-  getAllRelationships(): void;
   getLatestGraph(user: IUser): void;
-  getPremiumStatus(): void;
 }
 
 export class PureMain extends React.PureComponent<
@@ -38,8 +36,6 @@ export class PureMain extends React.PureComponent<
   public componentDidMount() {
     if (this.props.currentUser !== undefined) {
       this.props.getLatestGraph(this.props.currentUser);
-      this.props.getPremiumStatus();
-      this.props.getAllRelationships();
     }
   }
 
@@ -90,11 +86,8 @@ function mapStoreToProps(state: IStoreState): IMainStoreProps {
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IMainDispatchProps {
-  const databaseDispatcher = new DatabaseDispatcher(dispatch);
   return {
-    getAllRelationships: databaseDispatcher.getAllRelationships,
-    getLatestGraph: databaseDispatcher.getLatestGraph,
-    getPremiumStatus: databaseDispatcher.checkPremiumStatus
+    getLatestGraph: new DatabaseDispatcher(dispatch).getLatestGraph
   };
 }
 

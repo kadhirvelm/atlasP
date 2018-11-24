@@ -96,6 +96,8 @@ export class DatabaseDispatcher {
       return;
     }
     await this.getGraph(convertPayloadToUser(latestUser));
+    await this.checkPremiumStatus();
+    await this.getAllRelationships();
   };
 
   /**
