@@ -171,7 +171,7 @@ export class UserDispatcher {
       this.dispatch(
         CompoundAction([
           DeleteUser.create(removeConnection),
-          UpdateUser.create(updatedUser)
+          UpdateUser.create({ connections: updatedUser.connections })
         ])
       );
       showToast(Intent.SUCCESS, `We've removed ${name} from your graph.`);
