@@ -44,3 +44,7 @@ export const RemoveHighlightConnection = TypedAction.define(
 export const RemoveAllHighlights = TypedAction.defineWithoutPayload(
   "WebsiteAction//REMOVE_ALL_HIGHLIGHTS"
 )();
+
+export const DisplayRecommendation = TypedAction.define(
+  "WebsiteAction//DISPLAY_RECOMMENDATION"
+)<IUser | undefined>();

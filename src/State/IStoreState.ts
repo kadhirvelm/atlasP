@@ -17,6 +17,7 @@ export default interface IStoreState {
   };
   WebsiteReducer: {
     contextMenuNode: IGraphUser | undefined;
+    displayRecommendation: IUser | undefined;
     infoPerson?: IUser;
     graphFilters: IFilter[];
     graphRef: HTMLElement | null;
@@ -34,6 +35,7 @@ export const EMPTY_STATE: IStoreState = {
   },
   WebsiteReducer: {
     contextMenuNode: undefined,
+    displayRecommendation: undefined,
     graphFilters: [],
     graphRef: null,
     graphType: DRIFT_GRAPH,

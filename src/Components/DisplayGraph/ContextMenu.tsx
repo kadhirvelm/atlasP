@@ -230,7 +230,12 @@ class PureGraphContextMenu extends React.PureComponent<
     };
   };
 
-  private close = () => this.props.setContextMenuNode(undefined);
+  private close = () => {
+    if (this.props.currentContextNode === undefined) {
+      return;
+    }
+    this.props.setContextMenuNode(undefined);
+  };
 }
 
 function mapStateToProps(state: IStoreState): IGraphContextMenuStoreProps {

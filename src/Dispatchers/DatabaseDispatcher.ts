@@ -9,6 +9,7 @@ import { AuthenticationDispatcher } from "./AuthenticationDispatcher";
 import { EventDispatcher } from "./EventDispatcher";
 import { GraphDispatcher } from "./GraphDispatcher";
 import { PremiumDispatcher } from "./PremiumDispatcher";
+import { RecommendationDispatcher } from "./RecommendationDispatcher";
 import { RelationshipsDispatcher } from "./RelationshipsDispatcher";
 import { UserDispatcher } from "./UserDispatcher";
 import { retrieveURL } from "./Utils";
@@ -21,6 +22,7 @@ export class DatabaseDispatcher {
   private eventDisptcher: EventDispatcher;
   private graphDispatcher: GraphDispatcher;
   private userDispatcher: UserDispatcher;
+  private recommendationDispatcher: RecommendationDispatcher;
   private relationshipDispatcher: RelationshipsDispatcher;
   private premiumDispatcher: PremiumDispatcher;
 
@@ -28,9 +30,10 @@ export class DatabaseDispatcher {
     this.authenticationDispatcher = new AuthenticationDispatcher(dispatch);
     this.eventDisptcher = new EventDispatcher(dispatch);
     this.graphDispatcher = new GraphDispatcher(dispatch);
-    this.userDispatcher = new UserDispatcher(dispatch);
-    this.relationshipDispatcher = new RelationshipsDispatcher(dispatch);
     this.premiumDispatcher = new PremiumDispatcher(dispatch);
+    this.recommendationDispatcher = new RecommendationDispatcher(dispatch);
+    this.relationshipDispatcher = new RelationshipsDispatcher(dispatch);
+    this.userDispatcher = new UserDispatcher(dispatch);
   }
 
   public async checkServerStatus() {
@@ -90,22 +93,24 @@ export class DatabaseDispatcher {
     return this.graphDispatcher.getGraph(user);
   };
 
-  public getLatestGraph = async (user: IUser) => {
-    const latestUser = await this.getUpdatedUser(user);
-    if (latestUser === undefined) {
-      return;
-    }
-    await this.getGraph(convertPayloadToUser(latestUser));
-    await this.checkPremiumStatus();
-    await this.getAllRelationships();
-  };
-
   /**
    * Premium Dispatcher
    */
 
   public checkPremiumStatus = async () => {
     return this.premiumDispatcher.getPremiumStatus();
+  };
+
+  /**
+   * Recommendation Dispatcher
+   */
+
+  public getShouldDisplayRecommendationDialog = async () => {
+    return this.recommendationDispatcher.getShouldDisplayRecommendationDialog();
+  };
+
+  public writeHasSeenDisplayRecommendation = async () => {
+    return this.recommendationDispatcher.writeHasSeenDisplayRecommendation();
   };
 
   /**
@@ -170,5 +175,21 @@ export class DatabaseDispatcher {
       newOtherUserDetails,
       currentUserId
     );
+  };
+
+  /**
+   * Multi-dispatcher methods
+   */
+  public getLatestGraph = async (user: IUser) => {
+    const latestUser = await this.getUpdatedUser(user);
+    if (latestUser === undefined) {
+      return;
+    }
+    await this.getGraph(convertPayloadToUser(latestUser));
+    await Promise.all([
+      this.checkPremiumStatus(),
+      this.getAllRelationships(),
+      this.getShouldDisplayRecommendationDialog()
+    ]);
   };
 }
