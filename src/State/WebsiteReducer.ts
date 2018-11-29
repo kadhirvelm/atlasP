@@ -5,6 +5,7 @@ import {
   AddGraphFilter,
   AddHighlightConnection,
   ChangeGraphType,
+  DisplayRecommendation,
   RemoveAllHighlights,
   RemoveGraphFilter,
   RemoveHighlightConnection,
@@ -82,5 +83,10 @@ export const WebsiteReducer = TypedReducer.builder<
       ...state,
       highlightConnections: new Set()
     };
+  })
+  .withHandler(DisplayRecommendation.TYPE, (state, payload) => {
+    return setWith(state, {
+      displayRecommendation: payload
+    });
   })
   .build();

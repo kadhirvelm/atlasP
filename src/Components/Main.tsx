@@ -7,11 +7,12 @@ import { DatabaseDispatcher } from "../Dispatchers/DatabaseDispatcher";
 import IStoreState from "../State/IStoreState";
 import { IUser } from "../Types/Users";
 import { getAuthenticationToken } from "../Utils/Security";
+import { RecommendationDialog } from "./Dialogs/Recommendation";
 import { DisplayGraph } from "./DisplayGraph/DisplayGraph";
+import { InfoPerson } from "./Informational/InfoPerson";
 import { MobileView } from "./Mobile/MobileView";
 import { AtlaspNavbar } from "./Navbar/Navbar";
 
-import { InfoPerson } from "./Informational/InfoPerson";
 import "./Main.scss";
 
 const Default = (props: any) => <Responsive {...props} minWidth={768} />;
@@ -74,6 +75,7 @@ export class PureMain extends React.PureComponent<
         <div className="info-graphic">
           <InfoPerson />
         </div>
+        <RecommendationDialog />
       </div>
     );
   };
