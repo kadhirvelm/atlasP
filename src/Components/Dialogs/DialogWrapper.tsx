@@ -39,6 +39,12 @@ export class DialogWrapper extends React.PureComponent<
     dialogOpen: this.props.forceOpen || false
   };
 
+  public componentDidUpdate(previousProps: IDialogWrapperProps) {
+    if (!previousProps.forceOpen && this.props.forceOpen) {
+      this.setState({ dialogOpen: true });
+    }
+  }
+
   public render() {
     const Dialog = this.props.dialog;
     if (this.props.children !== undefined) {

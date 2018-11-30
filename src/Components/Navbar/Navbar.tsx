@@ -11,7 +11,7 @@ import { NewEventIcon } from "../../icons/newEventIcon";
 import { NewPersonIcon } from "../../icons/newPersonIcon";
 import { EmptyDatabaseCache } from "../../State/DatabaseActions";
 import IStoreState from "../../State/IStoreState";
-import { IForceUpdate } from "../../Types/Other";
+import { IForceUpdate, IOpenNavbarDialog } from "../../Types/Other";
 import { IUser } from "../../Types/Users";
 import { AddNewEvent } from "../Dialogs/AddNewEvent";
 import { AddNewPerson } from "../Dialogs/AddNewUser";
@@ -31,11 +31,12 @@ interface INavbarState {
   handleHoverLeave(): void;
 }
 
-export interface INavbarStateProps {
+export interface INavbarStoreProps {
   currentUser?: IUser;
   fetching: boolean;
   forceUpdate: IForceUpdate | undefined;
   isPremium: boolean;
+  openNavbarDialog: IOpenNavbarDialog;
 }
 
 export interface INavbarDispatchProps {
@@ -43,7 +44,7 @@ export interface INavbarDispatchProps {
 }
 
 class PureAtlaspNavbar extends React.PureComponent<
-  INavbarStateProps & INavbarDispatchProps,
+  INavbarStoreProps & INavbarDispatchProps,
   INavbarState
 > {
   public state = {
@@ -149,6 +150,7 @@ class PureAtlaspNavbar extends React.PureComponent<
           containerElement={NavbarRow}
           dialog={AddNewEvent}
           elementProps={this.state}
+          forceOpen={this.props.openNavbarDialog === "event"}
           icon={<NewEventIcon attributes={this.customAttributes} />}
           text="Add event"
         />
@@ -185,12 +187,13 @@ class PureAtlaspNavbar extends React.PureComponent<
   private handleHoverLeave = () => this.setState({ isHovering: false });
 }
 
-function mapStateToProps(state: IStoreState): INavbarStateProps {
+function mapStateToProps(state: IStoreState): INavbarStoreProps {
   return {
     currentUser: state.DatabaseReducer.currentUser,
     fetching: state.DatabaseReducer.isFetching,
     forceUpdate: state.DatabaseReducer.forceUpdate,
-    isPremium: state.DatabaseReducer.isPremium
+    isPremium: state.DatabaseReducer.isPremium,
+    openNavbarDialog: state.WebsiteReducer.openNavbarDialog
   };
 }
 

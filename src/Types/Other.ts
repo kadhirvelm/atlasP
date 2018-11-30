@@ -4,3 +4,5 @@ export interface IForceUpdate {
   _id: string;
   fields: keyof IUser;
 }
+
+export type IOpenNavbarDialog = "event" | undefined;

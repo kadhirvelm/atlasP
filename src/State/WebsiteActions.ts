@@ -3,6 +3,7 @@ import { TypedAction } from "redoodle";
 import { IGraphUser } from "../Components/DisplayGraph/DisplayGraph";
 import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType } from "../Types/Graph";
+import { IOpenNavbarDialog } from "../Types/Other";
 import { IUser } from "../Types/Users";
 
 export const SetInfoPerson = TypedAction.define(
@@ -48,3 +49,11 @@ export const RemoveAllHighlights = TypedAction.defineWithoutPayload(
 export const DisplayRecommendation = TypedAction.define(
   "WebsiteAction//DISPLAY_RECOMMENDATION"
 )<IUser | undefined>();
+
+export const OpenNavbarDialog = TypedAction.define(
+  "WebsiteAction//OPEN_NAVBAR_DIALOG"
+)<IOpenNavbarDialog>();
+
+export const AddPeopleToEvent = TypedAction.define(
+  "WebsiteAction//ADD_PEOPLE_TO_EVENT"
+)<IUser>();

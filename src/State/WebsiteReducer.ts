@@ -4,8 +4,10 @@ import IStoreState from "./IStoreState";
 import {
   AddGraphFilter,
   AddHighlightConnection,
+  AddPeopleToEvent,
   ChangeGraphType,
   DisplayRecommendation,
+  OpenNavbarDialog,
   RemoveAllHighlights,
   RemoveGraphFilter,
   RemoveHighlightConnection,
@@ -87,6 +89,16 @@ export const WebsiteReducer = TypedReducer.builder<
   .withHandler(DisplayRecommendation.TYPE, (state, payload) => {
     return setWith(state, {
       displayRecommendation: payload
+    });
+  })
+  .withHandler(OpenNavbarDialog.TYPE, (state, payload) => {
+    return setWith(state, {
+      openNavbarDialog: payload
+    });
+  })
+  .withHandler(AddPeopleToEvent.TYPE, (state, payload) => {
+    return setWith(state, {
+      additionalPeopleToEvent: [payload]
     });
   })
   .build();
