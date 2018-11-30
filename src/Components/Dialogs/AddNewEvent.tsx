@@ -20,6 +20,7 @@ import { IDialogProps } from "./DialogWrapper";
 import "./AddNewEvent.scss";
 
 export interface IAddNewEventStateProps {
+  additionalUsers?: IUser[] | undefined;
   currentUser: IUser | undefined;
   users: Map<string, IUser> | undefined;
 }
@@ -53,6 +54,12 @@ export class PureAddNewEvent extends React.PureComponent<
     }
   };
   public state: IAddNewEventState = this.EMPTY_STATE;
+
+  public componentDidUpdate(previousProps: IAddNewEventStateProps) {
+    if (previousProps.additionalUsers !== this.props.additionalUsers) {
+      this.updateAttendeesFromProps();
+    }
+  }
 
   public render() {
     return (
@@ -101,6 +108,20 @@ export class PureAddNewEvent extends React.PureComponent<
     );
   }
 
+  private updateAttendeesFromProps = () => {
+    const { additionalUsers, users } = this.props;
+    if (additionalUsers === undefined || users === undefined) {
+      return;
+    }
+    const finalUsers = additionalUsers
+      .map(user => users.get(user.id))
+      .filter(user => user !== undefined);
+    this.adjustFinalEvent(
+      "attendees",
+      (finalUsers as IUser[]).concat(this.state.temporaryEvent.attendees)
+    );
+  };
+
   private resetStateAndClose = () => {
     this.setState(this.EMPTY_STATE, () => {
       this.props.onClose();
@@ -134,13 +155,13 @@ export class PureAddNewEvent extends React.PureComponent<
       }, {});
   };
 
-  private handleChange = (key: string) => {
+  private handleChange = (key: keyof ITemporaryEvent) => {
     return (event: React.FormEvent<HTMLElement>) => {
       this.adjustFinalEvent(key, (event.target as any).value);
     };
   };
 
-  private adjustFinalEvent = (key: string, newValue: any) => {
+  private adjustFinalEvent = (key: keyof ITemporaryEvent, newValue: any) => {
     this.setState({
       temporaryEvent: { ...this.state.temporaryEvent, [key]: newValue }
     });
@@ -149,6 +170,7 @@ export class PureAddNewEvent extends React.PureComponent<
 
 function mapStateToProps(state: IStoreState): IAddNewEventStateProps {
   return {
+    additionalUsers: state.WebsiteReducer.additionalPeopleToEvent,
     currentUser: state.DatabaseReducer.currentUser,
     users: state.DatabaseReducer.userData
   };

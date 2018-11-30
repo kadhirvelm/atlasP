@@ -9,7 +9,7 @@ import {
   UpdateEventData,
   UpdateUser
 } from "../State/DatabaseActions";
-import { SelectEvent } from "../State/WebsiteActions";
+import { OpenNavbarDialog, SelectEvent } from "../State/WebsiteActions";
 import { IEvent } from "../Types/Events";
 import Event from "../Utils/Event";
 import { showToast } from "../Utils/Toaster";
@@ -30,14 +30,17 @@ export class EventDispatcher {
         this.formatEvent(event)
       );
       this.dispatch(
-        UpdateEventData.create(
-          new Event(
-            response.data.payload.id,
-            new Date(event.date),
-            event.description,
-            event.attendees
-          )
-        )
+        CompoundAction.create([
+          UpdateEventData.create(
+            new Event(
+              response.data.payload.id,
+              new Date(event.date),
+              event.description,
+              event.attendees
+            )
+          ),
+          OpenNavbarDialog.create(undefined)
+        ])
       );
     } catch (error) {
       showToast(

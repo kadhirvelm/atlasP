@@ -2,7 +2,7 @@ import { IGraphUser } from "../Components/DisplayGraph/DisplayGraph";
 import { DRIFT_GRAPH } from "../Components/Navbar/NavbarComponents/GraphType/GraphConstants";
 import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType } from "../Types/Graph";
-import { IForceUpdate } from "../Types/Other";
+import { IForceUpdate, IOpenNavbarDialog } from "../Types/Other";
 import { IUser } from "../Types/Users";
 
 export default interface IStoreState {
@@ -16,6 +16,7 @@ export default interface IStoreState {
     userData?: Map<string, IUser>;
   };
   WebsiteReducer: {
+    additionalPeopleToEvent: IUser[] | undefined;
     contextMenuNode: IGraphUser | undefined;
     displayRecommendation: IUser | undefined;
     infoPerson?: IUser;
@@ -23,6 +24,7 @@ export default interface IStoreState {
     graphRef: HTMLElement | null;
     graphType: IGraphType;
     highlightConnections: Set<string>;
+    openNavbarDialog: IOpenNavbarDialog;
     selectedEvent: IEvent | undefined;
   };
 }
@@ -34,12 +36,14 @@ export const EMPTY_STATE: IStoreState = {
     isPremium: false
   },
   WebsiteReducer: {
+    additionalPeopleToEvent: undefined,
     contextMenuNode: undefined,
     displayRecommendation: undefined,
     graphFilters: [],
     graphRef: null,
     graphType: DRIFT_GRAPH,
     highlightConnections: new Set(),
+    openNavbarDialog: undefined,
     selectedEvent: undefined
   }
 };

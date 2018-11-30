@@ -20,3 +20,5 @@ export default class User implements IUser {
     return tempSeparate[0];
   };
 }
+
+export const getFirstName = (name: string) => name.split(" ")[0];

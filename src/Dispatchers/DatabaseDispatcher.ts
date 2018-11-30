@@ -180,16 +180,20 @@ export class DatabaseDispatcher {
   /**
    * Multi-dispatcher methods
    */
+  public updateAllOtherItems = async () => {
+    await Promise.all([
+      this.checkPremiumStatus(),
+      this.getAllRelationships(),
+      this.getShouldDisplayRecommendationDialog()
+    ]);
+  };
+
   public getLatestGraph = async (user: IUser) => {
     const latestUser = await this.getUpdatedUser(user);
     if (latestUser === undefined) {
       return;
     }
     await this.getGraph(convertPayloadToUser(latestUser));
-    await Promise.all([
-      this.checkPremiumStatus(),
-      this.getAllRelationships(),
-      this.getShouldDisplayRecommendationDialog()
-    ]);
+    this.updateAllOtherItems();
   };
 }
