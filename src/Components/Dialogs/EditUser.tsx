@@ -11,8 +11,9 @@ import {
   Tooltip
 } from "@blueprintjs/core";
 
+import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import IStoreState from "../../State/IStoreState";
-import { IUser } from "../../Types/Users";
+import { IFrequency, IUser } from "../../Types/Users";
 import { showToast } from "../../Utils/Toaster";
 import { DialogUtils, handleKeyDown } from "./DialogUtils";
 
@@ -21,6 +22,7 @@ import "./EditUser.scss";
 
 export interface IEditUserDispatchProps {
   dialogUtils: DialogUtils;
+  updateFrequency: (frequency: IFrequency) => void;
 }
 
 export interface IEditUserStoreProps {
@@ -206,7 +208,8 @@ function mapStoreToProps(state: IStoreState): IEditUserStoreProps {
 
 function mapDispatchToProps(dispatch: Dispatch): IEditUserDispatchProps {
   return {
-    dialogUtils: new DialogUtils(dispatch)
+    dialogUtils: new DialogUtils(dispatch),
+    updateFrequency: new DatabaseDispatcher(dispatch).updateFrequency
   };
 }
 

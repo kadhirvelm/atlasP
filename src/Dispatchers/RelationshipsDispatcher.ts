@@ -4,6 +4,7 @@ import { Dispatch } from "redux";
 import { Intent } from "@blueprintjs/core";
 
 import { UpdateUser } from "../State/DatabaseActions";
+import { IFrequency } from "../Types/Users";
 import { showToast } from "../Utils/Toaster";
 import { retrieveURL } from "./Utils";
 
@@ -25,6 +26,20 @@ export class RelationshipsDispatcher {
       showToast(
         Intent.DANGER,
         "We weren't able to retrieve your relationships with your friends. Try refreshing the page?"
+      );
+    }
+  };
+
+  public updateFrequency = async (frequency: IFrequency) => {
+    try {
+      await axios.post(retrieveURL("relationships/update"), {
+        frequency
+      });
+      this.dispatch(UpdateUser.create({ frequency }));
+    } catch (error) {
+      showToast(
+        Intent.DANGER,
+        "Something went wrong when we tried to update the frequency."
       );
     }
   };
