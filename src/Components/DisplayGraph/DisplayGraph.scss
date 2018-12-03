@@ -15,8 +15,8 @@
   user-select: none;
   stroke-width: 3;
 
-  &.gray {
-    fill: $light-gray4;
+  &.orange {
+    fill: $orange2;
   }
 
   &.blue {
@@ -34,19 +34,31 @@
   &.red {
     fill: $red2;
   }
-}
 
-.relationship {
-  &.ignoreUsers {
-    fill: $gray3;
-  }
+  &.ignore {
+    $mix-color: $light-gray4;
 
-  &.frequentUsers {
-    fill: $green3;
-  }
+    &.orange {
+      fill: mix($orange2, $mix-color);
+    }
 
-  &.semiFrequentUsers {
-    fill: $orange3;
+    &.blue {
+      fill: mix($blue2, $mix-color);
+    }
+
+    &.green {
+      fill: mix($green2, $mix-color);
+    }
+
+    &.yellow {
+      fill: mix($gold2, $mix-color);
+    }
+
+    &.red {
+      fill: mix($red2, $mix-color);
+    }
+
+    opacity: 0.75;
   }
 }
 
@@ -57,6 +69,10 @@
   opacity: 1;
   fill: $gray5;
   text-anchor: middle;
+
+  &.ignore {
+    opacity: 0.75;
+  }
 }
 
 .name:hover {

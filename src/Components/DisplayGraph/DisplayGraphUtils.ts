@@ -2,19 +2,15 @@ import classNames from "classnames";
 import * as d3 from "d3";
 
 import { ILink } from "../../Types/Graph";
-import { IUser } from "../../Types/Users";
+import { IPersonFrequency, IUser } from "../../Types/Users";
 import {
-  ALL_VALID_CATEGORIES,
-  IRelationship,
-  IValidCategories
-} from "../../Utils/selectors";
-import { getDifferenceBetweenDates } from "../../Utils/Util";
+  convertObjectToMap,
+  finalRelationshipDays,
+  getDifferenceBetweenDates
+} from "../../Utils/Util";
 
 const CHARGE_STRENGTH = -75;
 const GRAPH_ID = "BOUNDING_RECTANGLE";
-
-export const GREEN_DAYS = 30;
-export const RED_DAYS = 90;
 
 export const DEFAULT_RADIUS = 30;
 export const HALF_DEFAULT = DEFAULT_RADIUS / 2;
@@ -113,21 +109,26 @@ export function maybeApplyLinkForce(
   linkForce.links(links);
 }
 
-function returnFill(id: string, map: Map<string, Date>) {
+function returnFill(
+  id: string,
+  map: Map<string, Date>,
+  relationships: IPersonFrequency
+) {
   const lastTime = map.get(id);
   if (lastTime === undefined) {
-    return "gray";
+    return "orange";
   }
 
   const totalDifference = getDifferenceBetweenDates(
     new Date(),
     new Date(lastTime)
   );
+  const frequencyInDays = finalRelationshipDays(relationships);
   if (totalDifference < 0) {
     return "blue";
-  } else if (totalDifference < GREEN_DAYS) {
+  } else if (totalDifference < frequencyInDays) {
     return "green";
-  } else if (totalDifference < RED_DAYS) {
+  } else if (totalDifference < frequencyInDays * 3) {
     return "yellow";
   } else {
     return "red";
@@ -150,6 +151,7 @@ export function returnNodeElements(
   if (currentUser === undefined) {
     throw new Error("Tried to fetch an undefined current user in graph");
   }
+  const relationships = convertObjectToMap(currentUser.frequency);
   return svg
     .append("g")
     .selectAll(".node")
@@ -164,54 +166,28 @@ export function returnNodeElements(
     .attr("ry", 5)
     .on("click", handleClick)
     .attr("class", (node: IUser) =>
-      classNames("node", returnFill(node.id, lastEvents))
+      classNames(
+        "node",
+        returnFill(node.id, lastEvents, relationships.get(
+          node.id
+        ) as IPersonFrequency),
+        { ignore: relationships.get(node.id) === "IGNORE" }
+      )
     )
     .attr("id", (node: IUser) => `NODE_${node.id}`);
-}
-
-function relationshipIncludes(
-  id: string,
-  relationships: IRelationship,
-  key: IValidCategories
-) {
-  const allRelationships = relationships.get(id);
-  if (allRelationships === undefined) {
-    return false;
-  }
-  return allRelationships.includes(key);
-}
-
-export function returnRelationshipElements(
-  svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>,
-  nodes: IUser[],
-  relationships: IRelationship
-) {
-  const allRelationships = svg
-    .append("g")
-    .selectAll(".relationship")
-    .exit()
-    .remove()
-    .data(nodes)
-    .enter()
-    .append("g");
-  ALL_VALID_CATEGORIES.forEach(relationshipType => {
-    allRelationships
-      .filter(node =>
-        relationshipIncludes(node.id, relationships, relationshipType)
-      )
-      .append("circle")
-      .attr("r", 5)
-      .attr("class", classNames("relationship", relationshipType));
-  });
-  return allRelationships;
 }
 
 export function returnNames(
   svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>,
   nodes: IUser[],
+  currentUser: IUser | undefined,
   handleClick: (node: IUser) => void,
   handleContextMenu: (node: IUser) => void
 ) {
+  if (currentUser === undefined) {
+    throw new Error("Something went wrong when trying to create your graph.");
+  }
+  const relationships = convertObjectToMap(currentUser.frequency);
   return svg
     .append("g")
     .selectAll("text")
@@ -232,7 +208,11 @@ export function returnNames(
       d3.event.preventDefault();
       handleContextMenu(node);
     })
-    .attr("class", "name");
+    .attr("class", (node: IUser) =>
+      classNames("name", {
+        ignore: relationships.get(node.id) === "IGNORE"
+      })
+    );
 }
 
 export function zoomToNode(id: string, zoomAmount: number) {

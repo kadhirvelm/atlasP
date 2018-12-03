@@ -36,12 +36,9 @@ export const getDateFiltersHelper = (
   </div>
 );
 
-export const getIgnoreListHelper = (
+export const getFrequencyFiltersHelpers = (
   <div className="filter-ignore-list-helper">
-    When unchecked, will remove people in that category from your graph. AtlasP
-    will take a persons' category into account when generating recommendations.
-    <div className="filters-actionable-container">
-      You can change someone's category by right clicking on them in the graph.
-    </div>
+    At what frequency do you want to see this person? Check the ignore box to
+    include all your ignored friends on the graph.
   </div>
 );

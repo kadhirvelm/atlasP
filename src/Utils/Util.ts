@@ -1,10 +1,7 @@
 import PhoneNumber from "awesome-phonenumber";
 
-import { IconName } from "@blueprintjs/core";
-
 import { IEvent } from "../Types/Events";
-import { IUser } from "../Types/Users";
-import { IValidCategories } from "./selectors";
+import { IPersonFrequency, IUser } from "../Types/Users";
 import User from "./User";
 
 export function convertObjectToMap(object: {} | undefined): Map<string, {}> {
@@ -48,7 +45,7 @@ export function convertPayloadToUser(rawUser: any): IUser | undefined {
     rawUser.location,
     rawUser.phoneNumber,
     rawUser.claimed || false,
-    rawUser.ignoreUsers || [],
+    rawUser.frequency,
     rawUser.connections
   );
 }
@@ -79,15 +76,10 @@ export function distinctArray(array: any[]) {
 export const getLatestEventDate = (events: IEvent[]) =>
   events.sort((a, b) => getDifferenceBetweenDates(a.date, b.date)).slice(-1)[0];
 
-export const fetchCategoryDetails = (
-  category: IValidCategories
-): { icon: IconName; name: string } => {
-  switch (category) {
-    case "frequentUsers":
-      return { icon: "flows", name: "Frequent" };
-    case "semiFrequentUsers":
-      return { icon: "chart", name: "Semi-frequent" };
-    case "ignoreUsers":
-      return { icon: "blocked-person", name: "Ignore" };
-  }
+const DEFAULT_DAYS = 30;
+
+export const finalRelationshipDays = (relationship: IPersonFrequency) => {
+  return relationship === "IGNORE" || relationship === undefined
+    ? DEFAULT_DAYS
+    : relationship;
 };

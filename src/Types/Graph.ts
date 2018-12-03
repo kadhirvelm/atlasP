@@ -1,5 +1,5 @@
 import { IEvent } from "./Events";
-import { IUser } from "./Users";
+import { IPersonFrequency, IUser } from "./Users";
 
 export interface ILink {
   color?: string;
@@ -14,7 +14,11 @@ export interface ILink {
 export interface IFilter {
   id: string;
   type: "date" | "user";
-  shouldKeep: (value: any, currentUser?: IUser) => boolean;
+  shouldKeep: (
+    value: any,
+    frequency?: IPersonFrequency,
+    currentUser?: IUser
+  ) => boolean;
 }
 
 export interface IGraphType {

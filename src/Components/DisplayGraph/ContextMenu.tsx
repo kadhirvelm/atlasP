@@ -12,8 +12,6 @@ import {
   SetContextMenuNode
 } from "../../State/WebsiteActions";
 import { IUser } from "../../Types/Users";
-import { ALL_VALID_CATEGORIES, IValidCategories } from "../../Utils/selectors";
-import { fetchCategoryDetails } from "../../Utils/Util";
 import { isInsideDiv } from "../Common/utils";
 import "./ContextMenu.scss";
 import { IGraphUser } from "./DisplayGraph";
@@ -31,11 +29,8 @@ export interface IGraphContextMenuStoreProps {
 
 export interface IGraphContextMenuDispatchProps {
   addHighlight(id: string): void;
-  frequentUsers(ignoreList: string[]): void;
-  ignoreUsers(ignoreList: string[]): void;
   removeHighlight(id: string): void;
   removeFromGraph(id: string, name: string): void;
-  semiFrequentUsers(ignoreList: string[]): void;
   setContextMenuNode(node: IGraphUser | undefined): void;
 }
 
@@ -84,7 +79,6 @@ class PureGraphContextMenu extends React.PureComponent<
         {this.renderContextMenuOption(this.handleZoomClick, "zoom-in", "Zoom")}
         {this.renderHighlightConnections(currentContextNode)}
         {this.maybeRenderRemoveConnection(currentContextNode)}
-        {this.maybeRenderCategorizeOptions(currentContextNode)}
       </div>
     );
   }
@@ -169,67 +163,6 @@ class PureGraphContextMenu extends React.PureComponent<
     this.close();
   };
 
-  private maybeRenderCategorizeOptions(contextNode: IGraphUser) {
-    const { currentUser } = this.props;
-    if (currentUser === undefined || !this.props.isPremium) {
-      return;
-    }
-    return ALL_VALID_CATEGORIES.map(category =>
-      this.renderSingleCategory(category, contextNode, currentUser)
-    );
-  }
-
-  private renderSingleCategory(
-    category: IValidCategories,
-    contextNode: IGraphUser,
-    currentUser: IUser
-  ) {
-    const userCategory = currentUser[category];
-    const isInCategory =
-      userCategory !== undefined && userCategory.includes(contextNode.id);
-    const details = fetchCategoryDetails(category);
-    return isInCategory
-      ? this.renderContextMenuOption(
-          this.handleRemoveFromCategory(category, contextNode.id, currentUser),
-          "minus",
-          `Remove from ${details.name}`
-        )
-      : this.renderContextMenuOption(
-          this.handleAddToCategory(category, contextNode.id, currentUser),
-          "plus",
-          `Add to ${details.name}`
-        );
-  }
-
-  private handleRemoveFromCategory = (
-    category: IValidCategories,
-    currentContextNodeId: string,
-    currentUser: IUser
-  ) => {
-    return () => {
-      const currentUserCategory = (currentUser[category] || []).slice();
-      currentUserCategory.splice(
-        currentUserCategory.indexOf(currentContextNodeId),
-        1
-      );
-      this.props[category](currentUserCategory);
-      this.close();
-    };
-  };
-
-  private handleAddToCategory = (
-    category: IValidCategories,
-    currentContextNodeId: string,
-    currentUser: IUser
-  ) => {
-    return () => {
-      const currentUserCategory = (currentUser[category] || []).slice();
-      currentUserCategory.push(currentContextNodeId);
-      this.props[category](currentUserCategory);
-      this.close();
-    };
-  };
-
   private close = () => {
     if (this.props.currentContextNode === undefined) {
       return;
@@ -260,10 +193,7 @@ function mapDispatchToProps(
       },
       dispatch
     ),
-    frequentUsers: databaseDispatcher.updateFrequentUsersList,
-    ignoreUsers: databaseDispatcher.updateUserIgnoreList,
-    removeFromGraph: databaseDispatcher.removeFromGraph,
-    semiFrequentUsers: databaseDispatcher.updateSemiFrequentUsersList
+    removeFromGraph: databaseDispatcher.removeFromGraph
   };
 }
 

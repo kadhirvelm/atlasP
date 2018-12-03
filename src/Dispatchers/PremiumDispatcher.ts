@@ -4,7 +4,7 @@ import { Dispatch } from "redux";
 
 import { Intent } from "@blueprintjs/core";
 
-import { CATEGORY_FILTER } from "../Components/Navbar/NavbarComponents/Filters/FilterConstants";
+import { IGNORE_FILTER } from "../Components/Navbar/NavbarComponents/Filters/FilterConstants";
 import { SetPremiumStatus } from "../State/DatabaseActions";
 import { AddGraphFilter } from "../State/WebsiteActions";
 import { showToast } from "../Utils/Toaster";
@@ -24,7 +24,7 @@ export class PremiumDispatcher {
       this.dispatch(
         CompoundAction.create([
           SetPremiumStatus.create(isPremium),
-          AddGraphFilter.create(CATEGORY_FILTER("ignoreUsers"))
+          AddGraphFilter.create(IGNORE_FILTER)
         ])
       );
     } catch (error) {

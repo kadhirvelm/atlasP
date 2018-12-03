@@ -28,30 +28,4 @@ export class RelationshipsDispatcher {
       );
     }
   };
-
-  public updateUserIgnoreList = async (ignoreUsers: string[]) => {
-    this.updateUserList(ignoreUsers, "ignoreUsers");
-  };
-
-  public updateFrequentUsersList = async (frequentUsers: string[]) => {
-    this.updateUserList(frequentUsers, "frequentUsers");
-  };
-
-  public updateSemiFrequentUsersList = async (semiFrequentUsers: string[]) => {
-    this.updateUserList(semiFrequentUsers, "semiFrequentUsers");
-  };
-
-  private updateUserList = async (userList: string[], key: string) => {
-    try {
-      await axios.post(retrieveURL("relationships/update"), {
-        [key]: userList
-      });
-      this.dispatch(UpdateUser.create({ [key]: userList }));
-    } catch (error) {
-      showToast(
-        Intent.DANGER,
-        "Hum, something went wrong when updating that category. Try refreshing the page?"
-      );
-    }
-  };
 }
