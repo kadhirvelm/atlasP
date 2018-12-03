@@ -8,7 +8,7 @@ import IStoreState from "../State/IStoreState";
 import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType, ILink } from "../Types/Graph";
 import { IUser } from "../Types/Users";
-import { getLatestEventDate } from "./Util";
+import { convertObjectToMap, getLatestEventDate } from "./Util";
 
 export interface IFilteredNodes {
   nodes: IUser[];
@@ -16,22 +16,12 @@ export interface IFilteredNodes {
   connectionEvents: Map<string, IEvent[]>;
 }
 
-export const ALL_VALID_CATEGORIES: IValidCategories[] = [
-  "frequentUsers",
-  "semiFrequentUsers",
-  "ignoreUsers"
-];
-export type IValidCategories =
-  | "ignoreUsers"
-  | "frequentUsers"
-  | "semiFrequentUsers";
-export type IRelationship = Map<string, IValidCategories[]>;
+export type IRelationship = Map<string, number | "IGNORE">;
 
 export interface IPeopleGraph {
   nodes: IUser[];
   lastEvents: Map<string, Date>;
   links: ILink[];
-  relationships: IRelationship;
 }
 
 function returnLastEvents(connectionCopy: Map<string, IEvent[]>) {
@@ -82,12 +72,25 @@ export const selectConnectionsAndDates = createSelector(
   }
 );
 
+export const selectRelationships = createSelector(
+  (state: IStoreState) => state.DatabaseReducer.currentUser,
+  (mainPerson: IUser | undefined) => {
+    if (mainPerson === undefined) {
+      return new Map();
+    }
+
+    return convertObjectToMap(mainPerson.frequency || {});
+  }
+);
+
 export const selectFilteredConnections = createSelector(
   selectConnectionsAndDates,
+  selectRelationships,
   (state: IStoreState) => state.DatabaseReducer.currentUser,
   (state: IStoreState) => state.WebsiteReducer.graphFilters,
   (
     filteredNodes: IFilteredNodes | undefined,
+    relationships: IRelationship,
     currentUser: IUser | undefined,
     graphFilter: IFilter[] | undefined
   ): IFilteredNodes | undefined => {
@@ -107,7 +110,11 @@ export const selectFilteredConnections = createSelector(
         if (check === undefined) {
           return true;
         }
-        const shouldKeep = filter.shouldKeep(check, currentUser);
+        const shouldKeep = filter.shouldKeep(
+          check,
+          relationships.get(user.id),
+          currentUser
+        );
         if (!shouldKeep) {
           connectionEvents.delete(user.id);
         }
@@ -119,43 +126,12 @@ export const selectFilteredConnections = createSelector(
   }
 );
 
-export const selectRelationships = createSelector(
-  (state: IStoreState) => state.DatabaseReducer.currentUser,
-  (mainPerson: IUser | undefined) => {
-    if (mainPerson === undefined) {
-      return new Map();
-    }
-    const relationships: IRelationship = new Map();
-    const addToMap = (userId: string, key: IValidCategories) =>
-      relationships.set(
-        userId,
-        (relationships.get(userId) || []).concat([key])
-      );
-    const maybeAddStringToMap = (
-      users: string[] | undefined,
-      key: IValidCategories
-    ) => {
-      if (users === undefined) {
-        return;
-      }
-      users.forEach(userId => addToMap(userId, key));
-    };
-
-    ALL_VALID_CATEGORIES.forEach(key =>
-      maybeAddStringToMap(mainPerson[key], key)
-    );
-    return relationships;
-  }
-);
-
 export const selectLinkedConnections = createSelector(
   selectFilteredConnections,
-  selectRelationships,
   (state: IStoreState) => state.DatabaseReducer.currentUser,
   (state: IStoreState) => state.WebsiteReducer.graphType,
   (
     filteredNodes: IFilteredNodes | undefined,
-    relationships: IRelationship,
     mainPerson: IUser | undefined,
     graphType: IGraphType
   ): IPeopleGraph | undefined => {
@@ -168,8 +144,7 @@ export const selectLinkedConnections = createSelector(
         mainPerson.id,
         filteredNodes.connectionEvents
       ),
-      nodes: filteredNodes.nodes,
-      relationships
+      nodes: filteredNodes.nodes
     };
   }
 );

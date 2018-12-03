@@ -121,20 +121,6 @@ export class DatabaseDispatcher {
     return this.relationshipDispatcher.getAllRelationships();
   };
 
-  public updateUserIgnoreList = async (ignoreUsers: string[]) => {
-    return this.relationshipDispatcher.updateUserIgnoreList(ignoreUsers);
-  };
-
-  public updateFrequentUsersList = async (frequentUsers: string[]) => {
-    return this.relationshipDispatcher.updateFrequentUsersList(frequentUsers);
-  };
-
-  public updateSemiFrequentUsersList = async (semiFrequentUsers: string[]) => {
-    return this.relationshipDispatcher.updateSemiFrequentUsersList(
-      semiFrequentUsers
-    );
-  };
-
   /**
    * User Dispatcher
    */

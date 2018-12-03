@@ -1,4 +1,4 @@
-import { IConnections, IUser } from "../Types/Users";
+import { IConnections, IFrequency, IUser } from "../Types/Users";
 
 export default class User implements IUser {
   constructor(
@@ -8,7 +8,7 @@ export default class User implements IUser {
     public location: string,
     public contact: string,
     public claimed: boolean,
-    public ignoreUsers?: string[],
+    public frequency?: IFrequency,
     public connections?: IConnections
   ) {}
 

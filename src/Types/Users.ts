@@ -9,15 +9,19 @@ export interface IRawUser {
   phoneNumber: string;
 }
 
+export type IPersonFrequency = number | "IGNORE" | undefined;
+
+export interface IFrequency {
+  [id: string]: IPersonFrequency;
+}
+
 export interface IUser {
   claimed: boolean;
   connections?: IConnections;
   contact: string;
+  frequency?: IFrequency;
   gender: string;
   id: string;
-  ignoreUsers?: string[];
-  frequentUsers?: string[];
-  semiFrequentUsers?: string[];
   location: string;
   name: string;
   password?: string;

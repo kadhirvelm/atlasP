@@ -14,7 +14,11 @@ export interface ILink {
 export interface IFilter {
   id: string;
   type: "date" | "user";
-  shouldKeep: (value: any, currentUser?: IUser) => boolean;
+  shouldKeep: (
+    value: any,
+    frequency?: number | "IGNORE",
+    currentUser?: IUser
+  ) => boolean;
 }
 
 export interface IGraphType {

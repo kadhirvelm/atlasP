@@ -11,15 +11,12 @@ import {
   RemoveGraphFilter
 } from "../../../../State/WebsiteActions";
 import { IFilter } from "../../../../Types/Graph";
+import { DATE_FILTERS, IGNORE_FILTER } from "./FilterConstants";
 import {
-  CATEGORY_FILTER,
-  DATE_FILTERS,
-  NOT_IN_CATEGORY_FILTER
-} from "./FilterConstants";
-import { getDateFiltersHelper, getIgnoreListHelper } from "./FiltersUtils";
+  getDateFiltersHelper,
+  getFrequencyFiltersHelpers
+} from "./FiltersUtils";
 
-import { ALL_VALID_CATEGORIES } from "../../../../Utils/selectors";
-import { fetchCategoryDetails } from "../../../../Utils/Util";
 import "./Filters.scss";
 
 export interface IFiltersStoreProps {
@@ -43,7 +40,7 @@ class PureFilters extends React.PureComponent<
           {this.renderHelperTooltip(getDateFiltersHelper)}
         </div>
         {this.renderDateFilterButtons()}
-        {this.maybeRenderCategoryFilters()}
+        {this.maybeRenderIgnoreFilter()}
       </div>
     );
   }
@@ -76,47 +73,25 @@ class PureFilters extends React.PureComponent<
     );
   };
 
-  private maybeRenderCategoryFilters() {
+  private maybeRenderIgnoreFilter() {
     if (!this.props.isPremium) {
       return null;
     }
+
     return (
       <>
         <div className="filters-people">
-          Categories
-          {this.renderHelperTooltip(getIgnoreListHelper)}
+          Frequency
+          {this.renderHelperTooltip(getFrequencyFiltersHelpers)}
         </div>
-        {this.renderCategoriesFilters()}
-        {this.renderNoCategoriesFilter()}
+        <div className="filters-categories" key={IGNORE_FILTER.id}>
+          <Checkbox
+            checked={!this.doesContainFilter(IGNORE_FILTER.id)}
+            onChange={this.changeFilter(IGNORE_FILTER)}
+          />
+          <Text className="filters-category-text">Ignored</Text>
+        </div>
       </>
-    );
-  }
-
-  private renderSingleCategoryFilter(title: string, categoryFilter: IFilter) {
-    return (
-      <div className="filters-categories" key={categoryFilter.id}>
-        <Checkbox
-          checked={!this.doesContainFilter(categoryFilter.id)}
-          onChange={this.changeFilter(categoryFilter)}
-        />
-        <Text className="filters-category-text">{title}</Text>
-      </div>
-    );
-  }
-
-  private renderCategoriesFilters() {
-    return ALL_VALID_CATEGORIES.map(category =>
-      this.renderSingleCategoryFilter(
-        fetchCategoryDetails(category).name,
-        CATEGORY_FILTER(category)
-      )
-    );
-  }
-
-  private renderNoCategoriesFilter() {
-    return this.renderSingleCategoryFilter(
-      "Uncategorized",
-      NOT_IN_CATEGORY_FILTER
     );
   }
 
