@@ -7,7 +7,7 @@ import {
 import IStoreState from "../State/IStoreState";
 import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType, ILink } from "../Types/Graph";
-import { IFrequency, IUser } from "../Types/Users";
+import { IPersonFrequency, IUser } from "../Types/Users";
 import { convertObjectToMap, getLatestEventDate } from "./Util";
 
 export interface IFilteredNodes {
@@ -16,7 +16,7 @@ export interface IFilteredNodes {
   connectionEvents: Map<string, IEvent[]>;
 }
 
-export type IRelationship = Map<string, IFrequency>;
+export type IRelationship = Map<string, IPersonFrequency>;
 
 export interface IPeopleGraph {
   nodes: IUser[];
