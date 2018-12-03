@@ -11,12 +11,20 @@ export const BLUE_FILTER: IFilter = {
   type: "date"
 };
 
+const getDaysAndRelationship = (date: Date, relationship: IPersonFrequency) => {
+  const frequency = finalRelationshipDays(relationship);
+  const days = getDifferenceBetweenDates(new Date(), date);
+  return {
+    days,
+    frequency
+  };
+};
+
 export const GREEN_FILTER: IFilter = {
   id: "green",
   shouldKeep: (date: Date, relationship: IPersonFrequency) => {
-    const finalRelationship = finalRelationshipDays(relationship);
-    const days = getDifferenceBetweenDates(new Date(), date);
-    return days < 0 || days > finalRelationship;
+    const dF = getDaysAndRelationship(date, relationship);
+    return dF.days < 0 || dF.days > dF.frequency;
   },
   type: "date"
 };
@@ -24,9 +32,8 @@ export const GREEN_FILTER: IFilter = {
 export const YELLOW_FILTER: IFilter = {
   id: "yellow",
   shouldKeep: (date: Date, relationship: IPersonFrequency) => {
-    const finalRelationship = finalRelationshipDays(relationship);
-    const days = getDifferenceBetweenDates(new Date(), date);
-    return days < finalRelationship || days > finalRelationship * 3;
+    const dF = getDaysAndRelationship(date, relationship);
+    return dF.days < dF.frequency || dF.days > dF.frequency * 3;
   },
   type: "date"
 };
@@ -34,9 +41,8 @@ export const YELLOW_FILTER: IFilter = {
 export const RED_FILTER: IFilter = {
   id: "red",
   shouldKeep: (date: Date, relationship: IPersonFrequency) => {
-    const finalRelationship = finalRelationshipDays(relationship);
-    const days = getDifferenceBetweenDates(new Date(), date);
-    return days < finalRelationship * 3;
+    const dF = getDaysAndRelationship(date, relationship);
+    return dF.days < dF.frequency * 3;
   },
   type: "date"
 };
