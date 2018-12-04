@@ -15,6 +15,7 @@ import {
   Login,
   SetPremiumStatus,
   UpdateEventData,
+  UpdateFrequency,
   UpdateGraph,
   UpdateOtherUser,
   UpdateUser,
@@ -68,9 +69,22 @@ export const DatabaseReducer = TypedReducer.builder<
     }
 
     return setWith(state, {
+      currentUser: { ...currentUser, ...payload }
+    });
+  })
+  .withHandler(UpdateFrequency.TYPE, (state, payload) => {
+    const { currentUser } = state;
+    if (currentUser === undefined) {
+      return state;
+    }
+
+    return setWith(state, {
       currentUser: {
         ...currentUser,
-        ...payload
+        frequency: {
+          ...currentUser.frequency,
+          ...payload
+        }
       }
     });
   })

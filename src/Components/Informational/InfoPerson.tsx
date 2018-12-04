@@ -31,7 +31,7 @@ export class PureInfoPerson extends React.PureComponent<
   IInfoPersonState
 > {
   public state: IInfoPersonState = {
-    shouldShowEvents: false
+    shouldShowEvents: true
   };
 
   public render() {

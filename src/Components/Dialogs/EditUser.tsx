@@ -2,7 +2,6 @@ import * as React from "react";
 import { connect, Dispatch } from "react-redux";
 
 import {
-  Classes,
   Dialog,
   FormGroup,
   Icon,
@@ -17,6 +16,7 @@ import { IFrequency, IUser } from "../../Types/Users";
 import { showToast } from "../../Utils/Toaster";
 import { DialogUtils, handleKeyDown } from "./DialogUtils";
 
+import { FrequencySlider } from "../Common/Slider";
 import "./AddNewEvent.scss";
 import "./EditUser.scss";
 
@@ -26,8 +26,9 @@ export interface IEditUserDispatchProps {
 }
 
 export interface IEditUserStoreProps {
-  user: Pick<IUser, "claimed" | "gender" | "id" | "location" | "name">;
   currentUser: IUser | undefined;
+  isPremium: boolean;
+  user: Pick<IUser, "claimed" | "gender" | "id" | "location" | "name">;
 }
 
 export interface IEditUserProps {
@@ -37,6 +38,7 @@ export interface IEditUserProps {
 
 export interface IFinalPerson {
   gender: string;
+  frequency?: number | "IGNORE";
   location: string;
   name: string;
 }
@@ -84,10 +86,11 @@ export class PureEditUser extends React.PureComponent<
         }
       >
         <div
-          className={Classes.DIALOG_BODY}
+          className="edit-user-dialog-body"
           onKeyDown={handleKeyDown(this.handleSubmit, this.props.onClose)}
         >
-          <FormGroup>
+          <FormGroup className="edit-user-form-group">
+            <div className="edit-user-header">Public</div>
             <InputGroup
               className="input-group"
               disabled={this.isDisabled()}
@@ -109,6 +112,7 @@ export class PureEditUser extends React.PureComponent<
               placeholder="Location"
               value={this.state.finalPerson.location}
             />
+            {this.maybeRenderPrivateDetails()}
           </FormGroup>
         </div>
         {this.maybeRenderFooterActions()}
@@ -136,6 +140,42 @@ export class PureEditUser extends React.PureComponent<
       </>
     );
   }
+
+  private maybeRenderPrivateDetails() {
+    const { currentUser } = this.props;
+    if (
+      !this.props.isPremium ||
+      currentUser === undefined ||
+      currentUser.id === this.props.user.id
+    ) {
+      return null;
+    }
+
+    const { frequency } = currentUser;
+    let initialValue: number | "IGNORE" | undefined;
+    if (frequency !== undefined) {
+      initialValue = frequency[this.props.user.id];
+    }
+
+    return (
+      <>
+        <div className="edit-user-header">Private</div>
+        <div className="edit-user-frequency">
+          Frequency
+          <div className="slider-container">
+            <FrequencySlider
+              initialValue={initialValue}
+              onChange={this.handleFrequencyChange}
+            />
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  private handleFrequencyChange = (value: number) => {
+    this.adjustFinalPerson("frequency", value);
+  };
 
   private maybeRenderFooterActions() {
     if (this.isDisabled()) {
@@ -169,6 +209,13 @@ export class PureEditUser extends React.PureComponent<
           finalPerson,
           currentUser.id
         );
+
+        if (this.props.isPremium && finalPerson.frequency !== undefined) {
+          await this.props.updateFrequency({
+            [this.props.user.id]: finalPerson.frequency
+          });
+        }
+
         showToast(
           Intent.SUCCESS,
           `Successfully updated ${this.props.user.name}.`
@@ -196,6 +243,7 @@ export class PureEditUser extends React.PureComponent<
 function mapStoreToProps(state: IStoreState): IEditUserStoreProps {
   return {
     currentUser: state.DatabaseReducer.currentUser,
+    isPremium: state.DatabaseReducer.isPremium,
     user: state.WebsiteReducer.infoPerson || {
       claimed: false,
       gender: "",
