@@ -3,7 +3,7 @@ import { Dispatch } from "redux";
 
 import { IFinalPerson } from "../Components/Dialogs/AddNewUser";
 import { IEvent } from "../Types/Events";
-import { IUser } from "../Types/Users";
+import { IFrequency, IUser } from "../Types/Users";
 import { convertPayloadToUser } from "../Utils/Util";
 import { AuthenticationDispatcher } from "./AuthenticationDispatcher";
 import { EventDispatcher } from "./EventDispatcher";
@@ -119,6 +119,10 @@ export class DatabaseDispatcher {
 
   public getAllRelationships = async () => {
     return this.relationshipDispatcher.getAllRelationships();
+  };
+
+  public updateFrequency = async (frequency: IFrequency) => {
+    return this.relationshipDispatcher.updateFrequency(frequency);
   };
 
   /**

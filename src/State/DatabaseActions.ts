@@ -2,7 +2,7 @@ import { TypedAction } from "redoodle";
 
 import { IEvent } from "../Types/Events";
 import { IForceUpdate } from "../Types/Other";
-import { IRawUser, IUser } from "../Types/Users";
+import { IFrequency, IRawUser, IUser } from "../Types/Users";
 
 export const Login = TypedAction.define("DatabaseActions//LOGIN")<IRawUser>();
 
@@ -17,6 +17,10 @@ export const ClearForceUpdate = TypedAction.defineWithoutPayload(
 export const UpdateUser = TypedAction.define("DatabaseAction//UPDATE_USER")<
   Partial<IUser>
 >();
+
+export const UpdateFrequency = TypedAction.define(
+  "DatabaseActions//UPDATE_FREQUENCY"
+)<IFrequency>();
 
 export const UpdateOtherUser = TypedAction.define(
   "DatabaseAction//UPDATE_OTHER_USER"
