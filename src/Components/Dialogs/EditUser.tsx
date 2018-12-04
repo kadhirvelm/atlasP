@@ -152,9 +152,8 @@ export class PureEditUser extends React.PureComponent<
     }
 
     const { frequency } = currentUser;
-    let initialValue: number | "IGNORE" | undefined;
-    if (frequency !== undefined) {
-      initialValue = frequency[this.props.user.id];
+    if (frequency === undefined) {
+      return null;
     }
 
     return (
@@ -164,7 +163,7 @@ export class PureEditUser extends React.PureComponent<
           Frequency
           <div className="slider-container">
             <FrequencySlider
-              initialValue={initialValue}
+              initialValue={frequency[this.props.user.id]}
               onChange={this.handleFrequencyChange}
             />
           </div>

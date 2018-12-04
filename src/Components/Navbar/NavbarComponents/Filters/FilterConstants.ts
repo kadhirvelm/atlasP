@@ -4,6 +4,7 @@ import {
   finalRelationshipDays,
   getDifferenceBetweenDates
 } from "../../../../Utils/Util";
+import { DEFAULT_FREQUENCY_DAYS } from "../../../Common/Slider";
 
 export const BLUE_FILTER: IFilter = {
   id: "blue",
@@ -60,4 +61,31 @@ export const IGNORE_FILTER: IFilter = {
     return relationship !== "IGNORE";
   },
   type: "user"
+};
+
+const getFinalRelationshipNumber = (relationship: IPersonFrequency) => {
+  if (relationship === "IGNORE") {
+    return Infinity;
+  }
+  return relationship || DEFAULT_FREQUENCY_DAYS;
+};
+
+export const LOWER_BOUND_FREQUENCY_FILTER = (lowerBound: number) => {
+  return (): IFilter => ({
+    id: "lower_bound",
+    shouldKeep: (_: IUser, relationship: IPersonFrequency) => {
+      return getFinalRelationshipNumber(relationship) >= lowerBound;
+    },
+    type: "user"
+  });
+};
+
+export const UPPER_BOUND_FREQUENCY_FILTER = (upperBound: number) => {
+  return (): IFilter => ({
+    id: "upper_bound",
+    shouldKeep: (_: IUser, relationship: IPersonFrequency) => {
+      return getFinalRelationshipNumber(relationship) <= upperBound;
+    },
+    type: "user"
+  });
 };
