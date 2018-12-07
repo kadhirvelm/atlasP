@@ -37,11 +37,12 @@ export const getDateFiltersHelper = (
 );
 
 export const getFrequencyFiltersHelpers = (
-  <div className="filter-ignore-list-helper">
-    How often do you want to see this person? You can change a person's
-    frequency by clicking on their name in the blue panel to the right.
-    <div className="filters-actionable-container">
-      Move the sliders to filter people by frequency.
+  <div className="filter-frequency-helper">
+    How often do you want to see this person? Move the sliders to adjust the
+    filter.
+    <div className="filters-actionable-container filters-frequency-text">
+      You can change a person's frequency by clicking on their name in the blue
+      panel on the right side of your screen.
     </div>
   </div>
 );

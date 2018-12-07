@@ -132,8 +132,12 @@ $filter-height: 25px;
   margin-bottom: 2px;
 }
 
-.filter-ignore-list-helper {
+.filter-frequency-helper {
   max-width: 250px;
+}
+
+.filters-frequency-text {
+  color: $white;
 }
 
 .filters-frequency-range-slider {
