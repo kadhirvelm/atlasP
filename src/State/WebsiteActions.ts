@@ -1,5 +1,6 @@
 import { TypedAction } from "redoodle";
 
+import { IRangeSliderValue } from "../Components/Common/Sliders/RangeSlider";
 import { IGraphUser } from "../Components/DisplayGraph/DisplayGraph";
 import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType } from "../Types/Graph";
@@ -57,3 +58,7 @@ export const OpenNavbarDialog = TypedAction.define(
 export const AddPeopleToEvent = TypedAction.define(
   "WebsiteAction//ADD_PEOPLE_TO_EVENT"
 )<IUser>();
+
+export const SetRangeFilter = TypedAction.define(
+  "WebsiteAction//SET_RANGE_FILTER"
+)<IRangeSliderValue>();

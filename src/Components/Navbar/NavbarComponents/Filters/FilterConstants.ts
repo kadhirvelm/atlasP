@@ -4,7 +4,8 @@ import {
   finalRelationshipDays,
   getDifferenceBetweenDates
 } from "../../../../Utils/Util";
-import { DEFAULT_FREQUENCY_DAYS } from "../../../Common/Slider";
+import { IRangeSliderValue } from "../../../Common/Sliders/RangeSlider";
+import { DEFAULT_FREQUENCY_DAYS } from "../../../Common/Sliders/Utils";
 
 export const BLUE_FILTER: IFilter = {
   id: "blue",
@@ -55,14 +56,6 @@ export const DATE_FILTERS = [
   RED_FILTER
 ];
 
-export const IGNORE_FILTER: IFilter = {
-  id: "ignore",
-  shouldKeep: (_: IUser, relationship: IPersonFrequency) => {
-    return relationship !== "IGNORE";
-  },
-  type: "user"
-};
-
 const getFinalRelationshipNumber = (relationship: IPersonFrequency) => {
   if (relationship === "IGNORE") {
     return Infinity;
@@ -70,22 +63,18 @@ const getFinalRelationshipNumber = (relationship: IPersonFrequency) => {
   return relationship || DEFAULT_FREQUENCY_DAYS;
 };
 
-export const LOWER_BOUND_FREQUENCY_FILTER = (lowerBound: number) => {
-  return (): IFilter => ({
-    id: "lower_bound",
+export const RANGE_BOUND_FREQUENCY_FILTER = (
+  range: IRangeSliderValue
+): IFilter => {
+  return {
+    id: "range_bound",
     shouldKeep: (_: IUser, relationship: IPersonFrequency) => {
-      return getFinalRelationshipNumber(relationship) >= lowerBound;
+      const relationshipNumber = getFinalRelationshipNumber(relationship);
+      return (
+        relationshipNumber >= getFinalRelationshipNumber(range[0]) &&
+        relationshipNumber <= getFinalRelationshipNumber(range[1])
+      );
     },
     type: "user"
-  });
-};
-
-export const UPPER_BOUND_FREQUENCY_FILTER = (upperBound: number) => {
-  return (): IFilter => ({
-    id: "upper_bound",
-    shouldKeep: (_: IUser, relationship: IPersonFrequency) => {
-      return getFinalRelationshipNumber(relationship) <= upperBound;
-    },
-    type: "user"
-  });
+  };
 };

@@ -3,15 +3,20 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Checkbox, Icon, Text, Tooltip } from "@blueprintjs/core";
+import { Checkbox, Icon, Tooltip } from "@blueprintjs/core";
 
 import IStoreState from "../../../../State/IStoreState";
 import {
   AddGraphFilter,
-  RemoveGraphFilter
+  RemoveGraphFilter,
+  SetRangeFilter
 } from "../../../../State/WebsiteActions";
 import { IFilter } from "../../../../Types/Graph";
-import { DATE_FILTERS, IGNORE_FILTER } from "./FilterConstants";
+import {
+  FrequencyRangeSlider,
+  IRangeSliderValue
+} from "../../../Common/Sliders/RangeSlider";
+import { DATE_FILTERS, RANGE_BOUND_FREQUENCY_FILTER } from "./FilterConstants";
 import {
   getDateFiltersHelper,
   getFrequencyFiltersHelpers
@@ -22,11 +27,13 @@ import "./Filters.scss";
 export interface IFiltersStoreProps {
   currentFilters: IFilter[];
   isPremium: boolean;
+  rangeFilterValue: IRangeSliderValue | undefined;
 }
 
 export interface IFilterDispatchProps {
   addFilter: (filter: IFilter) => void;
   removeFilter: (filterId: string) => void;
+  setRangeFilter: (rangeFilter: IRangeSliderValue) => void;
 }
 
 class PureFilters extends React.PureComponent<
@@ -84,16 +91,24 @@ class PureFilters extends React.PureComponent<
           Frequency
           {this.renderHelperTooltip(getFrequencyFiltersHelpers)}
         </div>
-        <div className="filters-categories" key={IGNORE_FILTER.id}>
-          <Checkbox
-            checked={!this.doesContainFilter(IGNORE_FILTER.id)}
-            onChange={this.changeFilter(IGNORE_FILTER)}
+        <div className="filters-categories">
+          <FrequencyRangeSlider
+            className="filters-frequency-range-slider"
+            initialValue={this.props.rangeFilterValue}
+            onChange={this.frequencyFilterChange}
+            vertical={true}
           />
-          <Text className="filters-category-text">Ignored</Text>
         </div>
       </>
     );
   }
+
+  private frequencyFilterChange = (value: IRangeSliderValue) => {
+    const newFilter = RANGE_BOUND_FREQUENCY_FILTER(value);
+    this.props.removeFilter(newFilter.id);
+    this.props.addFilter(newFilter);
+    this.props.setRangeFilter(value);
+  };
 
   private changeFilter = (filter: IFilter) => {
     return () => {
@@ -115,7 +130,8 @@ class PureFilters extends React.PureComponent<
 function mapStateToProps(state: IStoreState): IFiltersStoreProps {
   return {
     currentFilters: state.WebsiteReducer.graphFilters,
-    isPremium: state.DatabaseReducer.isPremium
+    isPremium: state.DatabaseReducer.isPremium,
+    rangeFilterValue: state.WebsiteReducer.rangeFilter
   };
 }
 
@@ -123,7 +139,8 @@ function mapDispatchToProps(dispatch: Dispatch): IFilterDispatchProps {
   return bindActionCreators(
     {
       addFilter: AddGraphFilter.create,
-      removeFilter: RemoveGraphFilter.create
+      removeFilter: RemoveGraphFilter.create,
+      setRangeFilter: SetRangeFilter.create
     },
     dispatch
   );

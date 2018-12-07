@@ -16,7 +16,7 @@ import { IFrequency, IUser } from "../../Types/Users";
 import { showToast } from "../../Utils/Toaster";
 import { DialogUtils, handleKeyDown } from "./DialogUtils";
 
-import { FrequencySlider } from "../Common/Slider";
+import { FrequencySlider } from "../Common/Sliders/FrequencySlider";
 import "./AddNewEvent.scss";
 import "./EditUser.scss";
 
@@ -143,11 +143,7 @@ export class PureEditUser extends React.PureComponent<
 
   private maybeRenderPrivateDetails() {
     const { currentUser } = this.props;
-    if (
-      !this.props.isPremium ||
-      currentUser === undefined ||
-      currentUser.id === this.props.user.id
-    ) {
+    if (!this.props.isPremium || currentUser === undefined) {
       return null;
     }
 
@@ -163,6 +159,7 @@ export class PureEditUser extends React.PureComponent<
           Frequency
           <div className="slider-container">
             <FrequencySlider
+              disabled={currentUser.id === this.props.user.id}
               initialValue={frequency[this.props.user.id]}
               onChange={this.handleFrequencyChange}
             />

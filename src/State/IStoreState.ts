@@ -1,3 +1,4 @@
+import { IRangeSliderValue } from "../Components/Common/Sliders/RangeSlider";
 import { IGraphUser } from "../Components/DisplayGraph/DisplayGraph";
 import { DRIFT_GRAPH } from "../Components/Navbar/NavbarComponents/GraphType/GraphConstants";
 import { IEvent } from "../Types/Events";
@@ -25,6 +26,7 @@ export default interface IStoreState {
     graphType: IGraphType;
     highlightConnections: Set<string>;
     openNavbarDialog: IOpenNavbarDialog;
+    rangeFilter: IRangeSliderValue | undefined;
     selectedEvent: IEvent | undefined;
   };
 }
@@ -44,6 +46,7 @@ export const EMPTY_STATE: IStoreState = {
     graphType: DRIFT_GRAPH,
     highlightConnections: new Set(),
     openNavbarDialog: undefined,
+    rangeFilter: undefined,
     selectedEvent: undefined
   }
 };
