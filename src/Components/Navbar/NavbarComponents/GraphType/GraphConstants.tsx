@@ -37,7 +37,7 @@ const DRIFT_NORMALIZER = (totalDaysSinceEvent: number) =>
       totalDaysSinceEvent * DISTANCE_MULTIPLIER_DRIFT,
       365 * DISTANCE_MULTIPLIER_DRIFT
     ),
-    5 * DISTANCE_MULTIPLIER_DRIFT
+    7 * DISTANCE_MULTIPLIER_DRIFT
   );
 
 export const DRIFT_GRAPH: IGraphType = {

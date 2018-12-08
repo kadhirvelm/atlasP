@@ -83,7 +83,7 @@ class PureDisplayGraphHelpers extends React.PureComponent<
       <div className="graph-helpers-tooltip">
         Your graph health. Use this to gauge your current work life balance.
         <div className="graph-helper-math-box">
-          This number reflects what percentage of your friends display as green.
+          This number reflects how in touch you are in with your friends.
         </div>
       </div>
     );
