@@ -13,9 +13,14 @@
 
 .graph-helpers-bottom-container {
   display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+}
+
+.graph-helpers-single-row {
+  display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-top: 5px;
 }
 
 .graph-label {
@@ -24,7 +29,7 @@
   background-color: $gray4;
   border-radius: 3px;
   padding: 5px 10px;
-  margin-right: 10px;
+  margin: 5px;
   cursor: default;
 }
 
@@ -40,4 +45,31 @@
 .find-user-autocomplete {
   display: flex;
   flex: 1;
+}
+
+.display-graph-health {
+  display: flex;
+  border-radius: 3px;
+  padding: 5px 10px;
+  margin: 5px;
+  cursor: default;
+
+  &.green {
+    background-color: $green2;
+    color: $green5;
+  }
+
+  &.yellow {
+    background-color: $gold2;
+    color: $gold5;
+  }
+
+  &.red {
+    background-color: $red2;
+    color: $red5;
+  }
+}
+
+.graph-helpers-tooltip {
+  max-width: 200px;
 }

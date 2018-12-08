@@ -8,7 +8,12 @@ import IStoreState from "../State/IStoreState";
 import { IEvent } from "../Types/Events";
 import { IFilter, IGraphType, ILink } from "../Types/Graph";
 import { IPersonFrequency, IUser } from "../Types/Users";
-import { convertObjectToMap, getLatestEventDate } from "./Util";
+import {
+  convertObjectToMap,
+  finalRelationshipDays,
+  getDifferenceBetweenDates,
+  getLatestEventDate
+} from "./Util";
 
 export interface IFilteredNodes {
   nodes: IUser[];
@@ -201,6 +206,46 @@ export const selectMainPersonGraph = createSelector(
         return link;
       })
     };
+  }
+);
+
+const getHealth = (
+  eventDate: Date | undefined,
+  relationship: IPersonFrequency | undefined
+): number => {
+  if (eventDate === undefined) {
+    return 0;
+  }
+
+  const totalDifference = getDifferenceBetweenDates(
+    new Date(),
+    new Date(eventDate)
+  );
+  const frequencyInDays = finalRelationshipDays(relationship);
+  if (totalDifference < frequencyInDays) {
+    return 1;
+  } else if (totalDifference < frequencyInDays * 3) {
+    return 0.5;
+  }
+  return 0;
+};
+
+export const selectGraphHealth = createSelector(
+  selectFilteredConnections,
+  selectRelationships,
+  (filteredNodes: IFilteredNodes | undefined, relationships: IRelationship) => {
+    if (filteredNodes === undefined) {
+      return undefined;
+    }
+    const totalScore = filteredNodes.nodes
+      .map(node =>
+        getHealth(
+          filteredNodes.lastEvents.get(node.id),
+          relationships.get(node.id)
+        )
+      )
+      .reduce((previous, next) => previous + next, 0);
+    return Math.round((totalScore / filteredNodes.nodes.length) * 100);
   }
 );
 
