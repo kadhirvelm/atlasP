@@ -3,15 +3,17 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Button } from "@blueprintjs/core";
+import { Button, Tooltip } from "@blueprintjs/core";
 
+import { GraphIcon } from "../../icons/graphIcon";
 import IStoreState from "../../State/IStoreState";
 import { RemoveAllHighlights } from "../../State/WebsiteActions";
+import { IGraphType } from "../../Types/Graph";
 import { IUser } from "../../Types/Users";
+import { selectGraphHealth } from "../../Utils/selectors";
 import { Autocomplete } from "../Common/Autocomplete";
 import { zoomByScale } from "./DisplayGraphUtils";
 
-import { GraphIcon } from "../../icons/graphIcon";
 import "./DisplayGraphHelpers.scss";
 
 export interface IDisplayGraphHelpersProps {
@@ -23,7 +25,8 @@ export interface IDisplayGraphHelpersDispatchProps {
 }
 
 export interface IDisplayGraphHelpersStoreProps {
-  graphLabel: string;
+  graphType: IGraphType;
+  health: number | undefined;
   userMap: Map<string, IUser> | undefined;
 }
 
@@ -43,9 +46,56 @@ class PureDisplayGraphHelpers extends React.PureComponent<
           onSelection={this.props.zoomToNode}
         />
         <div className="graph-helpers-bottom-container">
+          <div className="graph-helpers-single-row">
+            {this.renderHealth()}
+            {this.renderGraphLabel()}
+          </div>
+          <div className="graph-helpers-single-row">
+            {this.renderGraphHelperButtons()}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  private renderHealth() {
+    const { health } = this.props;
+    if (health === undefined) {
+      return null;
+    }
+    return (
+      <div
+        className={classNames("display-graph-health", {
+          green: health >= 75,
+          red: health < 50,
+          yellow: health < 75 && health >= 50
+        })}
+      >
+        <Tooltip content={this.getHealthTooltipContent()} position="left">
+          {this.props.health}
+        </Tooltip>
+      </div>
+    );
+  }
+
+  private getHealthTooltipContent() {
+    return (
+      <div className="graph-helpers-tooltip">
+        Your graph health. Use this to gauge your current work life balance.
+        <div className="graph-helper-math-box">
+          This number reflects how in touch you are in with your friends.
+        </div>
+      </div>
+    );
+  }
+
+  private renderGraphLabel() {
+    return (
+      <>
+        <Tooltip content={this.props.graphType.tooltip} hoverOpenDelay={500}>
           <div
             className={classNames("graph-label", "show-change")}
-            key={this.props.graphLabel}
+            key={this.props.graphType.id}
           >
             <GraphIcon
               attributes={{
@@ -60,27 +110,30 @@ class PureDisplayGraphHelpers extends React.PureComponent<
                 width: 15
               }}
             />
-            {this.props.graphLabel}
+            {this.props.graphType.id}
           </div>
-          <div className="graph-assistant-buttons">
-            <Button
-              title="Zoom in"
-              icon="zoom-in"
-              onClick={this.handleZoomIn}
-            />
-            <Button
-              title="Zoom out"
-              icon="zoom-out"
-              onClick={this.handleZoomOut}
-            />
-            <Button
-              title="Remove highlights"
-              icon="delete"
-              onClick={this.removeAllHighlights}
-            />
-          </div>
+        </Tooltip>
+      </>
+    );
+  }
+
+  private renderGraphHelperButtons() {
+    return (
+      <>
+        <div className="graph-assistant-buttons">
+          <Button title="Zoom in" icon="zoom-in" onClick={this.handleZoomIn} />
+          <Button
+            title="Zoom out"
+            icon="zoom-out"
+            onClick={this.handleZoomOut}
+          />
+          <Button
+            title="Remove highlights"
+            icon="delete"
+            onClick={this.removeAllHighlights}
+          />
         </div>
-      </div>
+      </>
     );
   }
 
@@ -92,7 +145,8 @@ class PureDisplayGraphHelpers extends React.PureComponent<
 
 function mapStoreToProps(state: IStoreState): IDisplayGraphHelpersStoreProps {
   return {
-    graphLabel: state.WebsiteReducer.graphType.id,
+    graphType: state.WebsiteReducer.graphType,
+    health: selectGraphHealth(state),
     userMap: state.DatabaseReducer.userData
   };
 }

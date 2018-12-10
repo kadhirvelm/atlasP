@@ -29,12 +29,17 @@ const ICON_ATTRIBUTES = {
  * Drift - people drift away from you the longer it's been since you've seen them.
  */
 
-const DISTANCE_MULTIPLIER_DRIFT = 100;
-const LOG_MULTIPLIER_DRIFT = 3;
+const DISTANCE_MULTIPLIER_DRIFT = 10;
 
 const DRIFT_NORMALIZER = (totalDaysSinceEvent: number) =>
-  (Math.log(totalDaysSinceEvent) * LOG_MULTIPLIER_DRIFT + 1) *
-  DISTANCE_MULTIPLIER_DRIFT;
+  Math.max(
+    Math.min(
+      totalDaysSinceEvent * DISTANCE_MULTIPLIER_DRIFT,
+      365 * DISTANCE_MULTIPLIER_DRIFT
+    ),
+    7 * DISTANCE_MULTIPLIER_DRIFT
+  );
+
 export const DRIFT_GRAPH: IGraphType = {
   generateLinks: (source: string, connections: Map<string, IEvent[]>) => {
     const links = Array.from(connections.entries()).map(userAndEvents => {
@@ -63,7 +68,7 @@ export const DRIFT_GRAPH: IGraphType = {
       The longer it's been since you've seen a friend, the farther they will
       drift away from you.
       <div className="graph-helper-math-box">
-        Distance = Math.log(# days since last event)
+        Distance = # days since last event
       </div>
     </div>
   )

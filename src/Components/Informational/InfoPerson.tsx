@@ -34,6 +34,12 @@ export class PureInfoPerson extends React.PureComponent<
     shouldShowEvents: true
   };
 
+  public componentDidMount() {
+    setTimeout(() => {
+      this.setState({ shouldShowEvents: false });
+    }, 1500);
+  }
+
   public render() {
     if (this.props.person === undefined) {
       return null;
