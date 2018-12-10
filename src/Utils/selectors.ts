@@ -94,7 +94,11 @@ export const selectFilteredConnections = createSelector(
     currentUser: IUser | undefined,
     graphFilter: IFilter[] | undefined
   ): IFilteredNodes | undefined => {
-    if (filteredNodes === undefined || graphFilter === undefined) {
+    if (
+      filteredNodes === undefined ||
+      graphFilter === undefined ||
+      currentUser === undefined
+    ) {
       return filteredNodes;
     }
 
@@ -103,6 +107,10 @@ export const selectFilteredConnections = createSelector(
 
     graphFilter.forEach(filter => {
       filteredNodesCopy.nodes = filteredNodesCopy.nodes.filter(user => {
+        if (user.id === currentUser.id) {
+          return true;
+        }
+
         const check =
           filter.type === "date"
             ? filteredNodesCopy.lastEvents.get(user.id)
@@ -110,6 +118,7 @@ export const selectFilteredConnections = createSelector(
         if (check === undefined) {
           return true;
         }
+
         const shouldKeep = filter.shouldKeep(
           check,
           relationships.get(user.id),
@@ -118,6 +127,7 @@ export const selectFilteredConnections = createSelector(
         if (!shouldKeep) {
           connectionEvents.delete(user.id);
         }
+
         return shouldKeep;
       });
     });
@@ -138,6 +148,7 @@ export const selectLinkedConnections = createSelector(
     if (filteredNodes === undefined || mainPerson === undefined) {
       return undefined;
     }
+
     return {
       lastEvents: filteredNodes.lastEvents,
       links: graphType.generateLinks(
