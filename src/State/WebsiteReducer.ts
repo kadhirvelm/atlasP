@@ -14,7 +14,8 @@ import {
   SelectEvent,
   SetContextMenuNode,
   SetGraphRef,
-  SetInfoPerson
+  SetInfoPerson,
+  SetRangeFilter
 } from "./WebsiteActions";
 
 export const WebsiteReducer = TypedReducer.builder<
@@ -99,6 +100,11 @@ export const WebsiteReducer = TypedReducer.builder<
   .withHandler(AddPeopleToEvent.TYPE, (state, payload) => {
     return setWith(state, {
       additionalPeopleToEvent: [payload]
+    });
+  })
+  .withHandler(SetRangeFilter.TYPE, (state, payload) => {
+    return setWith(state, {
+      rangeFilter: payload
     });
   })
   .build();

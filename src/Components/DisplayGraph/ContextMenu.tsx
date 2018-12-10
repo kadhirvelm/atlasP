@@ -9,7 +9,8 @@ import IStoreState from "../../State/IStoreState";
 import {
   AddHighlightConnection,
   RemoveHighlightConnection,
-  SetContextMenuNode
+  SetContextMenuNode,
+  SetInfoPerson
 } from "../../State/WebsiteActions";
 import { IUser } from "../../Types/Users";
 import { isInsideDiv } from "../Common/utils";
@@ -32,6 +33,7 @@ export interface IGraphContextMenuDispatchProps {
   removeHighlight(id: string): void;
   removeFromGraph(id: string, name: string): void;
   setContextMenuNode(node: IGraphUser | undefined): void;
+  setInfoPerson(node: IGraphUser): void;
 }
 
 export interface IGraphContextMenuState {
@@ -78,6 +80,7 @@ class PureGraphContextMenu extends React.PureComponent<
         <div className="context-menu-node-name">{currentContextNode.name}</div>
         {this.renderContextMenuOption(this.handleZoomClick, "zoom-in", "Zoom")}
         {this.renderHighlightConnections(currentContextNode)}
+        {this.renderSetInfoPerson(currentContextNode)}
         {this.maybeRenderRemoveConnection(currentContextNode)}
       </div>
     );
@@ -95,6 +98,14 @@ class PureGraphContextMenu extends React.PureComponent<
       this.handleAddHighlight(currentContextNode.id),
       "highlight",
       "Highlight"
+    );
+  }
+
+  private renderSetInfoPerson(currentContextNode: IGraphUser) {
+    return this.renderContextMenuOption(
+      this.handleSelectPerson(currentContextNode),
+      "select",
+      "Select"
     );
   }
 
@@ -136,6 +147,11 @@ class PureGraphContextMenu extends React.PureComponent<
   };
   private handleRemoveHighlight = (id: string) => () => {
     this.props.removeHighlight(id);
+    this.close();
+  };
+
+  private handleSelectPerson = (user: IGraphUser) => () => {
+    this.props.setInfoPerson(user);
     this.close();
   };
 
@@ -189,7 +205,8 @@ function mapDispatchToProps(
       {
         addHighlight: AddHighlightConnection.create,
         removeHighlight: RemoveHighlightConnection.create,
-        setContextMenuNode: SetContextMenuNode.create
+        setContextMenuNode: SetContextMenuNode.create,
+        setInfoPerson: SetInfoPerson.create
       },
       dispatch
     ),

@@ -4,9 +4,10 @@ import { Dispatch } from "redux";
 
 import { Intent } from "@blueprintjs/core";
 
-import { IGNORE_FILTER } from "../Components/Navbar/NavbarComponents/Filters/FilterConstants";
+import { FREQUENCIES } from "../Components/Common/Sliders/Utils";
+import { RANGE_BOUND_FREQUENCY_FILTER } from "../Components/Navbar/NavbarComponents/Filters/FilterConstants";
 import { SetPremiumStatus } from "../State/DatabaseActions";
-import { AddGraphFilter } from "../State/WebsiteActions";
+import { AddGraphFilter, SetRangeFilter } from "../State/WebsiteActions";
 import { showToast } from "../Utils/Toaster";
 import { retrieveURL } from "./Utils";
 
@@ -21,10 +22,15 @@ export class PremiumDispatcher {
     try {
       const premiumStatus = await axios.get(retrieveURL("account/check"));
       const isPremium: boolean = premiumStatus.data.payload.isPremium;
+      const lowerBound = FREQUENCIES[0].value;
+      const upperBound = FREQUENCIES[FREQUENCIES.length - 2].value;
       this.dispatch(
         CompoundAction.create([
           SetPremiumStatus.create(isPremium),
-          AddGraphFilter.create(IGNORE_FILTER)
+          AddGraphFilter.create(
+            RANGE_BOUND_FREQUENCY_FILTER([lowerBound, upperBound])
+          ),
+          SetRangeFilter.create([lowerBound, upperBound])
         ])
       );
     } catch (error) {

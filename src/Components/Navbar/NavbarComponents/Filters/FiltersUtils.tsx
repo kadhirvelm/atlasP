@@ -37,8 +37,12 @@ export const getDateFiltersHelper = (
 );
 
 export const getFrequencyFiltersHelpers = (
-  <div className="filter-ignore-list-helper">
-    At what frequency do you want to see this person? Check the ignore box to
-    include all your ignored friends on the graph.
+  <div className="filter-frequency-helper">
+    How often do you want to see this person? Move the sliders to adjust the
+    filter.
+    <div className="filters-actionable-container filters-frequency-text">
+      You can change a person's frequency by clicking on their name in the blue
+      panel on the right side of your screen.
+    </div>
   </div>
 );
