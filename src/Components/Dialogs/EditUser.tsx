@@ -14,9 +14,9 @@ import { DatabaseDispatcher } from "../../Dispatchers/DatabaseDispatcher";
 import IStoreState from "../../State/IStoreState";
 import { IFrequency, IUser } from "../../Types/Users";
 import { showToast } from "../../Utils/Toaster";
+import { FrequencySlider } from "../Common/Sliders/FrequencySlider";
 import { DialogUtils, handleKeyDown } from "./DialogUtils";
 
-import { FrequencySlider } from "../Common/Sliders/FrequencySlider";
 import "./AddNewEvent.scss";
 import "./EditUser.scss";
 
